@@ -9,6 +9,7 @@ const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
 const globalErrHandler = require("./controllers/errorController");
 const AppError = require("./utils/appError");
+const logger = require("./config/logger.js");
 
 const app = express();
 
@@ -50,6 +51,10 @@ app.use("/api/v1/users", userRoutes);
 // handle undefined Routes
 app.use("*", (req, res, next) => {
   const err = new AppError(404, "fail", "undefined route");
+  logger.error("hello");
+  logger.warn("hello");
+  logger.info("hello");
+  logger.debug("hello");
   next(err, req, res, next);
 });
 
