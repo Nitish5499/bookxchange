@@ -1,12 +1,6 @@
 name: CI/CD
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: push
 
 jobs:
   test:
@@ -32,7 +26,7 @@ jobs:
       name: CD Pipeline
       runs-on: ubuntu-latest
       needs: [test]
-      if: github.ref == 'refs/heads/dummy'
+      if: github.ref == 'refs/heads/main'
       strategy:
         matrix:
           node-version: ['12.x']
