@@ -1,5 +1,5 @@
-const AppError = require("../utils/appError");
-const APIFeatures = require("../utils/apiFeatures");
+const { ErrorHandler } = require('../utils/errorHandler');
+const APIFeatures = require('../utils/apiFeatures');
 
 exports.deleteOne = (Model) => async (req, res, next) => {
   try {
@@ -7,7 +7,7 @@ exports.deleteOne = (Model) => async (req, res, next) => {
 
     if (!doc) {
       return next(
-        new AppError(404, "fail", "No document found with that id"),
+        new ErrorHandler(404, 'No document found with that id'),
         req,
         res,
         next
@@ -15,7 +15,7 @@ exports.deleteOne = (Model) => async (req, res, next) => {
     }
 
     res.status(204).json({
-      status: "success",
+      status: 'success',
       data: null,
     });
   } catch (error) {
@@ -32,7 +32,7 @@ exports.updateOne = (Model) => async (req, res, next) => {
 
     if (!doc) {
       return next(
-        new AppError(404, "fail", "No document found with that id"),
+        new ErrorHandler(404, 'No document found with that id'),
         req,
         res,
         next
@@ -40,7 +40,7 @@ exports.updateOne = (Model) => async (req, res, next) => {
     }
 
     res.status(200).json({
-      status: "success",
+      status: 'success',
       data: {
         doc,
       },
@@ -55,7 +55,7 @@ exports.createOne = (Model) => async (req, res, next) => {
     const doc = await Model.create(req.body);
 
     res.status(201).json({
-      status: "success",
+      status: 'success',
       data: {
         doc,
       },
@@ -71,7 +71,7 @@ exports.getOne = (Model) => async (req, res, next) => {
 
     if (!doc) {
       return next(
-        new AppError(404, "fail", "No document found with that id"),
+        new ErrorHandler(404, 'No document found with that id'),
         req,
         res,
         next
@@ -79,7 +79,7 @@ exports.getOne = (Model) => async (req, res, next) => {
     }
 
     res.status(200).json({
-      status: "success",
+      status: 'success',
       data: {
         doc,
       },
@@ -96,7 +96,7 @@ exports.getAll = (Model) => async (req, res, next) => {
     const doc = await features.query;
 
     res.status(200).json({
-      status: "success",
+      status: 'success',
       results: doc.length,
       data: {
         data: doc,

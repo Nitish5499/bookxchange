@@ -1,15 +1,15 @@
-const express = require("express");
-const rateLimit = require("express-rate-limit");
-const helmet = require("helmet");
-const mongoSanitize = require("express-mongo-sanitize");
-const xss = require("xss-clean");
-const hpp = require("hpp");
-const cors = require("cors");
+const express = require('express');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
+const cors = require('cors');
 
-const userRoutes = require("./routes/userRoutes");
-const globalErrHandler = require("./controllers/errorController");
-const AppError = require("./utils/appError");
-const logger = require("./config/logger.js");
+const userRoutes = require('./routes/userRoutes');
+const bookRoutes = require('./routes/bookRoutes');
+const { ErrorHandler, handleError }  = require('./utils/errorHandler');
+const logger = require('./config/logger.js');
 
 const app = express();
 
@@ -23,14 +23,14 @@ app.use(helmet());
 const limiter = rateLimit({
   max: 150,
   windowMs: 60 * 60 * 1000,
-  message: "Too Many Request from this IP, please try again in an hour",
+  message: 'Too Many Request from this IP, please try again in an hour',
 });
-app.use("/api", limiter);
+app.use('/api', limiter);
 
 // Body parser, reading data from body into req.body
 app.use(
   express.json({
-    limit: "15kb",
+    limit: '15kb',
   })
 );
 
@@ -43,21 +43,26 @@ app.use(xss());
 // Prevent parameter pollution
 app.use(hpp());
 
-app.get("/test", (req, res) => res.json({ status: "live" }));
+//Logger
+app.use(require('morgan')('combined',{ 'stream': logger.stream }));
+
+// Test routes
+app.get('/status', (req, res) => res.json({ 'status': 'alive' }));
 
 // Routes
-app.use("/api/v1/users", userRoutes);
+app.use('/api/v1/users', userRoutes);
+
+// Sample route
+app.use('/api/v1/books', bookRoutes);
 
 // handle undefined Routes
-app.use("*", (req, res, next) => {
-  const err = new AppError(404, "fail", "undefined route");
-  logger.error("hello");
-  logger.warn("hello");
-  logger.info("hello");
-  logger.debug("hello");
+app.use('*', (req, res, next) => {
+  const err = new ErrorHandler(404, 'undefined route');
   next(err, req, res, next);
 });
 
-app.use(globalErrHandler);
+app.use((err, req, res, next) => {
+  handleError(err, res);
+});
 
 module.exports = app;
