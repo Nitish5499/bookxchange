@@ -4,8 +4,8 @@ module.exports = {
       name: 'bxc-server',
       script: './server.js',
       env: {
-        NODE_ENV: 'development',
+        NODE_ENV: 'production',
       },
     },
   ],
-}
+};

@@ -16,10 +16,13 @@
         "ecmaVersion": 12
     },
     "plugins": [
-        "react"
+        "react",
+        "prettier"
     ],
     "rules": {
-        "quotes": [2, "single"],
-        "semi": [2, "always"]
+        "semi": ["error", "always"],
+        "prettier/prettier": ["error", { "singleQuote": true }],
+        "no-tabs": ["error", { "allowIndentationTabs": true }],
+        "no-multiple-empty-lines": ["error", {"max": 1, "maxEOF": 1}]
     }
 }

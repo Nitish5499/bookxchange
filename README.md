@@ -1,28 +1,25 @@
+[![Actions Status](https://github.com/shreyas-sriram/bookxchange-server/workflows/CI/CD/badge.svg)](https://github.com/shreyas-sriram/bookxchange-server/actions)
+
 # bookxchange-server
-The server-side for the BookXchange Application.
 
-# Folder Structure
-> Note: Found here - https://github.com/MoathShreim/Nodejs-rest-api-project-structure-Express
-## Features
-- Fundamental of Express: routing, middleware, sending response and more
-- Fundamental of Mongoose: Data models, data validation and middleware
-- RESTful API including pagination and sorting
-- CRUD operations with MongoDB
-- Security: encyption, sanitization and more
-- Authentication with JWT : login and signup
-- Authorization (User roles and permissions)
-- Error handling
-- Enviroment Varaibles
-- handling error outside Express
-- Catching Uncaught Exception
+The server-side API for the BookXchange Application.
 
-## Project Structure
-- server.js : Responsible for connecting the MongoDB and starting the server.
-- app.js : Configure everything that has to do with Express application. 
-- config.env: for Enviroment Varaiables
-- routes -> userRoutes.js: The goal of the route is to guide the request to the correct handler function which will be in one of the controllers
-- controllers -> userController.js: Handle the application request, interact with models and send back the response to the client 
-- models -> userModel.js: (Business logic) related to business rules, how the business works and business needs ( Creating new user in the database, checking if the user password is correct, validating user input data)
+# To Run Locally
+
+Run
+
+```
+npm start
+```
+
+# To Override Deployment to AWS
+
+Go to [.github/workflows/ci-cd.yml](https://github.com/shreyas-sriram/bookxchange-server/blob/signup/.github/workflows/ci-cd.yaml), change `if` in `CD Pipeline` job to add your working branch. For example, if your working branch is `foo`, then modify as
+
+```
+if: github.ref == 'refs/heads/foo'
+```
 
 # Keeping It Generic
+
 - installing packages - `npm install --save-dev <package-name>`

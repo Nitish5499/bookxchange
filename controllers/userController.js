@@ -1,94 +1,92 @@
-const User = require('../models/userModel');
-const base = require('./baseController');
-const userUtil = require('../utils/userUtil');
-const { ErrorHandler } = require('../utils/errorHandler');
+const User = require('$/models/userModel');
+const base = require('$/controllers/baseController');
+const auth = require('$/controllers/authController');
+const userUtil = require('$/utils/userUtil');
+const { ErrorHandler } = require('$/utils/errorHandler');
 
 exports.signup = async (req, res, next) => {
-  try {
-    const { name, email } = req.body;
-    if (!name || !email) {
-      throw new ErrorHandler(400, 'Missing required name and email parameters');
-    }
+	try {
+		const { name, email } = req.body;
+		if (!name || !email) {
+			throw new ErrorHandler(400, 'Missing required name and email parameters');
+		}
 
-    const secret = userUtil.getSecret();
-    const hash = userUtil.getRandom();
+		const otp = userUtil.getOTP();
 
-    const dbResult = await User.create({
-      name: name,
-      email: email,
-      secret: secret,
-      hash: hash,
-      active: false
-    });
+		const dbResult = await User.create({
+			name: name,
+			email: email,
+			otp: otp,
+			active: false,
+		});
 
-    res.status(200).json({
-      status: 'success',
-      data: hash,
-    });
-  } catch (error) {
-    next(error);
-  }
+		var data = undefined;
+
+		if (process.env.NODE_ENV == 'development') {
+			data = otp;
+		} else {
+			data = await userUtil.sendEmail(dbResult.email, dbResult.name, otp);
+			data = 'Email has been sent';
+		}
+
+		res.status(200).json({
+			status: 'success',
+			data: data,
+		});
+	} catch (error) {
+		next(error);
+	}
 };
 
 exports.verify = async (req, res, next) => {
-  try {
-    const { email, hash } = req.body;
-    if (!email || !hash) {
-      throw new ErrorHandler(400, 'Missing required email and hash parameters');
-    }
+	try {
+		const { email, otp } = req.body;
+		if (!email || !otp) {
+			throw new ErrorHandler(400, 'Missing required email and otp parameters');
+		}
 
-    var dbUser = await User.findOne({
-      email,
-    }).select('+secret');
+		var dbUser = await User.findOne({
+			email: email,
+		});
 
-    if(dbUser && dbUser.active) {
-      return next(
-        new ErrorHandler(403, 'User email has already been verified'),
-        req,
-        res,  
-        next
-      );
-    }
+		if (dbUser.active) {
+			return next(new ErrorHandler(403, 'User email has already been verified'), req, res, next);
+		}
 
-    if (!dbUser || !(await userUtil.verifyHash(hash, dbUser.hash))) {
-      return next(
-        new ErrorHandler(401, 'Email or hash is wrong'),
-        req,
-        res,  
-        next
-      );
-    }
+		if (!dbUser || otp != dbUser.otp) {
+			return next(new ErrorHandler(401, 'Email or otp is wrong'), req, res, next);
+		}
 
-    const secretQRCode = await userUtil.getQRCode(email, dbUser.secret);
+		dbUser = await User.findByIdAndUpdate(dbUser._id, {
+			otp: '',
+			active: true,
+		});
 
-    dbUser = await User.findByIdAndUpdate(dbUser._id, {
-      hash: "",
-      active: true,
-    });
+		const jwt = auth.createToken(dbUser.email);
+		res.cookie('jwt_token', jwt);
 
-    res.status(200).json({
-      status: 'success',
-      data: secretQRCode
-    });
-
-  } catch (error) {
-    next(error);
-  }
+		res.status(200).json({
+			status: 'success',
+			data: 'Email verified',
+		});
+	} catch (error) {
+		next(error);
+	}
 };
 
 exports.deleteMe = async (req, res, next) => {
-  try {
-    await User.findByIdAndUpdate(req.user.id, {
-      active: false,
-    });
+	try {
+		await User.findByIdAndUpdate(req.user.id, {
+			active: false,
+		});
 
-    res.status(204).json({
-      status: 'success',
-      data: null,
-    });
-  } catch (error) {
-    next(error);
-  }
+		res.status(204).json({
+			status: 'success',
+			data: null,
+		});
+	} catch (error) {
+		next(error);
+	}
 };
 
 exports.getAllUsers = base.getAll(User);
