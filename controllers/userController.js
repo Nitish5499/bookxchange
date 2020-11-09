@@ -74,6 +74,55 @@ exports.verify = async (req, res, next) => {
 	}
 };
 
+exports.login = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return next(
+        new ErrorHandler(400, 'Missing required email parameter'),
+        req,
+        res,  
+        next
+      );
+    }
+    const dbUser = await User.findOne({email:email});
+    if(!dbUser){
+      return next(
+        new ErrorHandler(401, 'Email or hash is wrong'),
+        req,
+        res,  
+        next
+      );
+    }
+    if(!dbUser.active){
+      return next(
+        new ErrorHandler(401, 'Email not verified'),
+        req,
+        res,  
+        next
+      );
+    }
+    else{
+      const OTP=Math.floor(100000 + Math.random() * 900000);
+      if (process.env.NODE_ENV == 'development') {
+        res.status(200).json({
+          status: 'success',
+          data: OTP,
+        });
+      } else {
+        userUtil.sendTemplateEmail(dbUser.email, dbUser.name, OTP);
+        res.status(200).json({
+          status: 'success',
+          data: 'check mail',
+        });
+      }
+    }
+    
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.deleteMe = async (req, res, next) => {
 	try {
 		await User.findByIdAndUpdate(req.user.id, {

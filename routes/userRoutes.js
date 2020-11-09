@@ -7,6 +7,8 @@ const userController = require('$/controllers/userController');
 router.post('/signup', userController.signup);
 router.post('/signup/verify', userController.verify);
 
+router.post('/login', userController.login);
+
 // // Protect all routes after this middleware
 // router.use(authController.protect);
 

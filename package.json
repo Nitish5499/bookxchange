@@ -7,6 +7,7 @@
   "scripts": {
     "debug": "ndb server.js",
     "start": "NODE_ENV=development nodemon server.js",
+    "start-windows": "set NODE_ENV=development&&nodemon server.js",
     "test": "mocha test/**/*.js",
     "lint:scss": "stylelint '**/*.scss' --syntax scss",
     "lint:scss:fix": "stylelint '**/*.scss' --syntax scss --fix",
