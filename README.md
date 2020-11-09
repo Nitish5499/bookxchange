@@ -4,12 +4,24 @@
 
 The server-side API for the BookXchange Application.
 
-# To Run Locally
+# Commands to Run
 
 Run
 
 ```
 npm start
+```
+
+Test
+
+```
+npm run test
+```
+
+Lint - manual run
+
+```
+node_modules/.bin/eslint --fix './**/*.js'
 ```
 
 # To Override Deployment to AWS
@@ -22,4 +34,18 @@ if: github.ref == 'refs/heads/foo'
 
 # Keeping It Generic
 
+## Installing Packages
+
 - installing packages - `npm install --save-dev <package-name>`
+
+## Requires
+
+- Follow the order
+  - external libraries
+  - controller
+  - models
+  - others
+
+## Writing Tests
+
+Please use comment for better understanding of tests

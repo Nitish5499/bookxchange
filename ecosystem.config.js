@@ -1,11 +1,11 @@
 module.exports = {
-  apps: [
-    {
-      name: 'bxc-server',
-      script: './server.js',
-      env: {
-        NODE_ENV: 'production',
-      },
-    },
-  ],
+	apps: [
+		{
+			name: 'bxc-server',
+			script: './server.js',
+			env: {
+				NODE_ENV: 'production',
+			},
+		},
+	],
 };

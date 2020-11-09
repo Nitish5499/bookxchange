@@ -22,7 +22,7 @@ exports.signup = async (req, res, next) => {
 
 		var data = undefined;
 
-		if (process.env.NODE_ENV == 'development') {
+		if (process.env.NODE_ENV == 'development' || process.env.NODE_ENV == 'test') {
 			data = otp;
 		} else {
 			data = await userUtil.sendEmail(dbResult.email, dbResult.name, otp);
