@@ -1,5 +1,5 @@
 const sgMail = require('@sendgrid/mail');
-const { ErrorHandler } = require('../utils/errorHandler');
+const { ErrorHandler } = require('$/utils/errorHandler');
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 

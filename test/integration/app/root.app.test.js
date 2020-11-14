@@ -3,6 +3,8 @@ const expect = chai.expect;
 const chaiHttp = require('chai-http');
 const dotenv = require('dotenv');
 
+const constants = require('$/config/constants.js');
+
 chai.use(chaiHttp);
 
 describe('Integration - Test root endpoints', () => {
@@ -40,7 +42,12 @@ describe('Integration - Test root endpoints', () => {
 				.get('/status')
 				.end((err, res) => {
 					expect(res.statusCode).equal(200);
-					expect(res.body.status).to.equal('alive');
+
+					const mongoStates = Object.keys(constants.MONGO_STATES).map(function (key) {
+						return constants.MONGO_STATES[key];
+					});
+					expect(res.body.status).to.be.oneOf(mongoStates);
+
 					done();
 				});
 		});

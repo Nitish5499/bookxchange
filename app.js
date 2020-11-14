@@ -5,11 +5,13 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const cors = require('cors');
+const mongoose = require('mongoose');
 
-const userRoutes = require('./routes/userRoutes');
-const bookRoutes = require('./routes/bookRoutes');
-const { ErrorHandler, handleError } = require('./utils/errorHandler');
-const logger = require('./config/logger.js');
+const userRoutes = require('$/routes/userRoutes');
+const bookRoutes = require('$/routes/bookRoutes');
+const { ErrorHandler, handleError } = require('$/utils/errorHandler');
+const logger = require('$/config/logger.js');
+const constants = require('$/config/constants.js');
 
 const app = express();
 
@@ -47,7 +49,7 @@ app.use(hpp());
 app.use(require('morgan')('combined', { stream: logger.stream }));
 
 // Test routes
-app.get('/status', (req, res) => res.json({ status: 'alive' }));
+app.get('/status', (req, res) => res.json({ status: constants.MONGO_STATES[mongoose.connection.readyState] }));
 
 // Routes
 app.use('/api/v1/users', userRoutes);
