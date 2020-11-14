@@ -61,4 +61,4 @@ if: github.ref == 'refs/heads/foo'
 
 ## Writing Tests
 
-Please use comment for better understanding of tests
+Please use comments for better understanding of tests
