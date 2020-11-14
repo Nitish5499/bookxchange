@@ -4,9 +4,9 @@
 
 The server-side API for the BookXchange Application.
 
-# Commands to Run
+# Commands
 
-Run
+Run server
 
 ```
 npm start
@@ -16,7 +16,11 @@ Test
 
 ```
 npm run test
+```
 
+Test specific file
+
+```
 npm run test < path/to/file >
 ```
 
@@ -28,10 +32,9 @@ node_modules/.bin/eslint --fix './**/*.js'
 
 Swagger API documentation
 
+Run the following command and open http://localhost:8002/ in browser to view documentation
 ```
 npm run docs
-
-// open http://localhost:8002/ in browser to view documentation
 ```
 
 # To Override Deployment to AWS
