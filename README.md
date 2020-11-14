@@ -16,12 +16,22 @@ Test
 
 ```
 npm run test
+
+npm run test < path/to/file >
 ```
 
 Lint - manual run
 
 ```
 node_modules/.bin/eslint --fix './**/*.js'
+```
+
+Swagger API documentation
+
+```
+npm run docs
+
+// open http://localhost:8002/ in browser to view documentation
 ```
 
 # To Override Deployment to AWS
