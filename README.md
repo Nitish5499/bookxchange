@@ -30,9 +30,10 @@ Lint - manual run
 node_modules/.bin/eslint --fix './**/*.js'
 ```
 
-Swagger API documentation
+## Swagger API documentation
 
 Run the following command and open http://localhost:8002/ in browser to view documentation
+
 ```
 npm run docs
 ```
