@@ -2,12 +2,18 @@ const express = require('express');
 
 const router = express.Router();
 const userController = require('$/controllers/userController');
+const errorController = require('$/controllers/errorController');
 
 // Signup
-router.post('/signup', userController.signup);
-router.post('/signup/verify', userController.verify);
+router.all('/signup', errorController.methods(['POST']), userController.signup);
+router.all('/signup/verify', errorController.methods(['POST']), userController.verify);
 
-router.post('/login', userController.login);
+//Login
+router.all('/login', errorController.methods(['POST']), userController.login);
+router.all('/login/verify', errorController.methods(['POST']), userController.verifyOTP);
+
+//JWT Middleware
+router.use(userController.verifyJWT);
 
 // // Protect all routes after this middleware
 // router.use(authController.protect);

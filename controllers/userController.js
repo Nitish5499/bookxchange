@@ -1,8 +1,13 @@
-const User = require('$/models/userModel');
+const jwt = require('jsonwebtoken');
+const { promisify } = require('util');
+
 const base = require('$/controllers/baseController');
 const auth = require('$/controllers/authController');
-const userUtil = require('$/utils/userUtil');
+
+const User = require('$/models/userModel');
+
 const { ErrorHandler } = require('$/utils/errorHandler');
+const userUtil = require('$/utils/userUtil');
 
 exports.signup = async (req, res, next) => {
 	try {
@@ -62,9 +67,6 @@ exports.verify = async (req, res, next) => {
 			active: true,
 		});
 
-		const jwt = auth.createToken(dbUser.email);
-		res.cookie('jwt_token', jwt);
-
 		res.status(200).json({
 			status: 'success',
 			data: 'Email verified',
@@ -74,53 +76,98 @@ exports.verify = async (req, res, next) => {
 	}
 };
 
+
 exports.login = async (req, res, next) => {
-  try {
-    const { email } = req.body;
-    if (!email) {
-      return next(
-        new ErrorHandler(400, 'Missing required email parameter'),
-        req,
-        res,  
-        next
-      );
-    }
-    const dbUser = await User.findOne({email:email});
-    if(!dbUser){
-      return next(
-        new ErrorHandler(401, 'Email or hash is wrong'),
-        req,
-        res,  
-        next
-      );
-    }
-    if(!dbUser.active){
-      return next(
-        new ErrorHandler(401, 'Email not verified'),
-        req,
-        res,  
-        next
-      );
-    }
-    else{
-      const OTP=Math.floor(100000 + Math.random() * 900000);
-      if (process.env.NODE_ENV == 'development') {
-        res.status(200).json({
-          status: 'success',
-          data: OTP,
-        });
-      } else {
-        userUtil.sendTemplateEmail(dbUser.email, dbUser.name, OTP);
-        res.status(200).json({
-          status: 'success',
-          data: 'check mail',
-        });
-      }
-    }
-    
-  } catch (error) {
-    next(error);
-  }
+	try {
+		const { email } = req.body;
+		if (!email) {
+			return next(new ErrorHandler(400, 'Missing required email parameter'), req, res, next);
+		}
+		var dbUser = await User.findOne({ email: email });
+		if (!dbUser) {
+			return next(new ErrorHandler(401, 'Email not registered'), req, res, next);
+		}
+		if (!dbUser.active) {
+			return next(new ErrorHandler(401, 'Email not verified'), req, res, next);
+		}
+		const OTP = userUtil.getOTP();
+
+		dbUser = await User.findByIdAndUpdate(dbUser._id, {
+			otp: OTP,
+		});
+
+		if (process.env.NODE_ENV != 'production') {
+			res.status(200).json({
+				status: 'success',
+				data: OTP,
+			});
+		} else {
+			userUtil.sendEmail(dbUser.email, dbUser.name, OTP);
+			res.status(200).json({
+				status: 'success',
+				data: 'check mail',
+			});
+		}
+	} catch (error) {
+		next(error);
+	}
+};
+
+exports.verifyOTP = async (req, res, next) => {
+	try {
+		const { email, otp } = req.body;
+		if (!otp || !email) {
+			return next(new ErrorHandler(400, 'Missing required email or OTP parameters'), req, res, next);
+		}
+		var user = await User.findOne({ email: email });
+
+		if (!user) {
+			return next(new ErrorHandler(401, 'Email not registered'), req, res, next);
+		}
+		if (!user.active) {
+			return next(new ErrorHandler(401, 'Email not verified'), req, res, next);
+		}
+		if (user.otp != otp) {
+			return next(new ErrorHandler(401, 'Invalid OTP or email'), req, res, next);
+		}
+
+		user = await User.findByIdAndUpdate(user._id, {
+			otp: '',
+		});
+
+		const jwt = auth.createToken(user.email);
+		res.cookie('jwt_token', jwt);
+
+		res.status(200).json({
+			status: 'success',
+			data: 'login successful',
+		});
+	} catch (err) {
+		next(err);
+	}
+};
+
+//verification middleware
+exports.verifyJWT = async (req, res, next) => {
+	try {
+		const token = req.cookies['jwt_token'];
+		if (!token) {
+			return next(new ErrorHandler(401, 'You are not logged in! Please login in to continue'), req, res, next);
+		}
+		const decode = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+		const email = decode.email;
+		const user = await User.findOne({ email: email });
+		if (!user) {
+			return next(new ErrorHandler(401, 'This user does not exist'), req, res, next);
+		}
+		req.user = user;
+		next();
+	} catch (err) {
+		if (err.message == 'invalid signature') {
+			next(new ErrorHandler(401, 'You are not logged in! Please login in to continue'));
+		}
+		next(err);
+	}
 };
 
 exports.deleteMe = async (req, res, next) => {
@@ -138,7 +185,7 @@ exports.deleteMe = async (req, res, next) => {
 	}
 };
 
-exports.getAllUsers = base.getAll(User);
+//exports.getAllUsers = base.getAll(User);
 exports.getUser = base.getOne(User);
 
 // Don't update password on this

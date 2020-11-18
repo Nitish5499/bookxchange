@@ -36,6 +36,13 @@ describe('Integration - Test root endpoints', () => {
 			delete require.cache[require.resolve('$/server')];
 		});
 
+		after(() => {
+			console.log('\n------------- AFTER TESTS -------------');
+			console.log('\n1. Exiting test');
+			console.log('\n---------------------------------------');
+			console.log('\n\n\n');
+		});
+
 		it('GET /status - return 200', (done) => {
 			chai
 				.request(server)

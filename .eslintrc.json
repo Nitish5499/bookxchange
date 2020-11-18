@@ -1,29 +1,24 @@
 {
-    "env": {
-        "node": true,
-        "commonjs": true,
-        "es2021": true,
-        "mocha": true
-    },
-    "extends": [
-        "eslint:recommended",
-        "plugin:react/recommended"
-    ],
-    "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        },
-        "ecmaVersion": 12
-    },
-    "plugins": [
-        "react",
-        "prettier"
-    ],
-    "rules": {
-        "semi": ["error", "always"],
-        "prettier/prettier": ["error", { "singleQuote": true }],
-        "no-tabs": ["error", { "allowIndentationTabs": true }],
-        "no-multiple-empty-lines": ["error", {"max": 1, "maxEOF": 1}],
-        "comma-dangle": ["error", "always-multiline"]
-    }
+	"env": {
+		"node": true,
+		"commonjs": true,
+		"es2021": true,
+		"mocha": true
+	},
+	"extends": ["eslint:recommended", "plugin:react/recommended"],
+	"parserOptions": {
+		"ecmaFeatures": {
+			"jsx": true
+		},
+		"ecmaVersion": 12
+	},
+	"plugins": ["react", "prettier"],
+	"rules": {
+		"semi": ["error", "always"],
+		"prettier/prettier": ["error", { "singleQuote": true }],
+		"no-tabs": ["error", { "allowIndentationTabs": true }],
+		"no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 1 }],
+		"comma-dangle": ["error", "always-multiline"],
+		"camelcase": [2, {"properties": "always"}]
+	}
 }

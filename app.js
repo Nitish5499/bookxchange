@@ -6,6 +6,7 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 
 const userRoutes = require('$/routes/userRoutes');
 const bookRoutes = require('$/routes/bookRoutes');
@@ -45,8 +46,13 @@ app.use(xss());
 // Prevent parameter pollution
 app.use(hpp());
 
-//Logger
-app.use(require('morgan')('combined', { stream: logger.stream }));
+// Logger
+if (process.env.NODE_ENV != 'test') {
+	app.use(require('morgan')('combined', { stream: logger.stream }));
+}
+
+//cookie-parser
+app.use(cookieParser());
 
 // Test routes
 app.get('/status', (req, res) => res.json({ status: constants.MONGO_STATES[mongoose.connection.readyState] }));

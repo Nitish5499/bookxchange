@@ -3,6 +3,13 @@ const userUtil = require('$/utils/userUtil');
 const chai = require('chai');
 
 describe('Unit - Test User Utils', () => {
+	after(() => {
+		console.log('\n------------- AFTER TESTS -------------');
+		console.log('\n1. Exiting test');
+		console.log('\n---------------------------------------');
+		console.log('\n\n\n');
+	});
+
 	// Test getOTP()
 	// 1. returns 6-digit number
 	describe('getOTP()', () => {

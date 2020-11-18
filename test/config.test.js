@@ -18,13 +18,20 @@ describe('Config - Test config setup', () => {
 			path: './config/test.env',
 		});
 
-		console.log('\n2. Fetching SendGrid API KEY');
+		console.log('\n2. Fetching SendGrid API KEY\n\n');
 		options = {
 			url: constants.SENDGRID_ENDPOINT,
 			headers: {
 				Authorization: 'Bearer ' + process.env.SENDGRID_API_KEY,
 			},
 		};
+	});
+
+	after(() => {
+		console.log('\n------------- AFTER TESTS -------------');
+		console.log('\n1. Exiting test');
+		console.log('\n---------------------------------------');
+		console.log('\n\n\n');
 	});
 
 	// Test SendGrid API KEY

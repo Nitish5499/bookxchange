@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
 // Mongoose -> Document Middleware
 userSchema.post('save', function (error, doc, next) {
 	if (error.name === 'MongoError' && error.code === 11000) {
-		next(new ErrorHandler(409, 'Email ID already exists'));
+		next(new ErrorHandler(409, 'Email already exists'));
 	} else {
 		next(error);
 	}
