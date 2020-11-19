@@ -4,7 +4,7 @@ on: push
 
 jobs:
   test:
-    name: CI Pipeline
+    name: Test
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -21,11 +21,30 @@ jobs:
           npm install
           npm build
           npm test
+        
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: npm install, build and lint
+        run: |
+          npm install
+          npm build
+          npm run lint
 
   staging-deploy:
-    name: CD Pipeline
+    name: Deploy
     runs-on: ubuntu-latest
-    needs: [test]
+    needs: [test, lint]
     if: github.ref == 'refs/heads/main'
     strategy:
       matrix:
