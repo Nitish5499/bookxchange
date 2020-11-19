@@ -9,8 +9,8 @@ exports.sendEmail = (recipientEmail, name, otp) => {
 		from: process.env.BXC_EMAIL_ACCOUNT,
 		templateId: process.env.SENDGRID_TEMPLATE_ID,
 		dynamicTemplateData: {
-			name: name,
-			otp: otp,
+			name,
+			otp,
 		},
 	};
 

@@ -6,6 +6,14 @@ The server-side API for the BookXchange Application.
 
 # Commands
 
+> All executable npm commands are under `scripts` in `package.json`, please look there for more.
+
+To run any script, do
+
+```
+npm run <script-name>
+```
+
 Run server
 
 ```
@@ -27,7 +35,7 @@ npm run test < path/to/file >
 Lint - manual run
 
 ```
-node_modules/.bin/eslint --fix './**/*.js'
+npm run lint:fix
 ```
 
 ## Swagger API documentation
@@ -50,16 +58,34 @@ if: github.ref == 'refs/heads/foo'
 
 ## Installing Packages
 
-- installing packages - `npm install --save-dev <package-name>`
+```
+npm install --save-dev <package-name>
+```
 
 ## Requires
 
-- Follow the order
-  - external libraries
-  - controller
-  - models
-  - others
+Follow the order
+
+- external libraries
+- controller
+- models
+- others
 
 ## Writing Tests
 
 Please use comments for better understanding of tests
+
+## Known Issues
+
+### Pre-commit runs test instead of lint
+
+Check if `.git/hooks/pre-commit` has the following :
+
+```
+#!/bin/sh
+# husky
+# Created by Husky v4.3.0 (https://github.com/typicode/husky#readme)
+#   At: 08/11/2020, 15:14:37
+#   From: /Users/shreyas/Desktop/BookXchange/bookxchange-server/node_modules/husky (https://github.com/typicode/husky#readme)
+. "$(dirname "$0")/husky.sh"
+```

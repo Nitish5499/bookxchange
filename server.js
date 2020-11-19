@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
-if (process.env.NODE_ENV == 'development' || process.env.NODE_ENV == 'test') {
+if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
 	dotenv.config({
 		path: './config/development.env',
 	});

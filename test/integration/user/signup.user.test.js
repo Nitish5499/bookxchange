@@ -1,5 +1,8 @@
+/* eslint-disable no-shadow, no-unused-vars */
+
 const chai = require('chai');
-const expect = chai.expect;
+
+const { expect } = chai;
 const chaiHttp = require('chai-http');
 const dotenv = require('dotenv');
 
@@ -8,7 +11,7 @@ const User = require('$/models/userModel');
 chai.use(chaiHttp);
 
 describe('Integration - Test users signup endpoints', () => {
-	var server;
+	let server;
 
 	// Before all tests begin
 	// 1. Load environment
@@ -22,6 +25,7 @@ describe('Integration - Test users signup endpoints', () => {
 		});
 
 		console.log('\n2. Starting server');
+		// eslint-disable-next-line global-require
 		server = require('$/server');
 
 		try {
@@ -75,7 +79,7 @@ describe('Integration - Test users signup endpoints', () => {
 			chai
 				.request(server)
 				.post('/api/v1/users/signup')
-				.send({ name: name, email: email })
+				.send({ name, email })
 				.end(() => {
 					done();
 				});
@@ -121,7 +125,7 @@ describe('Integration - Test users signup endpoints', () => {
 			chai
 				.request(server)
 				.post('/api/v1/users/signup')
-				.send({ name: name, email: email })
+				.send({ name, email })
 				.end((err, res) => {
 					expect(res.statusCode).equal(409);
 					expect(res.body.message).equal('Email already exists');
@@ -136,11 +140,11 @@ describe('Integration - Test users signup endpoints', () => {
 	describe('POST /api/v1/users/signup/verify', () => {
 		const name = 'foo2';
 		const email = 'foo2@bar.com';
-		var otpCorrect;
+		let otpCorrect;
 
 		const name2 = 'foo3';
 		const email2 = 'foo3@bar.com';
-		var otpCorrect2;
+		let otpCorrect2;
 
 		// Before all tests begin
 		// 1. Register a user
@@ -151,7 +155,7 @@ describe('Integration - Test users signup endpoints', () => {
 			chai
 				.request(server)
 				.post('/api/v1/users/signup')
-				.send({ name: name, email: email })
+				.send({ name, email })
 				.end((err, res) => {
 					otpCorrect = res.body.data;
 					done();
@@ -172,7 +176,7 @@ describe('Integration - Test users signup endpoints', () => {
 			chai
 				.request(server)
 				.post('/api/v1/users/signup/verify')
-				.send({ email: email, otp: otpCorrect })
+				.send({ email, otp: otpCorrect })
 				.end((err, res) => {
 					expect(res.statusCode).equal(200);
 					expect(res.body.data).equal('Email verified');
@@ -184,7 +188,7 @@ describe('Integration - Test users signup endpoints', () => {
 			chai
 				.request(server)
 				.post('/api/v1/users/signup/verify')
-				.send({ email: email, otp: otpCorrect })
+				.send({ email, otp: otpCorrect })
 				.end((err, res) => {
 					expect(res.statusCode).equal(403);
 					expect(res.body.message).equal('User email has already been verified');
@@ -204,7 +208,7 @@ describe('Integration - Test users signup endpoints', () => {
 		const name2 = 'foo4';
 		const email2 = 'foo4@bar.com';
 
-		var otpCorrect;
+		let otpCorrect;
 
 		// Before all tests begin
 		// 1. Register and verify a user
@@ -218,7 +222,10 @@ describe('Integration - Test users signup endpoints', () => {
 				.send({ name: name2, email: email2 })
 				.end((err, res) => {
 					otpCorrect = res.body.data;
-					chai.request(server).post('/api/v1/users/signup/verify').send({ email: email2, otp: otpCorrect })
+					chai
+						.request(server)
+						.post('/api/v1/users/signup/verify')
+						.send({ email: email2, otp: otpCorrect })
 						.end((err, res) => {
 							done();
 						});
@@ -264,7 +271,7 @@ describe('Integration - Test users signup endpoints', () => {
 			chai
 				.request(server)
 				.post('/api/v1/users/login')
-				.send({ email: email })
+				.send({ email })
 				.end((err, res) => {
 					expect(res.statusCode).equal(401);
 					expect(res.body.message).equal('Email not registered');
@@ -285,7 +292,7 @@ describe('Integration - Test users signup endpoints', () => {
 		const name2 = 'foo7';
 		const email2 = 'foo7@bar.com';
 
-		var otpCorrect;
+		let otpCorrect;
 		const otpWrong = '000000';
 
 		// Before all tests begin
@@ -299,7 +306,10 @@ describe('Integration - Test users signup endpoints', () => {
 				.send({ name: name2, email: email2 })
 				.end((err, res) => {
 					otpCorrect = res.body.data;
-					chai.request(server).post('/api/v1/users/signup/verify').send({ email: email2, otp: otpCorrect })
+					chai
+						.request(server)
+						.post('/api/v1/users/signup/verify')
+						.send({ email: email2, otp: otpCorrect })
 						.end((err, res) => {
 							chai
 								.request(server)
@@ -352,7 +362,7 @@ describe('Integration - Test users signup endpoints', () => {
 			chai
 				.request(server)
 				.post('/api/v1/users/login/verify')
-				.send({ email: email, otp: otpCorrect })
+				.send({ email, otp: otpCorrect })
 				.end((err, res) => {
 					expect(res.statusCode).equal(401);
 					expect(res.body.message).equal('Email not registered');

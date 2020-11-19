@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('$/models/userModel');
 const { ErrorHandler } = require('$/utils/errorHandler');
 
-const createToken = (exports.createToken = (email) => {
+const createToken = (email) => {
 	return jwt.sign(
 		{
 			email,
@@ -13,7 +13,9 @@ const createToken = (exports.createToken = (email) => {
 			expiresIn: process.env.JWT_EXPIRES_IN,
 		},
 	);
-});
+};
+
+exports.createToken = createToken;
 
 exports.login = async (req, res, next) => {
 	try {
@@ -82,7 +84,7 @@ exports.protect = async (req, res, next) => {
 		// 1) check if the token is there
 		let token;
 		if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-			token = req.headers.authorization.split(' ')[1];
+			[, token] = req.headers.authorization.split(' ');
 		}
 		if (!token) {
 			return next(new ErrorHandler(401, 'You are not logged in! Please login in to continue'), req, res, next);

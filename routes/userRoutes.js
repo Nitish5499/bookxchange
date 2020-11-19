@@ -8,11 +8,11 @@ const errorController = require('$/controllers/errorController');
 router.all('/signup', errorController.methods(['POST']), userController.signup);
 router.all('/signup/verify', errorController.methods(['POST']), userController.verify);
 
-//Login
+// Login
 router.all('/login', errorController.methods(['POST']), userController.login);
 router.all('/login/verify', errorController.methods(['POST']), userController.verifyOTP);
 
-//JWT Middleware
+// JWT Middleware
 router.use(userController.verifyJWT);
 
 // // Protect all routes after this middleware

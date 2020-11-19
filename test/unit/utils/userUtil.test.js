@@ -1,6 +1,5 @@
-const userUtil = require('$/utils/userUtil');
-
 const chai = require('chai');
+const userUtil = require('$/utils/userUtil');
 
 describe('Unit - Test User Utils', () => {
 	after(() => {

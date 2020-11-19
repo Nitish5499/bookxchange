@@ -1,6 +1,7 @@
 const mocks = require('node-mocks-http');
 const chai = require('chai');
-const expect = chai.expect;
+
+const { expect } = chai;
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
@@ -120,8 +121,8 @@ describe('Unit - Test User Controller', () => {
 	describe('verify() function', () => {
 		const name = 'foo1';
 		const email = 'foo1@bar.com';
-		const otpCorrect = '313371';
-		const otpWrong = '313370';
+		const otpCorrect = 313371;
+		const otpWrong = 313370;
 
 		before(async () => {
 			console.log('\n------------- BEFORE TESTS -------------');
@@ -129,8 +130,8 @@ describe('Unit - Test User Controller', () => {
 
 			try {
 				await User.create({
-					name: name,
-					email: email,
+					name,
+					email,
 					otp: otpCorrect,
 					active: false,
 				});
@@ -144,7 +145,7 @@ describe('Unit - Test User Controller', () => {
 			const req = mocks.createRequest({
 				method: 'POST',
 				body: {
-					email: email,
+					email,
 					otp: otpWrong,
 				},
 			});
@@ -160,19 +161,19 @@ describe('Unit - Test User Controller', () => {
 			const req = mocks.createRequest({
 				method: 'POST',
 				body: {
-					email: email,
+					email,
 					otp: otpCorrect,
 				},
 			});
 			const res = mocks.createResponse();
 
 			await userController.verify(req, res, (err) => {
+				console.log(err);
 				expect(err).equal(false);
 			});
 
 			const { data } = res._getJSONData();
 			expect(data).equal('Email verified');
-
 		});
 
 		it('missing email and otp - return 400', async () => {
@@ -188,12 +189,12 @@ describe('Unit - Test User Controller', () => {
 		});
 	});
 
-	//Test Login function
-	//1.user not registered
-	//2.user not verified
-	//3.Missing email parameter
-	//4.successful login attempt
-	describe('login() function', ()=> {
+	// Test Login function
+	// 1.user not registered
+	// 2.user not verified
+	// 3.Missing email parameter
+	// 4.successful login attempt
+	describe('login() function', () => {
 		const name = 'jett';
 		const email = 'jett@rp.com';
 		const email2 = 'faker@hacker.com';
@@ -209,8 +210,8 @@ describe('Unit - Test User Controller', () => {
 
 			try {
 				await User.create({
-					name: name,
-					email: email,
+					name,
+					email,
 					otp: '',
 					active: true,
 				});
@@ -225,7 +226,7 @@ describe('Unit - Test User Controller', () => {
 				process.exit(1);
 			}
 		});
-		
+
 		it('user not registered - return 401', async () => {
 			const req = mocks.createRequest({
 				method: 'POST',
@@ -271,8 +272,8 @@ describe('Unit - Test User Controller', () => {
 			const req = mocks.createRequest({
 				method: 'POST',
 				body: {
-					email: email,
-				}
+					email,
+				},
 			});
 
 			const res = mocks.createResponse();
@@ -286,24 +287,24 @@ describe('Unit - Test User Controller', () => {
 		});
 	});
 
-	//Test verifyOTP function
-	//1.user not registered
-	//2.user not verified
-	//3.Missing email or otp parameter
-	//4.unsuccessful login(wrong otp)
-	//5.successful login 
-	describe('verifyOTP() function', ()=> {
+	// Test verifyOTP function
+	// 1.user not registered
+	// 2.user not verified
+	// 3.Missing email or otp parameter
+	// 4.unsuccessful login(wrong otp)
+	// 5.successful login
+	describe('verifyOTP() function', () => {
 		const name = 'jack';
 		const email = 'jack@rp.com';
 
-		const otpCorrect = '383749';
-		const otpWrong = '343434';
+		const otpCorrect = 383749;
+		const otpWrong = 343434;
 
 		const email2 = 'faker@hacker.com';
 
 		const email3 = 'aa@bb.com';
 		const name3 = 'abcd';
-		
+
 		// before all tests begin
 		// 1.create a registered user
 		// 2.create a new user
@@ -313,8 +314,8 @@ describe('Unit - Test User Controller', () => {
 
 			try {
 				await User.create({
-					name: name,
-					email: email,
+					name,
+					email,
 					otp: otpCorrect,
 					active: true,
 				});
@@ -329,13 +330,13 @@ describe('Unit - Test User Controller', () => {
 				process.exit(1);
 			}
 		});
-		
+
 		it('user not registered - return 401', async () => {
 			const req = mocks.createRequest({
 				method: 'POST',
 				body: {
 					email: email2,
-					otp: '434343'
+					otp: 434343,
 				},
 			});
 			const res = mocks.createResponse();
@@ -350,7 +351,7 @@ describe('Unit - Test User Controller', () => {
 				method: 'POST',
 				body: {
 					email: email3,
-					otp: '554344'
+					otp: 554344,
 				},
 			});
 			const res = mocks.createResponse();
@@ -377,9 +378,9 @@ describe('Unit - Test User Controller', () => {
 			const req = mocks.createRequest({
 				method: 'POST',
 				body: {
-					email: email,
-					otp: otpWrong
-				}
+					email,
+					otp: otpWrong,
+				},
 			});
 
 			const res = mocks.createResponse();
@@ -394,9 +395,9 @@ describe('Unit - Test User Controller', () => {
 			const req = mocks.createRequest({
 				method: 'POST',
 				body: {
-					email: email,
-					otp: otpCorrect
-				}
+					email,
+					otp: otpCorrect,
+				},
 			});
 
 			const res = mocks.createResponse();
@@ -404,7 +405,7 @@ describe('Unit - Test User Controller', () => {
 			await userController.verifyOTP(req, res, (err) => {
 				expect(err).equal(false);
 			});
-      
+
 			const cookie = res.cookies.jwt_token.value;
 			expect(cookie).to.be.a('string');
 		});

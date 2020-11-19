@@ -1,5 +1,6 @@
 const chai = require('chai');
-const expect = chai.expect;
+
+const { expect } = chai;
 const chaiHttp = require('chai-http');
 const dotenv = require('dotenv');
 
@@ -12,7 +13,7 @@ describe('Integration - Test root endpoints', () => {
 	// 1. valid endpoint
 	// 2. invalid endpoint
 	describe('/', () => {
-		var server;
+		let server;
 
 		// Before all tests begin
 		// 1. Load environment
@@ -25,6 +26,7 @@ describe('Integration - Test root endpoints', () => {
 			});
 
 			console.log('\n2. Starting server\n');
+			// eslint-disable-next-line global-require
 			server = require('$/server');
 		});
 
@@ -50,7 +52,7 @@ describe('Integration - Test root endpoints', () => {
 				.end((err, res) => {
 					expect(res.statusCode).equal(200);
 
-					const mongoStates = Object.keys(constants.MONGO_STATES).map(function (key) {
+					const mongoStates = Object.keys(constants.MONGO_STATES).map((key) => {
 						return constants.MONGO_STATES[key];
 					});
 					expect(res.body.status).to.be.oneOf(mongoStates);

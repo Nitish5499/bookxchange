@@ -7,6 +7,7 @@ const hpp = require('hpp');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+const morgan = require('morgan');
 
 const userRoutes = require('$/routes/userRoutes');
 const bookRoutes = require('$/routes/bookRoutes');
@@ -47,11 +48,11 @@ app.use(xss());
 app.use(hpp());
 
 // Logger
-if (process.env.NODE_ENV != 'test') {
-	app.use(require('morgan')('combined', { stream: logger.stream }));
+if (process.env.NODE_ENV !== 'test') {
+	app.use(morgan('combined', { stream: logger.stream }));
 }
 
-//cookie-parser
+// cookie-parser
 app.use(cookieParser());
 
 // Test routes
@@ -69,6 +70,7 @@ app.use('*', (req, res, next) => {
 	next(err, req, res, next);
 });
 
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
 	handleError(err, res);
 });

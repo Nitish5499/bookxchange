@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
 		validate: [validator.isEmail, 'Please provide a valid email'],
 	},
 	otp: {
-		type: String,
+		type: Number,
 	},
 	active: {
 		type: Boolean,
@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
 });
 
 // Mongoose -> Document Middleware
-userSchema.post('save', function (error, doc, next) {
+userSchema.post('save', (error, doc, next) => {
 	if (error.name === 'MongoError' && error.code === 11000) {
 		next(new ErrorHandler(409, 'Email already exists'));
 	} else {

@@ -1,24 +1,23 @@
 {
 	"env": {
 		"node": true,
-		"commonjs": true,
-		"es2021": true,
 		"mocha": true
 	},
-	"extends": ["eslint:recommended", "plugin:react/recommended"],
+	"extends": ["airbnb-base", "prettier"],
+	"plugins": ["prettier"],
 	"parserOptions": {
-		"ecmaFeatures": {
-			"jsx": true
-		},
-		"ecmaVersion": 12
+		"ecmaVersion": 2018
 	},
-	"plugins": ["react", "prettier"],
 	"rules": {
 		"semi": ["error", "always"],
-		"prettier/prettier": ["error", { "singleQuote": true }],
+		"prettier/prettier": ["error"],
 		"no-tabs": ["error", { "allowIndentationTabs": true }],
 		"no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 1 }],
 		"comma-dangle": ["error", "always-multiline"],
-		"camelcase": [2, {"properties": "always"}]
+		"camelcase": ["error", { "properties": "always" }],
+		"import/no-unresolved": "off",
+		"no-console": "off",
+		"no-underscore-dangle": "off",
+		"consistent-return": "off"
 	}
 }

@@ -1,12 +1,13 @@
 const request = require('request');
 const chai = require('chai');
-const expect = chai.expect;
+
+const { expect } = chai;
 const dotenv = require('dotenv');
 
 const constants = require('$/config/constants');
 
 describe('Config - Test config setup', () => {
-	var options;
+	let options;
 
 	// Before all tests begin
 	// 1. Load environment
@@ -22,7 +23,7 @@ describe('Config - Test config setup', () => {
 		options = {
 			url: constants.SENDGRID_ENDPOINT,
 			headers: {
-				Authorization: 'Bearer ' + process.env.SENDGRID_API_KEY,
+				Authorization: `Bearer ${process.env.SENDGRID_API_KEY}`,
 			},
 		};
 	});
@@ -38,7 +39,7 @@ describe('Config - Test config setup', () => {
 	// 1. verify if API KEY is valid
 	describe('Verify SendGrid API KEY', () => {
 		it('should return 200', () => {
-			request.get(options, function (err, res) {
+			request.get(options, (err, res) => {
 				expect(res.statusCode).equal(200);
 			});
 		});

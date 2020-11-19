@@ -19,15 +19,15 @@ exports.signup = async (req, res, next) => {
 		const otp = userUtil.getOTP();
 
 		const dbResult = await User.create({
-			name: name,
-			email: email,
-			otp: otp,
+			name,
+			email,
+			otp,
 			active: false,
 		});
 
-		var data = undefined;
+		let data;
 
-		if (process.env.NODE_ENV == 'development' || process.env.NODE_ENV == 'test') {
+		if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
 			data = otp;
 		} else {
 			data = await userUtil.sendEmail(dbResult.email, dbResult.name, otp);
@@ -36,7 +36,7 @@ exports.signup = async (req, res, next) => {
 
 		res.status(200).json({
 			status: 'success',
-			data: data,
+			data,
 		});
 	} catch (error) {
 		next(error);
@@ -50,15 +50,15 @@ exports.verify = async (req, res, next) => {
 			throw new ErrorHandler(400, 'Missing required email and otp parameters');
 		}
 
-		var dbUser = await User.findOne({
-			email: email,
+		let dbUser = await User.findOne({
+			email,
 		});
 
 		if (dbUser.active) {
 			return next(new ErrorHandler(403, 'User email has already been verified'), req, res, next);
 		}
 
-		if (!dbUser || otp != dbUser.otp) {
+		if (!dbUser || otp !== dbUser.otp) {
 			return next(new ErrorHandler(401, 'Email or otp is wrong'), req, res, next);
 		}
 
@@ -76,14 +76,13 @@ exports.verify = async (req, res, next) => {
 	}
 };
 
-
 exports.login = async (req, res, next) => {
 	try {
 		const { email } = req.body;
 		if (!email) {
 			return next(new ErrorHandler(400, 'Missing required email parameter'), req, res, next);
 		}
-		var dbUser = await User.findOne({ email: email });
+		let dbUser = await User.findOne({ email });
 		if (!dbUser) {
 			return next(new ErrorHandler(401, 'Email not registered'), req, res, next);
 		}
@@ -96,7 +95,7 @@ exports.login = async (req, res, next) => {
 			otp: OTP,
 		});
 
-		if (process.env.NODE_ENV != 'production') {
+		if (process.env.NODE_ENV !== 'production') {
 			res.status(200).json({
 				status: 'success',
 				data: OTP,
@@ -119,7 +118,7 @@ exports.verifyOTP = async (req, res, next) => {
 		if (!otp || !email) {
 			return next(new ErrorHandler(400, 'Missing required email or OTP parameters'), req, res, next);
 		}
-		var user = await User.findOne({ email: email });
+		let user = await User.findOne({ email });
 
 		if (!user) {
 			return next(new ErrorHandler(401, 'Email not registered'), req, res, next);
@@ -127,7 +126,7 @@ exports.verifyOTP = async (req, res, next) => {
 		if (!user.active) {
 			return next(new ErrorHandler(401, 'Email not verified'), req, res, next);
 		}
-		if (user.otp != otp) {
+		if (user.otp !== otp) {
 			return next(new ErrorHandler(401, 'Invalid OTP or email'), req, res, next);
 		}
 
@@ -135,8 +134,8 @@ exports.verifyOTP = async (req, res, next) => {
 			otp: '',
 		});
 
-		const jwt = auth.createToken(user.email);
-		res.cookie('jwt_token', jwt);
+		const resJWT = auth.createToken(user.email);
+		res.cookie('jwt_token', resJWT);
 
 		res.status(200).json({
 			status: 'success',
@@ -147,23 +146,23 @@ exports.verifyOTP = async (req, res, next) => {
 	}
 };
 
-//verification middleware
+// verification middleware
 exports.verifyJWT = async (req, res, next) => {
 	try {
-		const token = req.cookies['jwt_token'];
+		const token = req.cookies.jwt_token;
 		if (!token) {
 			return next(new ErrorHandler(401, 'You are not logged in! Please login in to continue'), req, res, next);
 		}
 		const decode = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-		const email = decode.email;
-		const user = await User.findOne({ email: email });
+		const { email } = decode;
+		const user = await User.findOne({ email });
 		if (!user) {
 			return next(new ErrorHandler(401, 'This user does not exist'), req, res, next);
 		}
 		req.user = user;
 		next();
 	} catch (err) {
-		if (err.message == 'invalid signature') {
+		if (err.message === 'invalid signature') {
 			next(new ErrorHandler(401, 'You are not logged in! Please login in to continue'));
 		}
 		next(err);
@@ -185,7 +184,7 @@ exports.deleteMe = async (req, res, next) => {
 	}
 };
 
-//exports.getAllUsers = base.getAll(User);
+// exports.getAllUsers = base.getAll(User);
 exports.getUser = base.getOne(User);
 
 // Don't update password on this
