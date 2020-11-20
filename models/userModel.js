@@ -22,6 +22,21 @@ const userSchema = new mongoose.Schema({
 		type: Boolean,
 		required: [true, 'Active missing'],
 	},
+	address: {
+		type: String,
+	},
+	booksOwned: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Book',
+		},
+	],
+	booksLiked: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Book',
+		},
+	],
 });
 
 // Mongoose -> Document Middleware
