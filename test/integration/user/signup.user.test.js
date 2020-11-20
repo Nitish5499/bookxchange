@@ -1,12 +1,18 @@
 /* eslint-disable no-shadow, no-unused-vars */
 
-const chai = require('chai');
+/**
+ * Test user-signup APIs
+ * 1. api/v1/signup
+ * 2. api/v1/signup/verify
+ */
 
-const { expect } = chai;
-const chaiHttp = require('chai-http');
 const dotenv = require('dotenv');
+const chai = require('chai');
+const chaiHttp = require('chai-http');
 
 const User = require('$/models/userModel');
+
+const { expect } = chai;
 
 chai.use(chaiHttp);
 
@@ -40,9 +46,10 @@ describe('Integration - Test users signup endpoints', () => {
 	// After each tests ends
 	// 1. Delete server cache
 	afterEach(() => {
-		console.log('\n------------- AFTER EACH TEST -------------');
-		console.log('\n1. Deleting server cache\n\n');
+		console.log('\n---------- AFTER EACH TEST -----------');
+		console.log('\n1. Deleting server cache');
 		delete require.cache[require.resolve('$/server')];
+		console.log('\n---------------------------------------\n');
 	});
 
 	// After all tests complete
@@ -75,7 +82,7 @@ describe('Integration - Test users signup endpoints', () => {
 		// 1. Register a user using /signup
 		before((done) => {
 			console.log('\n------------- BEFORE TESTS -------------');
-			console.log('\n1. Registering user\n');
+			console.log('\n1. Registering user');
 			chai
 				.request(server)
 				.post('/api/v1/users/signup')
@@ -83,6 +90,7 @@ describe('Integration - Test users signup endpoints', () => {
 				.end(() => {
 					done();
 				});
+			console.log('\n---------------------------------------\n');
 		});
 
 		it('registration success - return 200', (done) => {
@@ -151,7 +159,7 @@ describe('Integration - Test users signup endpoints', () => {
 		// 2. Register and verify a user
 		before((done) => {
 			console.log('\n------------- BEFORE TESTS -------------');
-			console.log('\n1. Registering a user\n');
+			console.log('\n1. Registering a user');
 			chai
 				.request(server)
 				.post('/api/v1/users/signup')
@@ -161,7 +169,7 @@ describe('Integration - Test users signup endpoints', () => {
 					done();
 				});
 
-			console.log('\n2. Registering and verifying a user\n');
+			console.log('\n2. Registering and verifying a user');
 			chai
 				.request(server)
 				.post('/api/v1/users/signup')
@@ -170,6 +178,7 @@ describe('Integration - Test users signup endpoints', () => {
 					otpCorrect2 = res.body.data;
 					chai.request(server).post('/api/v1/users/signup/verify').send({ email: email2, otp: otpCorrect2 }).end();
 				});
+			console.log('\n---------------------------------------\n');
 		});
 
 		it('verification success - return 200', (done) => {
@@ -192,192 +201,6 @@ describe('Integration - Test users signup endpoints', () => {
 				.end((err, res) => {
 					expect(res.statusCode).equal(403);
 					expect(res.body.message).equal('User email has already been verified');
-					done();
-				});
-		});
-	});
-
-	// Test /login API
-	// 1. login success
-	// 2. missing parameter
-	// 3. invalid HTTP PUT method
-	// 4. direct login attempt
-	describe('POST /api/v1/users/login', () => {
-		const email = 'foo5@bar.com';
-
-		const name2 = 'foo4';
-		const email2 = 'foo4@bar.com';
-
-		let otpCorrect;
-
-		// Before all tests begin
-		// 1. Register and verify a user
-		before((done) => {
-			console.log('\n------------- BEFORE TESTS -------------');
-
-			console.log('\n1. Registering and verifying a user\n');
-			chai
-				.request(server)
-				.post('/api/v1/users/signup')
-				.send({ name: name2, email: email2 })
-				.end((err, res) => {
-					otpCorrect = res.body.data;
-					chai
-						.request(server)
-						.post('/api/v1/users/signup/verify')
-						.send({ email: email2, otp: otpCorrect })
-						.end((err, res) => {
-							done();
-						});
-				});
-		});
-
-		it('login attempt success - return 200', (done) => {
-			chai
-				.request(server)
-				.post('/api/v1/users/login')
-				.send({ email: email2 })
-				.end((err, res) => {
-					expect(res.statusCode).equal(200);
-					done();
-				});
-		});
-
-		it('missing email parameters - return 400', (done) => {
-			chai
-				.request(server)
-				.post('/api/v1/users/login')
-				.send({})
-				.end((err, res) => {
-					expect(res.statusCode).equal(400);
-					expect(res.body.message).equal('Missing required email parameter');
-					done();
-				});
-		});
-
-		it('Invalid HTTP PUT method - return 405', (done) => {
-			chai
-				.request(server)
-				.put('/api/v1/users/login')
-				.send({ email: email2 })
-				.end((err, res) => {
-					expect(res.statusCode).equal(405);
-					expect(res.body.message).equal('Method not allowed');
-					done();
-				});
-		});
-
-		it('direct login attempt - return 401', (done) => {
-			chai
-				.request(server)
-				.post('/api/v1/users/login')
-				.send({ email })
-				.end((err, res) => {
-					expect(res.statusCode).equal(401);
-					expect(res.body.message).equal('Email not registered');
-					done();
-				});
-		});
-	});
-
-	// Test /login/verify API
-	// 1. login success
-	// 2. missing parameter
-	// 3. invalid HTTP PUT method
-	// 4. Email not registered
-	// 5. incorrect otp
-	describe('POST /api/v1/users/login/verify', () => {
-		const email = 'foo6@bar.com';
-
-		const name2 = 'foo7';
-		const email2 = 'foo7@bar.com';
-
-		let otpCorrect;
-		const otpWrong = '000000';
-
-		// Before all tests begin
-		// 1. Register and verify a user
-		before((done) => {
-			console.log('\n------------- BEFORE TESTS -------------');
-			console.log('\n1. Registering and verifying a user\n');
-			chai
-				.request(server)
-				.post('/api/v1/users/signup')
-				.send({ name: name2, email: email2 })
-				.end((err, res) => {
-					otpCorrect = res.body.data;
-					chai
-						.request(server)
-						.post('/api/v1/users/signup/verify')
-						.send({ email: email2, otp: otpCorrect })
-						.end((err, res) => {
-							chai
-								.request(server)
-								.post('/api/v1/users/login')
-								.send({ email: email2 })
-								.end((err, res) => {
-									otpCorrect = res.body.data;
-									done();
-								});
-						});
-				});
-		});
-
-		it('login success - return 200', (done) => {
-			chai
-				.request(server)
-				.post('/api/v1/users/login/verify')
-				.send({ email: email2, otp: otpCorrect })
-				.end((err, res) => {
-					expect(res.statusCode).equal(200);
-					done();
-				});
-		});
-
-		it('missing email parameters - return 400', (done) => {
-			chai
-				.request(server)
-				.post('/api/v1/users/login/verify')
-				.send({})
-				.end((err, res) => {
-					expect(res.statusCode).equal(400);
-					expect(res.body.message).equal('Missing required email or OTP parameters');
-					done();
-				});
-		});
-
-		it('Invalid HTTP PUT method - return 405', (done) => {
-			chai
-				.request(server)
-				.put('/api/v1/users/login/verify')
-				.send({ email: email2, otp: otpCorrect })
-				.end((err, res) => {
-					expect(res.statusCode).equal(405);
-					expect(res.body.message).equal('Method not allowed');
-					done();
-				});
-		});
-
-		it('Email not registered - return 401', (done) => {
-			chai
-				.request(server)
-				.post('/api/v1/users/login/verify')
-				.send({ email, otp: otpCorrect })
-				.end((err, res) => {
-					expect(res.statusCode).equal(401);
-					expect(res.body.message).equal('Email not registered');
-					done();
-				});
-		});
-
-		it('Incorrect otp - return 401', (done) => {
-			chai
-				.request(server)
-				.post('/api/v1/users/login/verify')
-				.send({ email: email2, otp: otpWrong })
-				.end((err, res) => {
-					expect(res.statusCode).equal(401);
-					expect(res.body.message).equal('Invalid OTP or email');
 					done();
 				});
 		});

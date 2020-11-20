@@ -1,17 +1,22 @@
-const chai = require('chai');
+/**
+ * Test root-level APIs
+ * 1. api/v1/status
+ */
 
-const { expect } = chai;
-const chaiHttp = require('chai-http');
 const dotenv = require('dotenv');
+const chai = require('chai');
+const chaiHttp = require('chai-http');
 
 const constants = require('$/config/constants.js');
+
+const { expect } = chai;
 
 chai.use(chaiHttp);
 
 describe('Integration - Test root endpoints', () => {
 	// Test root level API
-	// 1. valid endpoint
-	// 2. invalid endpoint
+	// 1. Valid endpoint
+	// 2. Invalid endpoint
 	describe('/', () => {
 		let server;
 
@@ -25,17 +30,20 @@ describe('Integration - Test root endpoints', () => {
 				path: './config/test.env',
 			});
 
-			console.log('\n2. Starting server\n');
+			console.log('\n2. Starting server');
 			// eslint-disable-next-line global-require
 			server = require('$/server');
+
+			console.log('\n---------------------------------------');
 		});
 
 		// After each tests ends
 		// 1. Delete server cache
 		afterEach(() => {
-			console.log('\n------------- AFTER EACH TEST -------------');
-			console.log('\n1. Deleting server cache\n\n');
+			console.log('\n---------- AFTER EACH TEST -----------');
+			console.log('\n1. Deleting server cache');
 			delete require.cache[require.resolve('$/server')];
+			console.log('\n---------------------------------------');
 		});
 
 		after(() => {

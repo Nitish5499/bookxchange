@@ -1,13 +1,19 @@
+/**
+ * Test login-related functions
+ * 1. login()
+ * 2. loginVerify()
+ */
+
 const mocks = require('node-mocks-http');
 const chai = require('chai');
-
-const { expect } = chai;
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
 const userController = require('$/controllers/userController');
 
 const User = require('$/models/userModel');
+
+const { expect } = chai;
 
 describe('Unit - Test User Controller', () => {
 	// Before all tests begin
@@ -39,6 +45,8 @@ describe('Unit - Test User Controller', () => {
 			console.log(err);
 			process.exit(1);
 		}
+
+		console.log('\n---------------------------------------\n');
 	});
 
 	// After all tests complete
@@ -63,137 +71,11 @@ describe('Unit - Test User Controller', () => {
 		}
 	});
 
-	// Test signup()
-	// 1. registration successful
-	// 2. missing name and email
-	// 3. invalid email format
-	describe('signup() function', () => {
-		it('registration success - return 200', async () => {
-			const req = mocks.createRequest({
-				method: 'POST',
-				body: {
-					name: 'foo',
-					email: 'foo@bar.com',
-				},
-			});
-			const res = mocks.createResponse();
-
-			await userController.signup(req, res, (err) => {
-				expect(err).equal(false);
-			});
-
-			const { data } = res._getJSONData();
-			expect(data).to.be.a('number');
-		});
-
-		it('missing name and email - return 400', async () => {
-			const req = mocks.createRequest({
-				method: 'POST',
-			});
-			const res = mocks.createResponse();
-
-			await userController.signup(req, res, (err) => {
-				expect(err.statusCode).equal(400);
-				expect(err.message).equal('Missing required name and email parameters');
-			});
-		});
-
-		it('invalid email format - return error', async () => {
-			const req = mocks.createRequest({
-				method: 'POST',
-				body: {
-					name: 'foo',
-					email: 'foo',
-				},
-			});
-			const res = mocks.createResponse();
-
-			await userController.signup(req, res, (err) => {
-				expect(err.message).to.include('Please provide a valid email');
-			});
-		});
-	});
-
-	// Test verify()
-	// 1. wrong otp
-	// 2. verification success
-	// 3. missing email and otp
-	describe('verify() function', () => {
-		const name = 'foo1';
-		const email = 'foo1@bar.com';
-		const otpCorrect = 313371;
-		const otpWrong = 313370;
-
-		before(async () => {
-			console.log('\n------------- BEFORE TESTS -------------');
-			console.log('\n1. Creating user in database\n');
-
-			try {
-				await User.create({
-					name,
-					email,
-					otp: otpCorrect,
-					active: false,
-				});
-			} catch (err) {
-				console.log(err);
-				process.exit(1);
-			}
-		});
-
-		it('wrong otp - return 401', async () => {
-			const req = mocks.createRequest({
-				method: 'POST',
-				body: {
-					email,
-					otp: otpWrong,
-				},
-			});
-			const res = mocks.createResponse();
-
-			await userController.verify(req, res, (err) => {
-				expect(err.statusCode).equal(401);
-				expect(err.message).equal('Email or otp is wrong');
-			});
-		});
-
-		it('verification success - return 200', async () => {
-			const req = mocks.createRequest({
-				method: 'POST',
-				body: {
-					email,
-					otp: otpCorrect,
-				},
-			});
-			const res = mocks.createResponse();
-
-			await userController.verify(req, res, (err) => {
-				console.log(err);
-				expect(err).equal(false);
-			});
-
-			const { data } = res._getJSONData();
-			expect(data).equal('Email verified');
-		});
-
-		it('missing email and otp - return 400', async () => {
-			const req = mocks.createRequest({
-				method: 'POST',
-			});
-			const res = mocks.createResponse();
-
-			await userController.verify(req, res, (err) => {
-				expect(err.statusCode).equal(400);
-				expect(err.message).equal('Missing required email and otp parameters');
-			});
-		});
-	});
-
 	// Test Login function
-	// 1.user not registered
-	// 2.user not verified
-	// 3.Missing email parameter
-	// 4.successful login attempt
+	// 1. User not registered
+	// 2. User not verified
+	// 3. Missing email parameter
+	// 4. Successful login attempt
 	describe('login() function', () => {
 		const name = 'jett';
 		const email = 'jett@rp.com';
@@ -201,12 +83,12 @@ describe('Unit - Test User Controller', () => {
 		const email3 = 'aaa@bbb.com';
 		const name3 = 'abcd';
 
-		// before all tests begin
-		// 1.create a registered user
-		// 2.create a new user
+		// Before all tests begin
+		// 1. Create a registered user
+		// 2. Create a new user
 		before(async () => {
 			console.log('\n------------- BEFORE TESTS -------------');
-			console.log('\n1. Creating user in database\n');
+			console.log('\n1. Creating user in database');
 
 			try {
 				await User.create({
@@ -225,6 +107,13 @@ describe('Unit - Test User Controller', () => {
 				console.log(err);
 				process.exit(1);
 			}
+
+			console.log('\n---------------------------------------\n');
+		});
+
+		// For better log readability
+		after(() => {
+			console.log('\n---------------------------------------\n');
 		});
 
 		it('user not registered - return 401', async () => {
@@ -250,7 +139,7 @@ describe('Unit - Test User Controller', () => {
 			});
 			const res = mocks.createResponse();
 			await userController.login(req, res, (err) => {
-				expect(err.statusCode).equal(401);
+				expect(err.statusCode).equal(403);
 				expect(err.message).equal('Email not verified');
 			});
 		});
@@ -287,13 +176,13 @@ describe('Unit - Test User Controller', () => {
 		});
 	});
 
-	// Test verifyOTP function
+	// Test loginVerify function
 	// 1.user not registered
 	// 2.user not verified
 	// 3.Missing email or otp parameter
 	// 4.unsuccessful login(wrong otp)
 	// 5.successful login
-	describe('verifyOTP() function', () => {
+	describe('loginVerify() function', () => {
 		const name = 'jack';
 		const email = 'jack@rp.com';
 
@@ -305,12 +194,12 @@ describe('Unit - Test User Controller', () => {
 		const email3 = 'aa@bb.com';
 		const name3 = 'abcd';
 
-		// before all tests begin
-		// 1.create a registered user
-		// 2.create a new user
+		// Before all tests begin
+		// 1. Create a registered user
+		// 2. Create a new user
 		before(async () => {
 			console.log('\n------------- BEFORE TESTS -------------');
-			console.log('\n1. Creating user in database\n');
+			console.log('\n1. Creating user in database');
 
 			try {
 				await User.create({
@@ -329,6 +218,13 @@ describe('Unit - Test User Controller', () => {
 				console.log(err);
 				process.exit(1);
 			}
+
+			console.log('\n---------------------------------------\n');
+		});
+
+		// For better log readability
+		after(() => {
+			console.log('\n---------------------------------------\n');
 		});
 
 		it('user not registered - return 401', async () => {
@@ -340,7 +236,7 @@ describe('Unit - Test User Controller', () => {
 				},
 			});
 			const res = mocks.createResponse();
-			await userController.verifyOTP(req, res, (err) => {
+			await userController.loginVerify(req, res, (err) => {
 				expect(err.statusCode).equal(401);
 				expect(err.message).equal('Email not registered');
 			});
@@ -355,8 +251,8 @@ describe('Unit - Test User Controller', () => {
 				},
 			});
 			const res = mocks.createResponse();
-			await userController.verifyOTP(req, res, (err) => {
-				expect(err.statusCode).equal(401);
+			await userController.loginVerify(req, res, (err) => {
+				expect(err.statusCode).equal(403);
 				expect(err.message).equal('Email not verified');
 			});
 		});
@@ -368,7 +264,7 @@ describe('Unit - Test User Controller', () => {
 
 			const res = mocks.createResponse();
 
-			await userController.verifyOTP(req, res, (err) => {
+			await userController.loginVerify(req, res, (err) => {
 				expect(err.statusCode).equal(400);
 				expect(err.message).equal('Missing required email or OTP parameters');
 			});
@@ -385,7 +281,7 @@ describe('Unit - Test User Controller', () => {
 
 			const res = mocks.createResponse();
 
-			await userController.verifyOTP(req, res, (err) => {
+			await userController.loginVerify(req, res, (err) => {
 				expect(err.statusCode).equal(401);
 				expect(err.message).equal('Invalid OTP or email');
 			});
@@ -402,7 +298,7 @@ describe('Unit - Test User Controller', () => {
 
 			const res = mocks.createResponse();
 
-			await userController.verifyOTP(req, res, (err) => {
+			await userController.loginVerify(req, res, (err) => {
 				expect(err).equal(false);
 			});
 

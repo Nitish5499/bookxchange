@@ -1,10 +1,15 @@
+/**
+ * Test app configurations
+ * 1. SendGrid API Key
+ */
+
 const request = require('request');
 const chai = require('chai');
-
-const { expect } = chai;
 const dotenv = require('dotenv');
 
 const constants = require('$/config/constants');
+
+const { expect } = chai;
 
 describe('Config - Test config setup', () => {
 	let options;
@@ -19,13 +24,15 @@ describe('Config - Test config setup', () => {
 			path: './config/test.env',
 		});
 
-		console.log('\n2. Fetching SendGrid API KEY\n\n');
+		console.log('\n2. Fetching SendGrid API KEY');
 		options = {
 			url: constants.SENDGRID_ENDPOINT,
 			headers: {
 				Authorization: `Bearer ${process.env.SENDGRID_API_KEY}`,
 			},
 		};
+
+		console.log('\n---------------------------------------\n');
 	});
 
 	after(() => {

@@ -1,7 +1,8 @@
 const express = require('express');
 
-const router = express.Router();
 const bookController = require('$/controllers/bookController');
+
+const router = express.Router();
 
 router.route('/').post(bookController.addBook).get(bookController.getAllBooks);
 

@@ -1,13 +1,10 @@
-const jwt = require('jsonwebtoken');
-const { promisify } = require('util');
-
 const base = require('$/controllers/baseController');
-const auth = require('$/controllers/authController');
 
 const User = require('$/models/userModel');
 
 const { ErrorHandler } = require('$/utils/errorHandler');
-const userUtil = require('$/utils/userUtil');
+const authUtil = require('$/utils/authUtil');
+const externalUtil = require('$/utils/externalUtil');
 
 exports.signup = async (req, res, next) => {
 	try {
@@ -16,7 +13,7 @@ exports.signup = async (req, res, next) => {
 			throw new ErrorHandler(400, 'Missing required name and email parameters');
 		}
 
-		const otp = userUtil.getOTP();
+		const otp = authUtil.getOTP();
 
 		const dbResult = await User.create({
 			name,
@@ -27,10 +24,10 @@ exports.signup = async (req, res, next) => {
 
 		let data;
 
-		if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
+		if (process.env.NODE_ENV !== 'production') {
 			data = otp;
 		} else {
-			data = await userUtil.sendEmail(dbResult.email, dbResult.name, otp);
+			data = await externalUtil.sendEmail(dbResult.email, dbResult.name, otp);
 			data = 'Email has been sent';
 		}
 
@@ -43,12 +40,14 @@ exports.signup = async (req, res, next) => {
 	}
 };
 
-exports.verify = async (req, res, next) => {
+exports.signupVerify = async (req, res, next) => {
 	try {
 		const { email, otp } = req.body;
 		if (!email || !otp) {
 			throw new ErrorHandler(400, 'Missing required email and otp parameters');
 		}
+
+		const otpNum = parseInt(otp, 10);
 
 		let dbUser = await User.findOne({
 			email,
@@ -58,7 +57,7 @@ exports.verify = async (req, res, next) => {
 			return next(new ErrorHandler(403, 'User email has already been verified'), req, res, next);
 		}
 
-		if (!dbUser || otp !== dbUser.otp) {
+		if (!dbUser || otpNum !== dbUser.otp) {
 			return next(new ErrorHandler(401, 'Email or otp is wrong'), req, res, next);
 		}
 
@@ -82,26 +81,30 @@ exports.login = async (req, res, next) => {
 		if (!email) {
 			return next(new ErrorHandler(400, 'Missing required email parameter'), req, res, next);
 		}
+
 		let dbUser = await User.findOne({ email });
+
 		if (!dbUser) {
 			return next(new ErrorHandler(401, 'Email not registered'), req, res, next);
 		}
+
 		if (!dbUser.active) {
-			return next(new ErrorHandler(401, 'Email not verified'), req, res, next);
+			return next(new ErrorHandler(403, 'Email not verified'), req, res, next);
 		}
-		const OTP = userUtil.getOTP();
+
+		const otp = authUtil.getOTP();
 
 		dbUser = await User.findByIdAndUpdate(dbUser._id, {
-			otp: OTP,
+			otp,
 		});
 
 		if (process.env.NODE_ENV !== 'production') {
 			res.status(200).json({
 				status: 'success',
-				data: OTP,
+				data: otp,
 			});
 		} else {
-			userUtil.sendEmail(dbUser.email, dbUser.name, OTP);
+			externalUtil.sendEmail(dbUser.email, dbUser.name, otp);
 			res.status(200).json({
 				status: 'success',
 				data: 'check mail',
@@ -112,21 +115,26 @@ exports.login = async (req, res, next) => {
 	}
 };
 
-exports.verifyOTP = async (req, res, next) => {
+exports.loginVerify = async (req, res, next) => {
 	try {
 		const { email, otp } = req.body;
 		if (!otp || !email) {
 			return next(new ErrorHandler(400, 'Missing required email or OTP parameters'), req, res, next);
 		}
+
+		const otpNum = parseInt(otp, 10);
+
 		let user = await User.findOne({ email });
 
 		if (!user) {
 			return next(new ErrorHandler(401, 'Email not registered'), req, res, next);
 		}
+
 		if (!user.active) {
-			return next(new ErrorHandler(401, 'Email not verified'), req, res, next);
+			return next(new ErrorHandler(403, 'Email not verified'), req, res, next);
 		}
-		if (user.otp !== otp) {
+
+		if (user.otp !== otpNum) {
 			return next(new ErrorHandler(401, 'Invalid OTP or email'), req, res, next);
 		}
 
@@ -134,37 +142,14 @@ exports.verifyOTP = async (req, res, next) => {
 			otp: '',
 		});
 
-		const resJWT = auth.createToken(user.email);
-		res.cookie('jwt_token', resJWT);
+		const jwtToken = authUtil.createToken(user.email);
+		res.cookie('jwt_token', jwtToken);
 
 		res.status(200).json({
 			status: 'success',
 			data: 'login successful',
 		});
 	} catch (err) {
-		next(err);
-	}
-};
-
-// verification middleware
-exports.verifyJWT = async (req, res, next) => {
-	try {
-		const token = req.cookies.jwt_token;
-		if (!token) {
-			return next(new ErrorHandler(401, 'You are not logged in! Please login in to continue'), req, res, next);
-		}
-		const decode = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-		const { email } = decode;
-		const user = await User.findOne({ email });
-		if (!user) {
-			return next(new ErrorHandler(401, 'This user does not exist'), req, res, next);
-		}
-		req.user = user;
-		next();
-	} catch (err) {
-		if (err.message === 'invalid signature') {
-			next(new ErrorHandler(401, 'You are not logged in! Please login in to continue'));
-		}
 		next(err);
 	}
 };

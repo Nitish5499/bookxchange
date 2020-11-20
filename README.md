@@ -67,7 +67,8 @@ npm install --save-dev <package-name>
 Follow the order
 
 - external libraries
-- controller
+- controllers
+- middlewares
 - models
 - others
 
