@@ -1,10 +1,6 @@
 name: CI/CD
 
-on:
-  push:
-    paths-ignore:
-    - '**/README.md'
-    - 'docs/**'
+on: push
 
 jobs:
   test:
