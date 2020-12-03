@@ -120,3 +120,5 @@ sudo npm install basetag
 ```
 npm start
 ```
+
+#### Test CICD
