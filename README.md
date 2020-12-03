@@ -52,7 +52,7 @@ Go to [.github/workflows/ci-cd.yml](https://github.com/shreyas-sriram/bookxchang
 if: github.ref == 'refs/heads/foo'
 ```
 
-## Keeping It Generic
+## Guidelines
 
 ### Installing Packages
 
@@ -73,6 +73,17 @@ Follow the order
 ### Writing Tests
 
 Please use comments for better understanding of tests
+
+### Commit Messages
+
+- Capitalize the first letter of the subject line
+- Use the present tense ("Add feature" instead of "Added feature")
+
+### Pull Requests
+
+- Give a short description of what the pull request does
+- Capitalize the first letter of the title
+- Always **Squash and merge**
 
 ## Known Issues
 
@@ -120,5 +131,3 @@ sudo npm install basetag
 ```
 npm start
 ```
-
-#### Test CICD
