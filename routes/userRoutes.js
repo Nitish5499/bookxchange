@@ -15,6 +15,9 @@ router.all('/signup/verify', errorController.methods(['POST']), userController.s
 router.all('/login', errorController.methods(['POST']), userController.login);
 router.all('/login/verify', errorController.methods(['POST']), userController.loginVerify);
 
+// Logout
+router.all('/logout', errorController.methods(['GET']), userController.logout);
+
 // JWT Middleware
 router.use(authMiddleware.verifyJWT);
 

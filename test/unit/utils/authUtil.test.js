@@ -51,16 +51,16 @@ describe('Unit - Test Auth Util', () => {
 	// 1. expect valid jwt token
 	describe('createToken() function', () => {
 		it('expect valid jwt token', async () => {
-			const testEmail = 'foo@bar.com';
+			const testId = 'foobar1234';
 
-			const jwtToken = authUtil.createToken(testEmail);
+			const jwtToken = authUtil.createToken(testId);
 			// eslint-disable-next-line no-unused-expressions
 			expect(jwtToken).to.be.a.jwt;
 			expect(jwtToken).to.be.signedWith(process.env.JWT_SECRET);
 
 			const decode = await promisify(jwt.verify)(jwtToken, process.env.JWT_SECRET);
-			const { email } = decode;
-			expect(email).to.equal(testEmail);
+			const { id } = decode;
+			expect(id).to.equal(testId);
 		});
 	});
 });

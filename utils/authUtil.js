@@ -4,10 +4,10 @@ exports.getOTP = () => {
 	return Math.floor(100000 + Math.random() * 900000);
 };
 
-exports.createToken = (email) => {
+exports.createToken = (id) => {
 	return jwt.sign(
 		{
-			email,
+			id,
 		},
 		process.env.JWT_SECRET,
 		{

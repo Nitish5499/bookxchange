@@ -16,7 +16,7 @@ const { expect } = chai;
 
 chai.use(chaiHttp);
 
-describe('Integration - Test users signup endpoints', () => {
+describe('Integration - Test users login endpoints', () => {
 	let server;
 
 	// Before all tests begin

@@ -1,6 +1,10 @@
+const jwt = require('jsonwebtoken');
+const { promisify } = require('util');
+
 const base = require('$/controllers/baseController');
 
 const User = require('$/models/userModel');
+const Session = require('$/models/sessionModel');
 
 const { ErrorHandler } = require('$/utils/errorHandler');
 const authUtil = require('$/utils/authUtil');
@@ -142,7 +146,13 @@ exports.loginVerify = async (req, res, next) => {
 			otp: '',
 		});
 
-		const jwtToken = authUtil.createToken(user.email);
+		const jwtToken = authUtil.createToken(user._id);
+
+		await Session.create({
+			userId: user._id,
+			sessionToken: jwtToken,
+		});
+
 		res.cookie('jwt_token', jwtToken);
 
 		res.status(200).json({
@@ -151,6 +161,40 @@ exports.loginVerify = async (req, res, next) => {
 		});
 	} catch (err) {
 		next(err);
+	}
+};
+
+exports.logout = async (req, res, next) => {
+	try {
+		const token = req.cookies.jwt_token;
+		if (!token) {
+			return next(new ErrorHandler(401, 'You are not logged in'), req, res, next);
+		}
+
+		res.clearCookie('jwt_token');
+
+		const decode = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+		const { id } = decode;
+
+		await Session.deleteOne({
+			userId: id,
+			sessionToken: token,
+		});
+
+		res.status(200).json({
+			status: 'success',
+			data: 'successfully logged out',
+		});
+	} catch (error) {
+		// Do not care about malformed JWT tokens
+		if (error.name === 'JsonWebTokenError' || error.name === 'SyntaxError') {
+			res.status(200).json({
+				status: 'success',
+				data: 'successfully logged out',
+			});
+		} else {
+			next(error);
+		}
 	}
 };
 
