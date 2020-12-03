@@ -7,15 +7,13 @@
 	"scripts": {
 		"debug": "ndb server.js",
 		"start": "NODE_ENV=development nodemon server.js",
-		"start-windows": "set NODE_ENV=development&&nodemon server.js",
 		"test": "NODE_ENV=test mocha --recursive --timeout 20000 --retries 3 --exit",
 		"lint:eslint": "eslint . --ext .js,.jsx",
 		"lint:eslint:fix": "eslint . --ext .js,.jsx --fix",
 		"lint:prettier": "prettier -c .",
 		"lint:prettier:fix": "prettier -c . --write",
 		"lint": "npm run lint:eslint && npm run lint:prettier",
-		"lint:fix": "npm run lint:eslint:fix && npm run lint:prettier:fix",
-		"docs": "nodemon docs/main.js"
+		"lint:fix": "npm run lint:eslint:fix && npm run lint:prettier:fix"
 	},
 	"author": "Moath Shreim",
 	"license": "ISC",
