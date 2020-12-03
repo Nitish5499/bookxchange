@@ -13,8 +13,7 @@
 		"lint:prettier": "prettier -c .",
 		"lint:prettier:fix": "prettier -c . --write",
 		"lint": "npm run lint:eslint && npm run lint:prettier",
-		"lint:fix": "npm run lint:eslint:fix && npm run lint:prettier:fix",
-		"docs": "nodemon docs/main.js"
+		"lint:fix": "npm run lint:eslint:fix && npm run lint:prettier:fix"
 	},
 	"author": "Moath Shreim",
 	"license": "ISC",
