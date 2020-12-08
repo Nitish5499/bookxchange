@@ -21,6 +21,13 @@ router.all('/logout', errorController.methods(['GET']), userController.logout);
 // JWT Middleware
 router.use(authMiddleware.verifyJWT);
 
+// users-me
+router
+	.route('/me')
+	.get(userController.getUser)
+	.patch(userController.updateUser)
+	.all(errorController.methods(['GET', 'PATCH']));
+
 // // Protect all routes after this middleware
 // router.use(authController.protect);
 

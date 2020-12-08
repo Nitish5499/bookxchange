@@ -1,8 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 
-const base = require('$/controllers/baseController');
-
 const User = require('$/models/userModel');
 const Session = require('$/models/sessionModel');
 
@@ -164,6 +162,43 @@ exports.loginVerify = async (req, res, next) => {
 	}
 };
 
+exports.getUser = async (req, res, next) => {
+	try {
+		const { user } = req;
+
+		const dbUser = await User.findById(user.userId).select('name email address -_id');
+
+		res.status(200).json({
+			status: 'success',
+			data: dbUser,
+		});
+	} catch (error) {
+		next(error);
+	}
+};
+
+exports.updateUser = async (req, res, next) => {
+	try {
+		const { name, address } = req.body;
+		const { user } = req;
+
+		if (!name && !address) {
+			return next(new ErrorHandler(400, 'Missing update parameters'));
+		}
+		await User.findByIdAndUpdate(user.userId, {
+			name,
+			address,
+		});
+
+		res.status(200).json({
+			status: 'success',
+			data: 'update successful',
+		});
+	} catch (err) {
+		next(err);
+	}
+};
+
 exports.logout = async (req, res, next) => {
 	try {
 		const token = req.cookies.jwt_token;
@@ -214,8 +249,8 @@ exports.deleteMe = async (req, res, next) => {
 };
 
 // exports.getAllUsers = base.getAll(User);
-exports.getUser = base.getOne(User);
+// exports.getUser = base.getOne(User);
 
 // Don't update password on this
-exports.updateUser = base.updateOne(User);
-exports.deleteUser = base.deleteOne(User);
+// exports.updateUser = base.updateOne(User);
+// exports.deleteUser = base.deleteOne(User);
