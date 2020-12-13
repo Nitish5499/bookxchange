@@ -1,7 +1,6 @@
 const mocks = require('node-mocks-http');
 const chai = require('chai');
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
 
 const bookController = require('$/controllers/bookController');
 
@@ -21,27 +20,12 @@ describe('Unit - Test Book Controller', () => {
 	// Before all tests begin
 	// 1. Load environment
 	// 2. Connect to test database
+	// 3. Insert a dummy record
 	// 3. Delete all documents from Books collection
 	before(async () => {
-		console.log('\n------------- BEFORE TESTS -------------');
-		console.log('\n1. Loading environment');
-		dotenv.config({
-			path: './config/test.env',
-		});
-
-		const database = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
-
-		console.log('\n2. Connecting to database\n');
 		try {
-			await mongoose.connect(database, {
-				useNewUrlParser: true,
-				useCreateIndex: true,
-				useFindAndModify: false,
-				useUnifiedTopology: true,
-			});
-			console.log(`Connected to database - ${mongoose.connection.name}\n`);
-
-			console.log('\n3. Deleting all documents from Users collection\n');
+			console.log('\n------------- BEFORE TESTS -------------');
+			console.log('\n1. Deleting all documents from Books collection');
 			await Book.deleteMany({});
 
 			book = await Book.create({
@@ -69,11 +53,7 @@ describe('Unit - Test Book Controller', () => {
 		try {
 			console.log('\n1. Deleting all documents from Users collection');
 			await Book.deleteMany({});
-
-			console.log('\n2. Closing database connection');
-			mongoose.connection.close();
-
-			console.log('\n3. Exiting test');
+			console.log('\n2. Exiting test');
 			console.log('\n---------------------------------------');
 			console.log('\n\n\n');
 		} catch (err) {
@@ -82,6 +62,10 @@ describe('Unit - Test Book Controller', () => {
 		}
 	});
 
+	// Test GET /book/:id API
+	// 1. book retrival success
+	// 2. book not found
+	// 3. invalid book id
 	describe('getBook() function', () => {
 		it('successful book retrival - return 200', async () => {
 			const req = mocks.createRequest({
@@ -134,6 +118,11 @@ describe('Unit - Test Book Controller', () => {
 		});
 	});
 
+	// Test PATCH /book/:id API
+	// 1. book update success
+	// 2. missing parameter
+	// 3. invalid book id
+	// 4. book not found
 	describe('updateBook() function', () => {
 		it('successful book update - return 200', async () => {
 			const req = mocks.createRequest({
@@ -219,6 +208,10 @@ describe('Unit - Test Book Controller', () => {
 		});
 	});
 
+	// Test DELETE /book/:id API
+	// 1. invalid book id
+	// 2. book not found
+	// 3. book delete success
 	describe('deleteBook() function', () => {
 		it('Invalid Book ID - return 400', async () => {
 			const req = mocks.createRequest({

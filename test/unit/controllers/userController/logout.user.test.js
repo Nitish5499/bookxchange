@@ -6,7 +6,6 @@
 const mocks = require('node-mocks-http');
 const chai = require('chai');
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
 
 const userController = require('$/controllers/userController');
 
@@ -23,25 +22,9 @@ describe('Unit - Test User Controller', () => {
 	// 2. Connect to test database
 	// 3. Delete all documents from Users, Sessions collection
 	before(async () => {
-		console.log('\n------------- BEFORE TESTS -------------');
-		console.log('\n1. Loading environment');
-		dotenv.config({
-			path: './config/test.env',
-		});
-
-		const database = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
-
-		console.log('\n2. Connecting to database\n');
 		try {
-			await mongoose.connect(database, {
-				useNewUrlParser: true,
-				useCreateIndex: true,
-				useFindAndModify: false,
-				useUnifiedTopology: true,
-			});
-			console.log(`Connected to database - ${mongoose.connection.name}\n`);
-
-			console.log('\n3. Deleting all documents from Users, Sessions collection\n');
+			console.log('\n------------- BEFORE TESTS -------------');
+			console.log('\n1. Deleting all documents from Users, Sessions collection');
 			await User.deleteMany({});
 			await Session.deleteMany({});
 		} catch (err) {
@@ -62,11 +45,7 @@ describe('Unit - Test User Controller', () => {
 			console.log('\n1. Deleting all documents from Users, Sessions collection');
 			await User.deleteMany({});
 			await Session.deleteMany({});
-
-			console.log('\n2. Closing database connection');
-			mongoose.connection.close();
-
-			console.log('\n3. Exiting test');
+			console.log('\n2. Exiting test');
 			console.log('\n---------------------------------------');
 			console.log('\n\n\n');
 		} catch (err) {

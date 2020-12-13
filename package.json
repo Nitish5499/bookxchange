@@ -7,7 +7,7 @@
 	"scripts": {
 		"debug": "ndb server.js",
 		"start": "NODE_ENV=development nodemon server.js",
-		"test": "NODE_ENV=test mocha --recursive --timeout 20000 --retries 3 --exit",
+		"test": "NODE_ENV=test mocha --require ./test/fixtures.js --recursive --timeout 20000 --retries 3 --exit",
 		"lint:eslint": "eslint . --ext .js,.jsx",
 		"lint:eslint:fix": "eslint . --ext .js,.jsx --fix",
 		"lint:prettier": "prettier -c .",

@@ -6,12 +6,12 @@
  * 2. PATCH api/v1/users/me
  */
 
-const dotenv = require('dotenv');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 
 const User = require('$/models/userModel');
 const Session = require('$/models/sessionModel');
+const app = require('$/app');
 
 const authUtil = require('$/utils/authUtil');
 
@@ -27,34 +27,15 @@ describe('Integration - Test users me endpoints', () => {
 	// 2. Start server
 	// 3. Delete all documents from Users collection
 	before(async () => {
-		console.log('\n------------- BEFORE TESTS -------------');
-		console.log('\n1. Loading environment');
-		dotenv.config({
-			path: './config/test.env',
-		});
-
-		console.log('\n2. Starting server');
-		// eslint-disable-next-line global-require
-		server = require('$/server');
-
 		try {
-			console.log('\n3. Deleting all documents from Users collection\n');
+			console.log('\n------------- BEFORE TESTS -------------');
+			console.log('\n1. Deleting all documents from Users collection');
 			await User.deleteMany({});
+			console.log('\n---------------------------------------\n');
 		} catch (err) {
 			console.log(err);
 			process.exit(1);
 		}
-	});
-
-	// After each tests ends
-	// 1. Delete server cache
-	afterEach(() => {
-		console.log('\n---------- AFTER EACH TEST -----------');
-		console.log('\n1. Deleting server cache');
-
-		delete require.cache[require.resolve('$/server')];
-
-		console.log('\n---------------------------------------\n');
 	});
 
 	// After all tests complete
@@ -64,7 +45,6 @@ describe('Integration - Test users me endpoints', () => {
 		try {
 			console.log('\n1. Deleting all documents from Users collection');
 			await User.deleteMany({});
-
 			console.log('\n2. Exiting test');
 			console.log('\n---------------------------------------');
 			console.log('\n\n\n');
@@ -91,7 +71,7 @@ describe('Integration - Test users me endpoints', () => {
 		before(async () => {
 			console.log('\n------------- BEFORE TESTS -------------');
 
-			console.log('\n1.create a new user');
+			console.log('\n1. Create a new user');
 			try {
 				user = await User.create({
 					name,
@@ -125,7 +105,7 @@ describe('Integration - Test users me endpoints', () => {
 			const jsonData = JSON.parse(JSON.stringify(resBody));
 
 			chai
-				.request(server)
+				.request(app)
 				.get('/api/v1/users/me')
 				.set('Cookie', `jwt_token=${jwt}`)
 				.send()
@@ -138,7 +118,7 @@ describe('Integration - Test users me endpoints', () => {
 
 		it('user not logged in - return 401', (done) => {
 			chai
-				.request(server)
+				.request(app)
 				.get('/api/v1/users/me')
 				.send({})
 				.end((err, res) => {
@@ -150,7 +130,7 @@ describe('Integration - Test users me endpoints', () => {
 
 		it('Invalid HTTP PUT method - return 405', (done) => {
 			chai
-				.request(server)
+				.request(app)
 				.put('/api/v1/users/me')
 				.set('Cookie', `jwt_token=${jwt}`)
 				.send({})
@@ -179,7 +159,7 @@ describe('Integration - Test users me endpoints', () => {
 		// 1. Create a new user
 		before(async () => {
 			console.log('\n------------- BEFORE TESTS -------------');
-			console.log('\n1. Registering and verifying a user\n');
+			console.log('\n1. Registering and verifying a user');
 
 			user = await User.create({
 				name,
@@ -210,7 +190,7 @@ describe('Integration - Test users me endpoints', () => {
 			const jsonData = JSON.parse(JSON.stringify(resBody));
 
 			chai
-				.request(server)
+				.request(app)
 				.patch('/api/v1/users/me')
 				.set('cookie', `jwt_token=${jwt}`)
 				.send({ name: updateName, address: updateAddress })
@@ -228,7 +208,7 @@ describe('Integration - Test users me endpoints', () => {
 
 		it('missing update parameters - return 400', (done) => {
 			chai
-				.request(server)
+				.request(app)
 				.patch('/api/v1/users/me')
 				.set('cookie', `jwt_token=${jwt}`)
 				.send({})

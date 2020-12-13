@@ -1,15 +1,14 @@
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const { expect } = require('chai');
 
 const Book = require('$/models/bookModel');
+const app = require('$/app');
 
 chai.use(chaiHttp);
 
 describe('Integration - Test book fetch endpoints', () => {
-	let server;
 	let book = null;
 	const name = 'testBook';
 	const author = 'testAuthor';
@@ -21,21 +20,14 @@ describe('Integration - Test book fetch endpoints', () => {
 	// Before all tests begin
 	// 1. Load environment
 	// 2. Connect to test database
+	// 3. Insert a dummy record
 	// 3. Delete all documents from Books collection
 	before(async () => {
-		console.log('\n------------- BEFORE TESTS -------------');
-		console.log('\n1. Loading environment');
-		dotenv.config({
-			path: './config/test.env',
-		});
-
-		console.log('\n2. Starting server');
-		// eslint-disable-next-line global-require
-		server = require('$/server');
-
 		try {
-			console.log('\n3. Deleting all documents from Users collection\n');
+			console.log('\n------------- BEFORE TESTS -------------');
+			console.log('\n1. Deleting all documents from Books collection\n');
 			await Book.deleteMany({});
+			console.log('\n2. Inserting a dummy record into Books collection');
 
 			book = await Book.create({
 				name,
@@ -45,6 +37,8 @@ describe('Integration - Test book fetch endpoints', () => {
 				owner,
 				likedBy,
 			});
+
+			console.log('\n---------------------------------------\n');
 		} catch (err) {
 			console.log(err);
 			process.exit(1);
@@ -55,22 +49,11 @@ describe('Integration - Test book fetch endpoints', () => {
 	// 1. Delete all documents from Books collection
 	// 2. Close database connection
 	// 3. Exit process
-
-	afterEach(() => {
-		console.log('\n---------- AFTER EACH TEST -----------');
-		console.log('\n1. Deleting server cache');
-
-		delete require.cache[require.resolve('$/server')];
-
-		console.log('\n---------------------------------------\n');
-	});
-
 	after(async () => {
 		console.log('\n------------- AFTER TESTS -------------');
 		try {
-			console.log('\n1. Deleting all documents from Users collection');
+			console.log('\n1. Deleting all documents from Books collection');
 			await Book.deleteMany({});
-
 			console.log('\n2. Exiting test');
 			console.log('\n---------------------------------------');
 			console.log('\n\n\n');
@@ -80,10 +63,14 @@ describe('Integration - Test book fetch endpoints', () => {
 		}
 	});
 
+	// Test GET /book/:id API
+	// 1. book retrival success
+	// 2. book not found
+	// 3. invalid book id
 	describe('GET /api/v1/books/:id', () => {
 		it('successful book retrival - return 200', (done) => {
 			chai
-				.request(server)
+				.request(app)
 				.get(`/api/v1/books/${book._id}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(200);
@@ -95,7 +82,7 @@ describe('Integration - Test book fetch endpoints', () => {
 
 		it('Book not found - return 404', (done) => {
 			chai
-				.request(server)
+				.request(app)
 				.get(`/api/v1/books/${mongoose.Types.ObjectId()}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(404);
@@ -106,7 +93,7 @@ describe('Integration - Test book fetch endpoints', () => {
 
 		it('Invalid Book ID - return 400', (done) => {
 			chai
-				.request(server)
+				.request(app)
 				.get('/api/v1/books/1234')
 				.end((err, res) => {
 					expect(res.statusCode).equal(400);
@@ -116,10 +103,15 @@ describe('Integration - Test book fetch endpoints', () => {
 		});
 	});
 
+	// Test PATCH /book/:id API
+	// 1. book update success
+	// 2. missing parameter
+	// 3. invalid book id
+	// 4. book not found
 	describe('PATCH /api/v1/books/:id', () => {
 		it('successful book update - return 200', (done) => {
 			chai
-				.request(server)
+				.request(app)
 				.patch(`/api/v1/books/${book._id}`)
 				.send({ name: 'changedName', author: 'changedAuthor', link: 'changedLink' })
 				.end((err, res) => {
@@ -137,7 +129,7 @@ describe('Integration - Test book fetch endpoints', () => {
 
 		it('Missing parameters - return 400', (done) => {
 			chai
-				.request(server)
+				.request(app)
 				.patch(`/api/v1/books/${book._id}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(400);
@@ -148,7 +140,7 @@ describe('Integration - Test book fetch endpoints', () => {
 
 		it('Invalid Book ID - return 400', (done) => {
 			chai
-				.request(server)
+				.request(app)
 				.patch('/api/v1/books/1234')
 				.send({ name: 'changedName', author: 'changedAuthor', link: 'changedLink' })
 				.end((err, res) => {
@@ -160,7 +152,7 @@ describe('Integration - Test book fetch endpoints', () => {
 
 		it('Book not found - return 404', (done) => {
 			chai
-				.request(server)
+				.request(app)
 				.patch(`/api/v1/books/${mongoose.Types.ObjectId()}`)
 				.send({ name: 'changedName', author: 'changedAuthor', link: 'changedLink' })
 				.end((err, res) => {
@@ -171,10 +163,14 @@ describe('Integration - Test book fetch endpoints', () => {
 		});
 	});
 
+	// Test DELETE /book/:id API
+	// 1. invalid book id
+	// 2. book not found
+	// 3. book delete success
 	describe('DELETE /api/v1/books/:id', () => {
 		it('Invalid Book ID - return 400', (done) => {
 			chai
-				.request(server)
+				.request(app)
 				.delete('/api/v1/books/1234')
 				.end((err, res) => {
 					expect(res.statusCode).equal(400);
@@ -185,7 +181,7 @@ describe('Integration - Test book fetch endpoints', () => {
 
 		it('Book not found - return 404', (done) => {
 			chai
-				.request(server)
+				.request(app)
 				.delete(`/api/v1/books/${mongoose.Types.ObjectId()}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(404);
@@ -196,7 +192,7 @@ describe('Integration - Test book fetch endpoints', () => {
 
 		it('successful book delete - return 200', (done) => {
 			chai
-				.request(server)
+				.request(app)
 				.delete(`/api/v1/books/${book._id}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(200);
