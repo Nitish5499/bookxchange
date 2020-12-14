@@ -96,7 +96,7 @@ Check if `.git/hooks/pre-commit` has the following :
 # husky
 # Created by Husky v4.3.0 (https://github.com/typicode/husky#readme)
 #   At: 08/11/2020, 15:14:37
-#   From: /Users/shreyas/Desktop/BookXchange/bookxchange-server/node_modules/husky (https://github.com/typicode/husky#readme)
+#   From: ./bookxchange-server/node_modules/husky (https://github.com/typicode/husky#readme)
 . "$(dirname "$0")/husky.sh"
 ```
 

@@ -7,7 +7,8 @@
 	"scripts": {
 		"debug": "ndb server.js",
 		"start": "NODE_ENV=development nodemon server.js",
-		"test": "NODE_ENV=test mocha --require ./test/fixtures.js --recursive --timeout 20000 --retries 3 --exit",
+		"test": "NODE_ENV=test nyc mocha --require ./test/fixtures.js --recursive --timeout 20000 --retries 3 --exit",
+		"test-report": "nyc report --reporter=html && open ./coverage/index.html",
 		"lint:eslint": "eslint . --ext .js,.jsx",
 		"lint:eslint:fix": "eslint . --ext .js,.jsx --fix",
 		"lint:prettier": "prettier -c .",
@@ -35,7 +36,7 @@
 		"winston": "^3.3.3"
 	},
 	"devDependencies": {
-		"basetag": "^1.0.0",
+		"basetag": "^1.1.0",
 		"chai": "^4.2.0",
 		"chai-http": "^4.3.0",
 		"chai-jwt": "^2.0.0",
@@ -45,11 +46,14 @@
 		"eslint-plugin-import": "^2.22.1",
 		"eslint-plugin-prettier": "^3.1.4",
 		"express-winston": "^4.0.5",
+		"find-up": "^5.0.0",
 		"husky": "^4.3.0",
 		"lint-staged": "^10.4.2",
 		"mocha": "^8.2.1",
 		"node-mocks-http": "^1.9.0",
 		"nodemon": "^2.0.6",
+		"nyc": "^15.1.0",
+		"open": "^7.3.0",
 		"pm2": "^4.5.0",
 		"pre-commit": "^1.2.2",
 		"prettier": "2.1.2",
