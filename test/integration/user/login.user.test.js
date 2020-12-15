@@ -78,7 +78,7 @@ describe('Integration - Test users login endpoints', () => {
 			console.log('\n---------------------------------------\n');
 		});
 
-		it('login attempt success - return 200', (done) => {
+		it('login success - return 200', (done) => {
 			chai
 				.request(app)
 				.post('/api/v1/users/login')
@@ -96,7 +96,7 @@ describe('Integration - Test users login endpoints', () => {
 				.send({})
 				.end((err, res) => {
 					expect(res.statusCode).equal(400);
-					expect(res.body.message).equal('Missing required email parameter');
+					expect(res.body.message).equal('email is required');
 					done();
 				});
 		});
@@ -173,7 +173,7 @@ describe('Integration - Test users login endpoints', () => {
 				.send({})
 				.end((err, res) => {
 					expect(res.statusCode).equal(400);
-					expect(res.body.message).equal('Missing required email or OTP parameters');
+					expect(res.body.message).equal('email is required');
 					done();
 				});
 		});

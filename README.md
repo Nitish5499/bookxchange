@@ -67,6 +67,7 @@ Follow the order
 - external libraries
 - controllers
 - middlewares
+- validations
 - models
 - others
 

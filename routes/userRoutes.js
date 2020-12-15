@@ -4,44 +4,51 @@ const userController = require('$/controllers/userController');
 const errorController = require('$/controllers/errorController');
 
 const authMiddleware = require('$/middlewares/authMiddleware');
+const validateMiddleware = require('$/middlewares/validateMiddleware');
+
+const userValidation = require('$/validations/userValidation');
 
 const router = express.Router();
 
-// Signup
-router.all('/signup', errorController.methods(['POST']), userController.signup);
-router.all('/signup/verify', errorController.methods(['POST']), userController.signupVerify);
+// POST - register a new user
+router
+	.route('/signup')
+	.post(validateMiddleware(userValidation.signup), userController.signup)
+	.all(errorController.methods(['POST']));
 
-// Login
-router.all('/login', errorController.methods(['POST']), userController.login);
-router.all('/login/verify', errorController.methods(['POST']), userController.loginVerify);
+// POST - verify a new user
+router
+	.route('/signup/verify')
+	.post(validateMiddleware(userValidation.signupVerify), userController.signupVerify)
+	.all(errorController.methods(['POST']));
 
-// Logout
-router.all('/logout', errorController.methods(['GET']), userController.logout);
+// POST - request new login otp
+router
+	.route('/login')
+	.post(validateMiddleware(userValidation.login), userController.login)
+	.all(errorController.methods(['POST']));
+
+// POST - verify new login otp
+router
+	.route('/login/verify')
+	.post(validateMiddleware(userValidation.loginVerify), userController.loginVerify)
+	.all(errorController.methods(['POST']));
+
+// GET - logout user
+router
+	.route('/logout')
+	.get(userController.logout)
+	.all(errorController.methods(['GET']));
 
 // JWT Middleware
 router.use(authMiddleware.verifyJWT);
 
-// users-me
+// GET   - fetch details of user
+// PATCH - update details of user
 router
 	.route('/me')
 	.get(userController.getUser)
-	.patch(userController.updateUser)
+	.patch(validateMiddleware(userValidation.updateUser), userController.updateUser)
 	.all(errorController.methods(['GET', 'PATCH']));
-
-// // Protect all routes after this middleware
-// router.use(authController.protect);
-
-// router.delete("/deleteMe", userController.deleteMe);
-
-// // Only admin have permission to access for the below APIs
-// router.use(authController.restrictTo("admin"));
-
-// router.route("/").get(userController.getAllUsers);
-
-// router
-//   .route("/:id")
-//   .get(userController.getUser)
-//   .patch(userController.updateUser)
-//   .delete(userController.deleteUser);
 
 module.exports = router;

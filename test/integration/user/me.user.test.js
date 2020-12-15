@@ -214,7 +214,7 @@ describe('Integration - Test users me endpoints', () => {
 				.send({})
 				.end((err, res) => {
 					expect(res.statusCode).equal(400);
-					expect(res.body.message).equal('Missing update parameters');
+					expect(res.body.message).equal('name is required');
 					done();
 				});
 		});

@@ -52,7 +52,6 @@ describe('Unit - Test User Controller', () => {
 	// Test Login function
 	// 1. User not registered
 	// 2. User not verified
-	// 3. Missing email parameter
 	// 4. Successful login attempt
 	describe('login() function', () => {
 		const name = 'jett';
@@ -122,19 +121,6 @@ describe('Unit - Test User Controller', () => {
 			});
 		});
 
-		it('missing email or otp - return 400', async () => {
-			const req = mocks.createRequest({
-				method: 'POST',
-			});
-
-			const res = mocks.createResponse();
-
-			await userController.login(req, res, (err) => {
-				expect(err.statusCode).equal(400);
-				expect(err.message).equal('Missing required email parameter');
-			});
-		});
-
 		it('successful login attempt - return 200', async () => {
 			const req = mocks.createRequest({
 				method: 'POST',
@@ -157,7 +143,6 @@ describe('Unit - Test User Controller', () => {
 	// Test loginVerify function
 	// 1.user not registered
 	// 2.user not verified
-	// 3.Missing email or otp parameter
 	// 4.unsuccessful login(wrong otp)
 	// 5.successful login
 	describe('loginVerify() function', () => {
@@ -235,20 +220,7 @@ describe('Unit - Test User Controller', () => {
 			});
 		});
 
-		it('missing email or otp - return 400', async () => {
-			const req = mocks.createRequest({
-				method: 'POST',
-			});
-
-			const res = mocks.createResponse();
-
-			await userController.loginVerify(req, res, (err) => {
-				expect(err.statusCode).equal(400);
-				expect(err.message).equal('Missing required email or OTP parameters');
-			});
-		});
-
-		it('unsuccessful login(wrong otp) - return 401', async () => {
+		it('unsuccessful login (wrong otp) - return 401', async () => {
 			const req = mocks.createRequest({
 				method: 'POST',
 				body: {

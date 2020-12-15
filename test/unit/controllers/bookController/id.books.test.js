@@ -65,7 +65,6 @@ describe('Unit - Test Book Controller', () => {
 	// Test GET /book/:id API
 	// 1. book retrival success
 	// 2. book not found
-	// 3. invalid book id
 	describe('getBook() function', () => {
 		it('successful book retrival - return 200', async () => {
 			const req = mocks.createRequest({
@@ -100,29 +99,11 @@ describe('Unit - Test Book Controller', () => {
 				expect(err.message).equal('Book not Found!');
 			});
 		});
-
-		it('Invalid Book ID - return 400', async () => {
-			const req = mocks.createRequest({
-				method: 'GET',
-				params: {
-					id: '1234',
-				},
-			});
-
-			const res = mocks.createResponse();
-
-			await bookController.getBook(req, res, (err) => {
-				expect(err.statusCode).equal(400);
-				expect(err.message).equal('Invalid BookID!');
-			});
-		});
 	});
 
 	// Test PATCH /book/:id API
 	// 1. book update success
-	// 2. missing parameter
-	// 3. invalid book id
-	// 4. book not found
+	// 2. book not found
 	describe('updateBook() function', () => {
 		it('successful book update - return 200', async () => {
 			const req = mocks.createRequest({
@@ -147,43 +128,6 @@ describe('Unit - Test Book Controller', () => {
 
 			const updatedBook = await Book.findById(book._id);
 			expect(JSON.stringify(data)).equal(JSON.stringify(updatedBook));
-		});
-
-		it('Missing parameters - return 400', async () => {
-			const req = mocks.createRequest({
-				method: 'POST',
-				params: {
-					id: book._id,
-				},
-			});
-
-			const res = mocks.createResponse();
-
-			await bookController.updateBook(req, res, (err) => {
-				expect(err.statusCode).equal(400);
-				expect(err.message).equal('Missing required name,author and link parameters');
-			});
-		});
-
-		it('Invalid Book ID - return 400', async () => {
-			const req = mocks.createRequest({
-				method: 'POST',
-				params: {
-					id: '1234',
-				},
-				body: {
-					name: 'changedName',
-					author: 'changedAuthor',
-					link: 'changedLink',
-				},
-			});
-
-			const res = mocks.createResponse();
-
-			await bookController.updateBook(req, res, (err) => {
-				expect(err.statusCode).equal(400);
-				expect(err.message).equal('Invalid BookID!');
-			});
 		});
 
 		it('Book not found - return 404', async () => {

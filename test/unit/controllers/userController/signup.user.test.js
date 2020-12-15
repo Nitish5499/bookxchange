@@ -51,8 +51,6 @@ describe('Unit - Test User Controller', () => {
 
 	// Test signup()
 	// 1. registration successful
-	// 2. missing name and email
-	// 3. invalid email format
 	describe('signup() function', () => {
 		// For better log readability
 		before(() => {
@@ -81,39 +79,11 @@ describe('Unit - Test User Controller', () => {
 			const { data } = res._getJSONData();
 			expect(data).to.be.a('number');
 		});
-
-		it('missing name and email - return 400', async () => {
-			const req = mocks.createRequest({
-				method: 'POST',
-			});
-			const res = mocks.createResponse();
-
-			await userController.signup(req, res, (err) => {
-				expect(err.statusCode).equal(400);
-				expect(err.message).equal('Missing required name and email parameters');
-			});
-		});
-
-		it('invalid email format - return error', async () => {
-			const req = mocks.createRequest({
-				method: 'POST',
-				body: {
-					name: 'foo',
-					email: 'foo',
-				},
-			});
-			const res = mocks.createResponse();
-
-			await userController.signup(req, res, (err) => {
-				expect(err.message).to.include('Please provide a valid email');
-			});
-		});
 	});
 
 	// Test signupVerify()
 	// 1. wrong otp
 	// 2. verification success
-	// 3. missing email and otp
 	describe('signupVerify() function', () => {
 		const name = 'foo1';
 		const email = 'foo1@bar.com';
@@ -179,18 +149,6 @@ describe('Unit - Test User Controller', () => {
 
 			const { data } = res._getJSONData();
 			expect(data).equal('Email verified');
-		});
-
-		it('missing email and otp - return 400', async () => {
-			const req = mocks.createRequest({
-				method: 'POST',
-			});
-			const res = mocks.createResponse();
-
-			await userController.signupVerify(req, res, (err) => {
-				expect(err.statusCode).equal(400);
-				expect(err.message).equal('Missing required email and otp parameters');
-			});
 		});
 	});
 });

@@ -11,9 +11,6 @@ const externalUtil = require('$/utils/externalUtil');
 exports.signup = async (req, res, next) => {
 	try {
 		const { name, email } = req.body;
-		if (!name || !email) {
-			throw new ErrorHandler(400, 'Missing required name and email parameters');
-		}
 
 		const otp = authUtil.getOTP();
 
@@ -45,9 +42,6 @@ exports.signup = async (req, res, next) => {
 exports.signupVerify = async (req, res, next) => {
 	try {
 		const { email, otp } = req.body;
-		if (!email || !otp) {
-			throw new ErrorHandler(400, 'Missing required email and otp parameters');
-		}
 
 		const otpNum = parseInt(otp, 10);
 
@@ -80,9 +74,6 @@ exports.signupVerify = async (req, res, next) => {
 exports.login = async (req, res, next) => {
 	try {
 		const { email } = req.body;
-		if (!email) {
-			return next(new ErrorHandler(400, 'Missing required email parameter'), req, res, next);
-		}
 
 		let dbUser = await User.findOne({ email });
 
@@ -120,9 +111,6 @@ exports.login = async (req, res, next) => {
 exports.loginVerify = async (req, res, next) => {
 	try {
 		const { email, otp } = req.body;
-		if (!otp || !email) {
-			return next(new ErrorHandler(400, 'Missing required email or OTP parameters'), req, res, next);
-		}
 
 		const otpNum = parseInt(otp, 10);
 
@@ -182,9 +170,6 @@ exports.updateUser = async (req, res, next) => {
 		const { name, address } = req.body;
 		const { user } = req;
 
-		if (!name && !address) {
-			return next(new ErrorHandler(400, 'Missing update parameters'));
-		}
 		await User.findByIdAndUpdate(user.userId, {
 			name,
 			address,
@@ -232,25 +217,3 @@ exports.logout = async (req, res, next) => {
 		}
 	}
 };
-
-exports.deleteMe = async (req, res, next) => {
-	try {
-		await User.findByIdAndUpdate(req.user.id, {
-			active: false,
-		});
-
-		res.status(204).json({
-			status: 'success',
-			data: null,
-		});
-	} catch (error) {
-		next(error);
-	}
-};
-
-// exports.getAllUsers = base.getAll(User);
-// exports.getUser = base.getOne(User);
-
-// Don't update password on this
-// exports.updateUser = base.updateOne(User);
-// exports.deleteUser = base.deleteOne(User);

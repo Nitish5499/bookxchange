@@ -97,7 +97,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.get('/api/v1/books/1234')
 				.end((err, res) => {
 					expect(res.statusCode).equal(400);
-					expect(res.body.message).equal('Invalid BookID!');
+					expect(res.body.message).equal('"id" must be a valid MongoDB document ID');
 					done();
 				});
 		});
@@ -113,7 +113,7 @@ describe('Integration - Test book fetch endpoints', () => {
 			chai
 				.request(app)
 				.patch(`/api/v1/books/${book._id}`)
-				.send({ name: 'changedName', author: 'changedAuthor', link: 'changedLink' })
+				.send({ name: 'changedName', author: 'changedAuthor', link: 'https://foo.com' })
 				.end((err, res) => {
 					expect(res.statusCode).equal(200);
 					const { data } = res.body;
@@ -133,7 +133,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.patch(`/api/v1/books/${book._id}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(400);
-					expect(res.body.message).equal('Missing required name,author and link parameters');
+					expect(res.body.message).equal('name is required');
 					done();
 				});
 		});
@@ -145,7 +145,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.send({ name: 'changedName', author: 'changedAuthor', link: 'changedLink' })
 				.end((err, res) => {
 					expect(res.statusCode).equal(400);
-					expect(res.body.message).equal('Invalid BookID!');
+					expect(res.body.message).equal('"id" must be a valid MongoDB document ID');
 					done();
 				});
 		});
@@ -154,7 +154,7 @@ describe('Integration - Test book fetch endpoints', () => {
 			chai
 				.request(app)
 				.patch(`/api/v1/books/${mongoose.Types.ObjectId()}`)
-				.send({ name: 'changedName', author: 'changedAuthor', link: 'changedLink' })
+				.send({ name: 'changedName', author: 'changedAuthor', link: 'https://foo.com' })
 				.end((err, res) => {
 					expect(res.statusCode).equal(404);
 					expect(res.body.message).equal('Book not Found!');
@@ -174,7 +174,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.delete('/api/v1/books/1234')
 				.end((err, res) => {
 					expect(res.statusCode).equal(400);
-					expect(res.body.message).equal('Invalid BookID!');
+					expect(res.body.message).equal('"id" must be a valid MongoDB document ID');
 					done();
 				});
 		});

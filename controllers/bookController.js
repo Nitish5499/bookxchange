@@ -62,10 +62,6 @@ exports.getBook = async (req, res, next) => {
 	try {
 		const { id } = req.params;
 
-		if (!ObjectId.isValid(id)) {
-			return next(new ErrorHandler(400, 'Invalid BookID!'), req, res, next);
-		}
-
 		const book = await Book.findById(id);
 
 		if (!book) {
@@ -87,14 +83,6 @@ exports.updateBook = async (req, res, next) => {
 	try {
 		const { id } = req.params;
 		const { name, author, link } = req.body;
-
-		if (!ObjectId.isValid(id)) {
-			return next(new ErrorHandler(400, 'Invalid BookID!'), req, res, next);
-		}
-
-		if (!name || !author || !link) {
-			return next(new ErrorHandler(400, 'Missing required name,author and link parameters'), req, res, next);
-		}
 
 		const dbBook = await Book.findByIdAndUpdate(id, { name, author, link }, { new: true });
 

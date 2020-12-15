@@ -30,7 +30,6 @@ describe('Unit - Test User Controller', () => {
 			console.log(err);
 			process.exit(1);
 		}
-
 		console.log('\n---------------------------------------\n');
 	});
 
@@ -85,7 +84,6 @@ describe('Unit - Test User Controller', () => {
 				console.log(err);
 				process.exit(1);
 			}
-
 			console.log('\n---------------------------------------\n');
 		});
 
@@ -124,7 +122,6 @@ describe('Unit - Test User Controller', () => {
 
 	// Test updateUser function
 	// 1. Successful update of user details
-	// 2. Missing update parameters
 	describe('updateUser() function', () => {
 		const name = 'jett1';
 		const email = 'jett1@rp.com';
@@ -150,7 +147,6 @@ describe('Unit - Test User Controller', () => {
 				console.log(err);
 				process.exit(1);
 			}
-
 			console.log('\n---------------------------------------\n');
 		});
 
@@ -179,20 +175,6 @@ describe('Unit - Test User Controller', () => {
 
 			const { data } = res._getJSONData();
 			expect(data).deep.equals(message);
-		});
-
-		it('missing update parameters - return 400', async () => {
-			const req = mocks.createRequest({
-				user: dbUser,
-				method: 'PATCH',
-			});
-
-			const res = mocks.createResponse();
-
-			await userController.updateUser(req, res, (err) => {
-				expect(err.statusCode).equal(400);
-				expect(err.message).equal('Missing update parameters');
-			});
 		});
 	});
 });

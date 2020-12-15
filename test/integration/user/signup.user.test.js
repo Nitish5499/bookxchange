@@ -98,7 +98,7 @@ describe('Integration - Test users signup endpoints', () => {
 				.send({ name: 'foo' })
 				.end((err, res) => {
 					expect(res.statusCode).equal(400);
-					expect(res.body.message).equal('Missing required name and email parameters');
+					expect(res.body.message).equal('email is required');
 					done();
 				});
 		});
