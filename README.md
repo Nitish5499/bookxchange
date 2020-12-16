@@ -1,4 +1,5 @@
-[![Actions Status](https://github.com/shreyas-sriram/bookxchange-server/workflows/CI/CD/badge.svg)](https://github.com/shreyas-sriram/bookxchange-server/actions)
+![Lint & test](https://github.com/shreyas-sriram/bookxchange-server/workflows/Lint%20and%20Test/badge.svg)
+![AWS-Deploy](https://github.com/shreyas-sriram/bookxchange-server/workflows/Deploy/badge.svg)
 
 # bookxchange-server
 
