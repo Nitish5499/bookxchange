@@ -139,7 +139,7 @@ exports.loginVerify = async (req, res, next) => {
 			sessionToken: jwtToken,
 		});
 
-		res.cookie('jwt_token', jwtToken);
+		res.cookie('jwt_token', jwtToken, { httpOnly: true, maxAge: process.env.JWT_SESSION_DB_TTL * 1000 });
 
 		res.status(200).json({
 			status: 'success',
