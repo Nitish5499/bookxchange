@@ -47,10 +47,11 @@ npm run lint:fix
 
 ## To Override Deployment to AWS
 
-Go to [.github/workflows/ci-cd.yml](https://github.com/shreyas-sriram/bookxchange-server/blob/main/.github/workflows/ci-cd.yaml), change `if` in `CD Pipeline` job to add your working branch. For example, if your working branch is `foo`, then modify as
+Go to [.github/workflows/deployment.yaml](https://github.com/shreyas-sriram/bookxchange-server/blob/main/.github/workflows/deployment.yaml), change `branches` in `workflow_run` event to add your working branch. For example, if your working branch is `foo`, then modify as
 
 ```
-if: github.ref == 'refs/heads/foo'
+branches:
+  - foo
 ```
 
 ## Guidelines
