@@ -1,3 +1,7 @@
+const httpResponse = require('http-status');
+
+const logger = require('$/config/logger');
+
 class ErrorHandler extends Error {
 	constructor(statusCode, message) {
 		super(message);
@@ -8,9 +12,12 @@ class ErrorHandler extends Error {
 
 const handleError = (err, res) => {
 	const { statusCode, message } = err;
-	res.status(statusCode || 500).json({
+
+	logger.error(`${err}, statuscode:${statusCode}`);
+
+	res.status(statusCode || httpResponse.INTERNAL_SERVER_ERROR).json({
 		status: 'error',
-		code: statusCode || 500,
+		code: statusCode || httpResponse.INTERNAL_SERVER_ERROR,
 		message: message || 'Internal Server Error',
 	});
 };

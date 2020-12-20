@@ -8,12 +8,13 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
+const httpResponse = require('http-status');
 
 const userRoutes = require('$/routes/userRoutes');
 const bookRoutes = require('$/routes/bookRoutes');
 const { ErrorHandler, handleError } = require('$/utils/errorHandler');
-const logger = require('$/config/logger.js');
-const constants = require('$/config/constants.js');
+const logger = require('$/config/logger');
+const constants = require('$/config/constants');
 
 const app = express();
 
@@ -66,7 +67,7 @@ app.use('/api/v1/books', bookRoutes);
 
 // handle undefined Routes
 app.use('*', (req, res, next) => {
-	const err = new ErrorHandler(404, 'undefined route');
+	const err = new ErrorHandler(httpResponse.NOT_FOUND, 'undefined route');
 	next(err, req, res, next);
 });
 

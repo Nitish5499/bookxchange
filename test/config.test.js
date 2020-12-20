@@ -6,6 +6,7 @@
 const request = require('request');
 const chai = require('chai');
 const dotenv = require('dotenv');
+const httpResponse = require('http-status');
 
 const constants = require('$/config/constants');
 
@@ -47,7 +48,7 @@ describe('Config - Test config setup', () => {
 	describe('Verify SendGrid API KEY', () => {
 		it('should return 200', () => {
 			request.get(options, (err, res) => {
-				expect(res.statusCode).equal(200);
+				expect(res.statusCode).equal(httpResponse.OK);
 			});
 		});
 	});

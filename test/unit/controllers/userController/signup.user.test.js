@@ -6,6 +6,7 @@
 
 const mocks = require('node-mocks-http');
 const chai = require('chai');
+const httpResponse = require('http-status');
 
 const userController = require('$/controllers/userController');
 
@@ -127,7 +128,7 @@ describe('Unit - Test User Controller', () => {
 			const res = mocks.createResponse();
 
 			await userController.signupVerify(req, res, (err) => {
-				expect(err.statusCode).equal(401);
+				expect(err.statusCode).equal(httpResponse.UNAUTHORIZED);
 				expect(err.message).equal('Email or otp is wrong');
 			});
 		});
@@ -143,7 +144,6 @@ describe('Unit - Test User Controller', () => {
 			const res = mocks.createResponse();
 
 			await userController.signupVerify(req, res, (err) => {
-				console.log(err);
 				expect(err).equal(false);
 			});
 

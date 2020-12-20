@@ -5,6 +5,7 @@
 
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const httpResponse = require('http-status');
 
 const constants = require('$/config/constants.js');
 const app = require('$/app');
@@ -29,7 +30,7 @@ describe('Integration - Test root endpoints', () => {
 				.request(app)
 				.get('/status')
 				.end((err, res) => {
-					expect(res.statusCode).equal(200);
+					expect(res.statusCode).equal(httpResponse.OK);
 
 					const mongoStates = Object.keys(constants.MONGO_STATES).map((key) => {
 						return constants.MONGO_STATES[key];

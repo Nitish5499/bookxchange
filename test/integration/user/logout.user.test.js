@@ -8,6 +8,7 @@
 const chai = require('chai');
 const mongoose = require('mongoose');
 const chaiHttp = require('chai-http');
+const httpResponse = require('http-status');
 
 const User = require('$/models/userModel');
 const Session = require('$/models/sessionModel');
@@ -104,7 +105,7 @@ describe('Integration - Test users logout endpoints', () => {
 				.request(app)
 				.get('/api/v1/users/logout')
 				.end((err, res) => {
-					expect(res.statusCode).equal(401);
+					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
 					expect(res.body.message).equal('You are not logged in');
 					done();
 				});
@@ -116,7 +117,7 @@ describe('Integration - Test users logout endpoints', () => {
 				.get('/api/v1/users/logout')
 				.set('Cookie', `jwt_token=${jwtTokenInvalid}`)
 				.end((err, res) => {
-					expect(res.statusCode).equal(200);
+					expect(res.statusCode).equal(httpResponse.OK);
 					expect(res.body.data).equal('successfully logged out');
 					done();
 				});
@@ -128,7 +129,7 @@ describe('Integration - Test users logout endpoints', () => {
 				.get('/api/v1/users/logout')
 				.set('Cookie', `jwt_token=${jwtTokenValid}`)
 				.end((err, res) => {
-					expect(res.statusCode).equal(200);
+					expect(res.statusCode).equal(httpResponse.OK);
 					expect(res.body.data).equal('successfully logged out');
 					done();
 				});

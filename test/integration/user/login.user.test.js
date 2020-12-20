@@ -8,6 +8,7 @@
 
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const httpResponse = require('http-status');
 
 const User = require('$/models/userModel');
 const app = require('$/app');
@@ -84,7 +85,7 @@ describe('Integration - Test users login endpoints', () => {
 				.post('/api/v1/users/login')
 				.send({ email })
 				.end((err, res) => {
-					expect(res.statusCode).equal(200);
+					expect(res.statusCode).equal(httpResponse.OK);
 					done();
 				});
 		});
@@ -95,7 +96,7 @@ describe('Integration - Test users login endpoints', () => {
 				.post('/api/v1/users/login')
 				.send({})
 				.end((err, res) => {
-					expect(res.statusCode).equal(400);
+					expect(res.statusCode).equal(httpResponse.BAD_REQUEST);
 					expect(res.body.message).equal('email is required');
 					done();
 				});
@@ -107,7 +108,7 @@ describe('Integration - Test users login endpoints', () => {
 				.put('/api/v1/users/login')
 				.send({ email })
 				.end((err, res) => {
-					expect(res.statusCode).equal(405);
+					expect(res.statusCode).equal(httpResponse.METHOD_NOT_ALLOWED);
 					expect(res.body.message).equal('Method not allowed');
 					done();
 				});
@@ -119,7 +120,7 @@ describe('Integration - Test users login endpoints', () => {
 				.post('/api/v1/users/login')
 				.send({ email: email2 })
 				.end((err, res) => {
-					expect(res.statusCode).equal(401);
+					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
 					expect(res.body.message).equal('Email not registered');
 					done();
 				});
@@ -161,7 +162,7 @@ describe('Integration - Test users login endpoints', () => {
 				.post('/api/v1/users/login/verify')
 				.send({ email, otp: otpCorrect })
 				.end((err, res) => {
-					expect(res.statusCode).equal(200);
+					expect(res.statusCode).equal(httpResponse.OK);
 					done();
 				});
 		});
@@ -172,7 +173,7 @@ describe('Integration - Test users login endpoints', () => {
 				.post('/api/v1/users/login/verify')
 				.send({})
 				.end((err, res) => {
-					expect(res.statusCode).equal(400);
+					expect(res.statusCode).equal(httpResponse.BAD_REQUEST);
 					expect(res.body.message).equal('email is required');
 					done();
 				});
@@ -184,7 +185,7 @@ describe('Integration - Test users login endpoints', () => {
 				.put('/api/v1/users/login/verify')
 				.send({ email, otp: otpCorrect })
 				.end((err, res) => {
-					expect(res.statusCode).equal(405);
+					expect(res.statusCode).equal(httpResponse.METHOD_NOT_ALLOWED);
 					expect(res.body.message).equal('Method not allowed');
 					done();
 				});
@@ -196,7 +197,7 @@ describe('Integration - Test users login endpoints', () => {
 				.post('/api/v1/users/login/verify')
 				.send({ email: email2, otp: otpCorrect })
 				.end((err, res) => {
-					expect(res.statusCode).equal(401);
+					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
 					expect(res.body.message).equal('Email not registered');
 					done();
 				});
@@ -208,7 +209,7 @@ describe('Integration - Test users login endpoints', () => {
 				.post('/api/v1/users/login/verify')
 				.send({ email, otp: otpWrong })
 				.end((err, res) => {
-					expect(res.statusCode).equal(401);
+					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
 					expect(res.body.message).equal('Invalid OTP or email');
 					done();
 				});

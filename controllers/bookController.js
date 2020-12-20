@@ -1,10 +1,12 @@
 const { ObjectId } = require('mongoose').Types;
 const mongoose = require('mongoose');
+const httpResponse = require('http-status');
 
 const Book = require('$/models/bookModel');
 const User = require('$/models/userModel');
 
 const { ErrorHandler } = require('$/utils/errorHandler');
+const logger = require('$/config/logger');
 
 exports.addBook = async (req, res, next) => {
 	try {
@@ -32,7 +34,7 @@ exports.addBook = async (req, res, next) => {
 			likedBy,
 		});
 
-		res.status(200).json({
+		res.status(httpResponse.OK).json({
 			status: 'success',
 			data: {
 				book,
@@ -44,10 +46,13 @@ exports.addBook = async (req, res, next) => {
 };
 
 exports.getAllBooks = async (req, res, next) => {
+	logger.info('inside getAllBooks function');
 	try {
 		const book = await Book.find();
 
-		res.status(200).json({
+		logger.info(`Book: ${book}`);
+
+		res.status(httpResponse.OK).json({
 			status: 'success',
 			data: {
 				book,
@@ -59,16 +64,21 @@ exports.getAllBooks = async (req, res, next) => {
 };
 
 exports.getBook = async (req, res, next) => {
+	logger.info('inside getBook function');
 	try {
 		const { id } = req.params;
 
+		logger.info(`BookId:${id}`);
+
 		const book = await Book.findById(id);
+
+		logger.info(`Book:${book}`);
 
 		if (!book) {
 			return next(new ErrorHandler(404, 'Book not Found!'), req, res, next);
 		}
 
-		res.status(200).json({
+		res.status(httpResponse.OK).json({
 			status: 'success',
 			data: {
 				book,
@@ -80,17 +90,25 @@ exports.getBook = async (req, res, next) => {
 };
 
 exports.updateBook = async (req, res, next) => {
+	logger.info('inside updateBook function');
 	try {
 		const { id } = req.params;
+
+		logger.info(`BookId:${id}`);
+
 		const { name, author, link } = req.body;
 
+		logger.info(`Name:${name}, Author:${author}, link:${link}`);
+
 		const dbBook = await Book.findByIdAndUpdate(id, { name, author, link }, { new: true });
+
+		logger.info(dbBook);
 
 		if (!dbBook) {
 			return next(new ErrorHandler(404, 'Book not Found!'), req, res, next);
 		}
 
-		res.status(200).json({
+		res.status(httpResponse.OK).json({
 			status: 'success',
 			data: dbBook,
 		});
@@ -100,8 +118,11 @@ exports.updateBook = async (req, res, next) => {
 };
 
 exports.deleteBook = async (req, res, next) => {
+	logger.info('inside deleteBook function');
 	try {
 		const { id } = req.params;
+
+		logger.info(`BookId:${id}`);
 
 		if (!ObjectId.isValid(id)) {
 			return next(new ErrorHandler(400, 'Invalid BookID!'), req, res, next);
@@ -113,13 +134,19 @@ exports.deleteBook = async (req, res, next) => {
 			return next(new ErrorHandler(404, 'Book not Found!'), req, res, next);
 		}
 
+		logger.info('Book successfully deleted from the database');
+
 		// TODO: Might need to remove the awaits to optimize the delete functionality in the future.
 
 		await User.findByIdAndUpdate(book.owner, { $pull: { booksOwned: book._id } }, { new: true });
 
+		logger.info('Book removed from user record');
+
 		await User.updateMany({ _id: { $in: book.likedBy } }, { $pull: { booksLiked: book._id } }, { new: true });
 
-		res.status(200).json({
+		logger.info('users updated to remove book from liked field');
+
+		res.status(httpResponse.OK).json({
 			status: 'success',
 			data: {
 				book,

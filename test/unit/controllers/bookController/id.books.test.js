@@ -1,6 +1,7 @@
 const mocks = require('node-mocks-http');
 const chai = require('chai');
 const mongoose = require('mongoose');
+const httpResponse = require('http-status');
 
 const bookController = require('$/controllers/bookController');
 
@@ -168,7 +169,7 @@ describe('Unit - Test Book Controller', () => {
 			const res = mocks.createResponse();
 
 			await bookController.deleteBook(req, res, (err) => {
-				expect(err.statusCode).equal(400);
+				expect(err.statusCode).equal(httpResponse.BAD_REQUEST);
 				expect(err.message).equal('Invalid BookID!');
 			});
 		});

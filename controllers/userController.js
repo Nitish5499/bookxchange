@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
+const httpResponse = require('http-status');
 
 const User = require('$/models/userModel');
 const Session = require('$/models/sessionModel');
@@ -7,12 +8,16 @@ const Session = require('$/models/sessionModel');
 const { ErrorHandler } = require('$/utils/errorHandler');
 const authUtil = require('$/utils/authUtil');
 const externalUtil = require('$/utils/externalUtil');
+const logger = require('$/config/logger');
 
 exports.signup = async (req, res, next) => {
+	logger.info('Inside signup function');
 	try {
 		const { name, email } = req.body;
 
 		const otp = authUtil.getOTP();
+
+		logger.info(`data: "name":${name}, "email":${email}, "otp":${otp}`);
 
 		const dbResult = await User.create({
 			name,
@@ -20,6 +25,8 @@ exports.signup = async (req, res, next) => {
 			otp,
 			active: false,
 		});
+
+		logger.info(`database user created: ${dbResult}`);
 
 		let data;
 
@@ -30,7 +37,9 @@ exports.signup = async (req, res, next) => {
 			data = 'Email has been sent';
 		}
 
-		res.status(200).json({
+		logger.info('Email successfully sent');
+
+		res.status(httpResponse.OK).json({
 			status: 'success',
 			data,
 		});
@@ -40,29 +49,34 @@ exports.signup = async (req, res, next) => {
 };
 
 exports.signupVerify = async (req, res, next) => {
+	logger.info('Inside signup verify function');
 	try {
 		const { email, otp } = req.body;
 
 		const otpNum = parseInt(otp, 10);
+
+		logger.info(`data: "email":${email}, "otp":${otp}`);
 
 		let dbUser = await User.findOne({
 			email,
 		});
 
 		if (dbUser.active) {
-			return next(new ErrorHandler(403, 'User email has already been verified'), req, res, next);
+			return next(new ErrorHandler(httpResponse.FORBIDDEN, 'User email has already been verified'), req, res, next);
 		}
 
 		if (!dbUser || otpNum !== dbUser.otp) {
-			return next(new ErrorHandler(401, 'Email or otp is wrong'), req, res, next);
+			return next(new ErrorHandler(httpResponse.UNAUTHORIZED, 'Email or otp is wrong'), req, res, next);
 		}
+
+		logger.info(`database user : ${dbUser}`);
 
 		dbUser = await User.findByIdAndUpdate(dbUser._id, {
 			otp: '',
 			active: true,
 		});
 
-		res.status(200).json({
+		res.status(httpResponse.OK).json({
 			status: 'success',
 			data: 'Email verified',
 		});
@@ -72,18 +86,23 @@ exports.signupVerify = async (req, res, next) => {
 };
 
 exports.login = async (req, res, next) => {
+	logger.info('Inside login function');
 	try {
 		const { email } = req.body;
+
+		logger.info(`data: "email":${email}`);
 
 		let dbUser = await User.findOne({ email });
 
 		if (!dbUser) {
-			return next(new ErrorHandler(401, 'Email not registered'), req, res, next);
+			return next(new ErrorHandler(httpResponse.UNAUTHORIZED, 'Email not registered'), req, res, next);
 		}
 
 		if (!dbUser.active) {
-			return next(new ErrorHandler(403, 'Email not verified'), req, res, next);
+			return next(new ErrorHandler(httpResponse.FORBIDDEN, 'Email not verified'), req, res, next);
 		}
+
+		logger.info(`database user: ${dbUser}`);
 
 		const otp = authUtil.getOTP();
 
@@ -91,14 +110,17 @@ exports.login = async (req, res, next) => {
 			otp,
 		});
 
+		logger.info(`database user after update: ${dbUser}`);
+
 		if (process.env.NODE_ENV !== 'production') {
-			res.status(200).json({
+			res.status(httpResponse.OK).json({
 				status: 'success',
 				data: otp,
 			});
 		} else {
 			externalUtil.sendEmail(dbUser.email, dbUser.name, otp);
-			res.status(200).json({
+			logger.info('email sent successfully');
+			res.status(httpResponse.OK).json({
 				status: 'success',
 				data: 'check mail',
 			});
@@ -109,28 +131,35 @@ exports.login = async (req, res, next) => {
 };
 
 exports.loginVerify = async (req, res, next) => {
+	logger.info('Inside loginVerify function');
 	try {
 		const { email, otp } = req.body;
+
+		logger.info(`data: "email":${email}, "otp":${otp}`);
 
 		const otpNum = parseInt(otp, 10);
 
 		let user = await User.findOne({ email });
 
 		if (!user) {
-			return next(new ErrorHandler(401, 'Email not registered'), req, res, next);
+			return next(new ErrorHandler(httpResponse.UNAUTHORIZED, 'Email not registered'), req, res, next);
 		}
 
 		if (!user.active) {
-			return next(new ErrorHandler(403, 'Email not verified'), req, res, next);
+			return next(new ErrorHandler(httpResponse.FORBIDDEN, 'Email not verified'), req, res, next);
 		}
 
 		if (user.otp !== otpNum) {
-			return next(new ErrorHandler(401, 'Invalid OTP or email'), req, res, next);
+			return next(new ErrorHandler(httpResponse.UNAUTHORIZED, 'Invalid OTP or email'), req, res, next);
 		}
+
+		logger.info(`database user : ${user}`);
 
 		user = await User.findByIdAndUpdate(user._id, {
 			otp: '',
 		});
+
+		logger.info(`database user after update: ${user}`);
 
 		const jwtToken = authUtil.createToken(user._id);
 
@@ -141,7 +170,9 @@ exports.loginVerify = async (req, res, next) => {
 
 		res.cookie('jwt_token', jwtToken, { httpOnly: true, maxAge: process.env.JWT_SESSION_DB_TTL * 1000 });
 
-		res.status(200).json({
+		logger.info('JWT token created and added');
+
+		res.status(httpResponse.OK).json({
 			status: 'success',
 			data: 'login successful',
 		});
@@ -151,12 +182,17 @@ exports.loginVerify = async (req, res, next) => {
 };
 
 exports.getUser = async (req, res, next) => {
+	logger.info('Inside getUser function');
 	try {
 		const { user } = req;
 
+		logger.info(`request user: ${user}`);
+
 		const dbUser = await User.findById(user.userId).select('name email address -_id');
 
-		res.status(200).json({
+		logger.info(`user data: "name":${dbUser.name}, "email":${dbUser.email}, "address":${dbUser.address}`);
+
+		res.status(httpResponse.OK).json({
 			status: 'success',
 			data: dbUser,
 		});
@@ -166,16 +202,21 @@ exports.getUser = async (req, res, next) => {
 };
 
 exports.updateUser = async (req, res, next) => {
+	logger.info('Inside updateUser function');
 	try {
 		const { name, address } = req.body;
-		const { user } = req;
+		let { user } = req;
 
-		await User.findByIdAndUpdate(user.userId, {
+		logger.info(`request user: ${user}`);
+
+		user = await User.findByIdAndUpdate(user.userId, {
 			name,
 			address,
 		});
 
-		res.status(200).json({
+		logger.info(`user after update: ${user}`);
+
+		res.status(httpResponse.OK).json({
 			status: 'success',
 			data: 'update successful',
 		});
@@ -185,13 +226,16 @@ exports.updateUser = async (req, res, next) => {
 };
 
 exports.logout = async (req, res, next) => {
+	logger.info('Inside Logout function');
 	try {
 		const token = req.cookies.jwt_token;
 		if (!token) {
-			return next(new ErrorHandler(401, 'You are not logged in'), req, res, next);
+			return next(new ErrorHandler(httpResponse.UNAUTHORIZED, 'You are not logged in'), req, res, next);
 		}
 
 		res.clearCookie('jwt_token');
+
+		logger.info('user cookie cleared');
 
 		const decode = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 		const { id } = decode;
@@ -201,14 +245,16 @@ exports.logout = async (req, res, next) => {
 			sessionToken: token,
 		});
 
-		res.status(200).json({
+		logger.info('user session removed from db');
+
+		res.status(httpResponse.OK).json({
 			status: 'success',
 			data: 'successfully logged out',
 		});
 	} catch (error) {
 		// Do not care about malformed JWT tokens
 		if (error.name === 'JsonWebTokenError' || error.name === 'SyntaxError') {
-			res.status(200).json({
+			res.status(httpResponse.OK).json({
 				status: 'success',
 				data: 'successfully logged out',
 			});

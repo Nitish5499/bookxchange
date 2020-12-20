@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const { expect } = require('chai');
+const httpResponse = require('http-status');
 
 const Book = require('$/models/bookModel');
 const app = require('$/app');
@@ -73,7 +74,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.request(app)
 				.get(`/api/v1/books/${book._id}`)
 				.end((err, res) => {
-					expect(res.statusCode).equal(200);
+					expect(res.statusCode).equal(httpResponse.OK);
 					const { data } = res.body;
 					expect(JSON.stringify(data.book)).equal(JSON.stringify(book));
 					done();
@@ -96,7 +97,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.request(app)
 				.get('/api/v1/books/1234')
 				.end((err, res) => {
-					expect(res.statusCode).equal(400);
+					expect(res.statusCode).equal(httpResponse.BAD_REQUEST);
 					expect(res.body.message).equal('"id" must be a valid MongoDB document ID');
 					done();
 				});
@@ -115,7 +116,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.patch(`/api/v1/books/${book._id}`)
 				.send({ name: 'changedName', author: 'changedAuthor', link: 'https://foo.com' })
 				.end((err, res) => {
-					expect(res.statusCode).equal(200);
+					expect(res.statusCode).equal(httpResponse.OK);
 					const { data } = res.body;
 
 					Book.findById(book._id, (err1, newBook) => {
@@ -132,7 +133,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.request(app)
 				.patch(`/api/v1/books/${book._id}`)
 				.end((err, res) => {
-					expect(res.statusCode).equal(400);
+					expect(res.statusCode).equal(httpResponse.BAD_REQUEST);
 					expect(res.body.message).equal('name is required');
 					done();
 				});
@@ -144,7 +145,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.patch('/api/v1/books/1234')
 				.send({ name: 'changedName', author: 'changedAuthor', link: 'changedLink' })
 				.end((err, res) => {
-					expect(res.statusCode).equal(400);
+					expect(res.statusCode).equal(httpResponse.BAD_REQUEST);
 					expect(res.body.message).equal('"id" must be a valid MongoDB document ID');
 					done();
 				});
@@ -173,7 +174,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.request(app)
 				.delete('/api/v1/books/1234')
 				.end((err, res) => {
-					expect(res.statusCode).equal(400);
+					expect(res.statusCode).equal(httpResponse.BAD_REQUEST);
 					expect(res.body.message).equal('"id" must be a valid MongoDB document ID');
 					done();
 				});
@@ -195,7 +196,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.request(app)
 				.delete(`/api/v1/books/${book._id}`)
 				.end((err, res) => {
-					expect(res.statusCode).equal(200);
+					expect(res.statusCode).equal(httpResponse.OK);
 					Book.findById(book._id, (err1, newBook) => {
 						if (err1) console.log(err1);
 

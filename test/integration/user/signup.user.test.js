@@ -8,6 +8,7 @@
 
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const httpResponse = require('http-status');
 
 const User = require('$/models/userModel');
 const app = require('$/app');
@@ -85,7 +86,7 @@ describe('Integration - Test users signup endpoints', () => {
 				.post('/api/v1/users/signup')
 				.send({ name: 'foo', email: 'foo@bar.com' })
 				.end((err, res) => {
-					expect(res.statusCode).equal(200);
+					expect(res.statusCode).equal(httpResponse.OK);
 					expect(res.body.data).to.be.a('number');
 					done();
 				});
@@ -97,7 +98,7 @@ describe('Integration - Test users signup endpoints', () => {
 				.post('/api/v1/users/signup')
 				.send({ name: 'foo' })
 				.end((err, res) => {
-					expect(res.statusCode).equal(400);
+					expect(res.statusCode).equal(httpResponse.BAD_REQUEST);
 					expect(res.body.message).equal('email is required');
 					done();
 				});
@@ -109,7 +110,7 @@ describe('Integration - Test users signup endpoints', () => {
 				.put('/api/v1/users/signup')
 				.send({ name: 'foo', email: 'foo@bar.com' })
 				.end((err, res) => {
-					expect(res.statusCode).equal(405);
+					expect(res.statusCode).equal(httpResponse.METHOD_NOT_ALLOWED);
 					expect(res.body.message).equal('Method not allowed');
 					done();
 				});
@@ -174,7 +175,7 @@ describe('Integration - Test users signup endpoints', () => {
 				.post('/api/v1/users/signup/verify')
 				.send({ email, otp: otpCorrect })
 				.end((err, res) => {
-					expect(res.statusCode).equal(200);
+					expect(res.statusCode).equal(httpResponse.OK);
 					expect(res.body.data).equal('Email verified');
 					done();
 				});
@@ -186,7 +187,7 @@ describe('Integration - Test users signup endpoints', () => {
 				.post('/api/v1/users/signup/verify')
 				.send({ email: email2, otp: otpCorrect2 })
 				.end((err, res) => {
-					expect(res.statusCode).equal(403);
+					expect(res.statusCode).equal(httpResponse.FORBIDDEN);
 					expect(res.body.message).equal('User email has already been verified');
 					done();
 				});

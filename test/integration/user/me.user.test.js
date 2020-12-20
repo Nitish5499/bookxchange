@@ -8,6 +8,7 @@
 
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const httpResponse = require('http-status');
 
 const User = require('$/models/userModel');
 const Session = require('$/models/sessionModel');
@@ -110,7 +111,7 @@ describe('Integration - Test users me endpoints', () => {
 				.set('Cookie', `jwt_token=${jwt}`)
 				.send()
 				.end((err, res) => {
-					expect(res.statusCode).equal(200);
+					expect(res.statusCode).equal(httpResponse.OK);
 					expect(res.body.data).deep.equals(jsonData);
 					done();
 				});
@@ -122,7 +123,7 @@ describe('Integration - Test users me endpoints', () => {
 				.get('/api/v1/users/me')
 				.send({})
 				.end((err, res) => {
-					expect(res.statusCode).equal(401);
+					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
 					expect(res.body.message).equal('You are not logged in! Please login in to continue');
 					done();
 				});
@@ -135,7 +136,7 @@ describe('Integration - Test users me endpoints', () => {
 				.set('Cookie', `jwt_token=${jwt}`)
 				.send({})
 				.end((err, res) => {
-					expect(res.statusCode).equal(405);
+					expect(res.statusCode).equal(httpResponse.METHOD_NOT_ALLOWED);
 					expect(res.body.message).equal('Method not allowed');
 					done();
 				});
@@ -195,7 +196,7 @@ describe('Integration - Test users me endpoints', () => {
 				.set('cookie', `jwt_token=${jwt}`)
 				.send({ name: updateName, address: updateAddress })
 				.end((err, res) => {
-					expect(res.statusCode).equal(200);
+					expect(res.statusCode).equal(httpResponse.OK);
 					expect(res.body.data).equals('update successful');
 					User.findById(user._id)
 						.select('name email address -_id')
@@ -213,7 +214,7 @@ describe('Integration - Test users me endpoints', () => {
 				.set('cookie', `jwt_token=${jwt}`)
 				.send({})
 				.end((err, res) => {
-					expect(res.statusCode).equal(400);
+					expect(res.statusCode).equal(httpResponse.BAD_REQUEST);
 					expect(res.body.message).equal('name is required');
 					done();
 				});
