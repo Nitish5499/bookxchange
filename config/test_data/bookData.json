@@ -1,0 +1,36 @@
+{
+    "books": [
+        {
+            "name":"The Guest List",
+            "author":"Lucy Foley",
+            "link":"https://www.goodreads.com/book/show/54911607-the-guest-list?from_choice=true",
+            "address":"theAddress",
+            "owner":null,
+            "likedBy":[]
+        },
+        {
+            "name":"Home Before Dark",
+            "author":"Riley Sager",
+            "link":"https://www.goodreads.com/book/show/50833559-home-before-dark?from_choice=true",
+            "address":"theAddress",
+            "owner":null,
+            "likedBy":[]
+        },
+        {
+            "name":"The Sun Down Motel",
+            "author":"Simone St. James",
+            "link":"https://www.goodreads.com/book/show/45885644-the-sun-down-motel?from_choice=true",
+            "address":"theAddress",
+            "owner":null,
+            "likedBy":[]
+        },
+        {
+            "name":"From Blood and Ash",
+            "author":"Jennifer L. Armentrout",
+            "link":"https://www.goodreads.com/book/show/52941854-from-blood-and-ash?from_choice=true",
+            "address":"theAddress",
+            "owner":null,
+            "likedBy":[]
+        }
+    ]
+}

@@ -12,6 +12,8 @@ const httpResponse = require('http-status');
 
 const userRoutes = require('$/routes/userRoutes');
 const bookRoutes = require('$/routes/bookRoutes');
+const adminRoutes = require('$/routes/adminRoutes');
+
 const { ErrorHandler, handleError } = require('$/utils/errorHandler');
 const logger = require('$/config/logger');
 const constants = require('$/config/constants');
@@ -64,6 +66,9 @@ app.use('/api/v1/users', userRoutes);
 
 // Sample route
 app.use('/api/v1/books', bookRoutes);
+
+// Admin route
+app.use('/api/v1/admin', adminRoutes);
 
 // handle undefined Routes
 app.use('*', (req, res, next) => {
