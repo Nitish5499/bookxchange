@@ -21,7 +21,7 @@ const constants = require('$/config/constants');
 const app = express();
 
 // Allow Cross-Origin requests
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:3006', credentials: true }));
 
 // Set security HTTP headers
 app.use(helmet());
