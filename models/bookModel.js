@@ -12,9 +12,6 @@ const bookSchema = new mongoose.Schema({
 	link: {
 		type: String,
 	},
-	address: {
-		type: String,
-	},
 	owner: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'User',

@@ -5,7 +5,11 @@ const { expect } = require('chai');
 const httpResponse = require('http-status');
 
 const Book = require('$/models/bookModel');
+const User = require('$/models/userModel');
+const Session = require('$/models/sessionModel');
 const app = require('$/app');
+
+const authUtil = require('$/utils/authUtil');
 
 chai.use(chaiHttp);
 
@@ -14,9 +18,13 @@ describe('Integration - Test book fetch endpoints', () => {
 	const name = 'testBook';
 	const author = 'testAuthor';
 	const link = 'testLink';
-	const address = 'testAddress';
 	const owner = mongoose.Types.ObjectId();
 	const likedBy = new Array(mongoose.Types.ObjectId());
+	let dbUser = null;
+	let jwt = null;
+	const userName = 'jett';
+	const userEmail = 'jett@rp.com';
+	const userAddress = 'test_address';
 
 	// Before all tests begin
 	// 1. Load environment
@@ -28,15 +36,30 @@ describe('Integration - Test book fetch endpoints', () => {
 			console.log('\n------------- BEFORE TESTS -------------');
 			console.log('\n1. Deleting all documents from Books collection\n');
 			await Book.deleteMany({});
+			await User.deleteMany({});
+			await Session.deleteMany({});
 			console.log('\n2. Inserting a dummy record into Books collection');
 
 			book = await Book.create({
 				name,
 				author,
 				link,
-				address,
 				owner,
 				likedBy,
+			});
+
+			dbUser = await User.create({
+				name: userName,
+				email: userEmail,
+				address: userAddress,
+				otp: '',
+				active: true,
+			});
+
+			jwt = authUtil.createToken(dbUser._id);
+			await Session.create({
+				userId: dbUser._id,
+				sessionToken: jwt,
 			});
 
 			console.log('\n---------------------------------------\n');
@@ -55,6 +78,8 @@ describe('Integration - Test book fetch endpoints', () => {
 		try {
 			console.log('\n1. Deleting all documents from Books collection');
 			await Book.deleteMany({});
+			await User.deleteMany({});
+			await Session.deleteMany({});
 			console.log('\n2. Exiting test');
 			console.log('\n---------------------------------------');
 			console.log('\n\n\n');
@@ -73,6 +98,7 @@ describe('Integration - Test book fetch endpoints', () => {
 			chai
 				.request(app)
 				.get(`/api/v1/books/${book._id}`)
+				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.OK);
 					const { data } = res.body;
@@ -81,10 +107,22 @@ describe('Integration - Test book fetch endpoints', () => {
 				});
 		});
 
+		it('user not logged in - return 401', (done) => {
+			chai
+				.request(app)
+				.get(`/api/v1/books/${book._id}`)
+				.end((err, res) => {
+					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
+					expect(res.body.message).equal('You are not logged in! Please login in to continue');
+					done();
+				});
+		});
+
 		it('Book not found - return 404', (done) => {
 			chai
 				.request(app)
 				.get(`/api/v1/books/${mongoose.Types.ObjectId()}`)
+				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(404);
 					expect(res.body.message).equal('Book not Found!');
@@ -96,6 +134,7 @@ describe('Integration - Test book fetch endpoints', () => {
 			chai
 				.request(app)
 				.get('/api/v1/books/1234')
+				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.BAD_REQUEST);
 					expect(res.body.message).equal('"id" must be a valid MongoDB document ID');
@@ -115,6 +154,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.request(app)
 				.patch(`/api/v1/books/${book._id}`)
 				.send({ name: 'changedName', author: 'changedAuthor', link: 'https://foo.com' })
+				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.OK);
 					const { data } = res.body;
@@ -128,10 +168,23 @@ describe('Integration - Test book fetch endpoints', () => {
 				});
 		});
 
+		it('user not logged in - return 401', (done) => {
+			chai
+				.request(app)
+				.patch(`/api/v1/books/${book._id}`)
+				.send({ name: 'changedName', author: 'changedAuthor', link: 'https://foo.com' })
+				.end((err, res) => {
+					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
+					expect(res.body.message).equal('You are not logged in! Please login in to continue');
+					done();
+				});
+		});
+
 		it('Missing parameters - return 400', (done) => {
 			chai
 				.request(app)
 				.patch(`/api/v1/books/${book._id}`)
+				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.BAD_REQUEST);
 					expect(res.body.message).equal('name is required');
@@ -144,6 +197,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.request(app)
 				.patch('/api/v1/books/1234')
 				.send({ name: 'changedName', author: 'changedAuthor', link: 'changedLink' })
+				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.BAD_REQUEST);
 					expect(res.body.message).equal('"id" must be a valid MongoDB document ID');
@@ -156,6 +210,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.request(app)
 				.patch(`/api/v1/books/${mongoose.Types.ObjectId()}`)
 				.send({ name: 'changedName', author: 'changedAuthor', link: 'https://foo.com' })
+				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(404);
 					expect(res.body.message).equal('Book not Found!');
@@ -173,9 +228,21 @@ describe('Integration - Test book fetch endpoints', () => {
 			chai
 				.request(app)
 				.delete('/api/v1/books/1234')
+				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.BAD_REQUEST);
 					expect(res.body.message).equal('"id" must be a valid MongoDB document ID');
+					done();
+				});
+		});
+
+		it('user not logged in - return 401', (done) => {
+			chai
+				.request(app)
+				.delete(`/api/v1/books/${book._id}`)
+				.end((err, res) => {
+					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
+					expect(res.body.message).equal('You are not logged in! Please login in to continue');
 					done();
 				});
 		});
@@ -184,6 +251,7 @@ describe('Integration - Test book fetch endpoints', () => {
 			chai
 				.request(app)
 				.delete(`/api/v1/books/${mongoose.Types.ObjectId()}`)
+				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(404);
 					expect(res.body.message).equal('Book not Found!');
@@ -195,6 +263,7 @@ describe('Integration - Test book fetch endpoints', () => {
 			chai
 				.request(app)
 				.delete(`/api/v1/books/${book._id}`)
+				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.OK);
 					Book.findById(book._id, (err1, newBook) => {

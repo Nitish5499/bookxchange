@@ -1,11 +1,14 @@
 const mocks = require('node-mocks-http');
 const chai = require('chai');
 const mongoose = require('mongoose');
-const httpResponse = require('http-status');
 
 const bookController = require('$/controllers/bookController');
 
 const Book = require('$/models/bookModel');
+const User = require('$/models/userModel');
+const Session = require('$/models/sessionModel');
+
+const authUtil = require('$/utils/authUtil');
 
 const { expect } = chai;
 
@@ -14,9 +17,14 @@ describe('Unit - Test Book Controller', () => {
 	const name = 'testBook';
 	const author = 'testAuthor';
 	const link = 'testLink';
-	const address = 'testAddress';
 	const owner = mongoose.Types.ObjectId();
 	const likedBy = new Array(mongoose.Types.ObjectId());
+	let dbUser = null;
+	let jwt = null;
+	let user = null;
+	const userName = 'jett';
+	const userEmail = 'jett@rp.com';
+	const userAddress = 'test_address';
 
 	// Before all tests begin
 	// 1. Load environment
@@ -28,14 +36,29 @@ describe('Unit - Test Book Controller', () => {
 			console.log('\n------------- BEFORE TESTS -------------');
 			console.log('\n1. Deleting all documents from Books collection');
 			await Book.deleteMany({});
+			await User.deleteMany({});
+			await Session.deleteMany({});
 
 			book = await Book.create({
 				name,
 				author,
 				link,
-				address,
 				owner,
 				likedBy,
+			});
+
+			dbUser = await User.create({
+				name: userName,
+				email: userEmail,
+				address: userAddress,
+				otp: '',
+				active: true,
+			});
+
+			jwt = authUtil.createToken(dbUser._id);
+			user = await Session.create({
+				userId: dbUser._id,
+				sessionToken: jwt,
 			});
 		} catch (err) {
 			console.log(err);
@@ -52,8 +75,10 @@ describe('Unit - Test Book Controller', () => {
 	after(async () => {
 		console.log('\n------------- AFTER TESTS -------------');
 		try {
-			console.log('\n1. Deleting all documents from Users collection');
+			console.log('\n1. Deleting all documents from Books collection');
 			await Book.deleteMany({});
+			await User.deleteMany({});
+			await Session.deleteMany({});
 			console.log('\n2. Exiting test');
 			console.log('\n---------------------------------------');
 			console.log('\n\n\n');
@@ -69,6 +94,7 @@ describe('Unit - Test Book Controller', () => {
 	describe('getBook() function', () => {
 		it('successful book retrival - return 200', async () => {
 			const req = mocks.createRequest({
+				user,
 				method: 'GET',
 				params: {
 					id: book._id,
@@ -87,6 +113,7 @@ describe('Unit - Test Book Controller', () => {
 
 		it('Book not found - return 404', async () => {
 			const req = mocks.createRequest({
+				user,
 				method: 'GET',
 				params: {
 					id: mongoose.Types.ObjectId(),
@@ -108,6 +135,7 @@ describe('Unit - Test Book Controller', () => {
 	describe('updateBook() function', () => {
 		it('successful book update - return 200', async () => {
 			const req = mocks.createRequest({
+				user,
 				method: 'PATCH',
 				params: {
 					id: book._id,
@@ -133,6 +161,7 @@ describe('Unit - Test Book Controller', () => {
 
 		it('Book not found - return 404', async () => {
 			const req = mocks.createRequest({
+				user,
 				method: 'POST',
 				params: {
 					id: mongoose.Types.ObjectId(),
@@ -158,24 +187,9 @@ describe('Unit - Test Book Controller', () => {
 	// 2. book not found
 	// 3. book delete success
 	describe('deleteBook() function', () => {
-		it('Invalid Book ID - return 400', async () => {
-			const req = mocks.createRequest({
-				method: 'DELETE',
-				params: {
-					id: '1234',
-				},
-			});
-
-			const res = mocks.createResponse();
-
-			await bookController.deleteBook(req, res, (err) => {
-				expect(err.statusCode).equal(httpResponse.BAD_REQUEST);
-				expect(err.message).equal('Invalid BookID!');
-			});
-		});
-
 		it('Book not found - return 404', async () => {
 			const req = mocks.createRequest({
+				user,
 				method: 'DELETE',
 				params: {
 					id: mongoose.Types.ObjectId(),
@@ -192,6 +206,7 @@ describe('Unit - Test Book Controller', () => {
 
 		it('successful book delete - return 200', async () => {
 			const req = mocks.createRequest({
+				user,
 				method: 'DELETE',
 				params: {
 					id: book._id,

@@ -1,4 +1,3 @@
-const { ObjectId } = require('mongoose').Types;
 const mongoose = require('mongoose');
 const httpResponse = require('http-status');
 
@@ -9,30 +8,29 @@ const { ErrorHandler } = require('$/utils/errorHandler');
 const logger = require('$/config/logger');
 
 exports.addBook = async (req, res, next) => {
+	logger.info('inside addBook function');
 	try {
 		const { name, author, link } = req.body;
+		const { user } = req;
 
-		let { owner, likedBy } = req.body;
+		logger.info(`request user: ${user}`);
 
-		if (!name || !author || !link || !owner || !likedBy) {
-			return next(
-				new ErrorHandler(400, 'Missing required name,author,link,owner and likedBy parameters'),
-				req,
-				res,
-				next,
-			);
-		}
-
-		owner = mongoose.Types.ObjectId(owner);
-		likedBy = likedBy.map((s) => mongoose.Types.ObjectId(s));
-
-		const book = await Book.create({
+		const data = {
 			name,
 			author,
 			link,
-			owner,
-			likedBy,
-		});
+			owner: mongoose.Types.ObjectId(user.userId),
+		};
+
+		const book = await Book.create(data);
+
+		logger.info(`Book: ${book}`);
+
+		if (!book) {
+			return next(new ErrorHandler(httpResponse.INTERNAL_SERVER_ERROR, 'Book creation Failed!'), req, res, next);
+		}
+
+		await User.findByIdAndUpdate(user.userId, { $push: { booksOwned: book._id } });
 
 		res.status(httpResponse.OK).json({
 			status: 'success',
@@ -48,14 +46,19 @@ exports.addBook = async (req, res, next) => {
 exports.getAllBooks = async (req, res, next) => {
 	logger.info('inside getAllBooks function');
 	try {
-		const book = await Book.find();
+		const { user } = req;
 
-		logger.info(`Book: ${book}`);
+		logger.info(`request user: ${user}`);
+
+		const userinfo = await User.findById(user.userId).populate('booksOwned');
+		const allBooks = userinfo.booksOwned;
+
+		logger.info(`Books: ${allBooks}`);
 
 		res.status(httpResponse.OK).json({
 			status: 'success',
 			data: {
-				book,
+				book: allBooks,
 			},
 		});
 	} catch (err) {
@@ -123,10 +126,6 @@ exports.deleteBook = async (req, res, next) => {
 		const { id } = req.params;
 
 		logger.info(`BookId:${id}`);
-
-		if (!ObjectId.isValid(id)) {
-			return next(new ErrorHandler(400, 'Invalid BookID!'), req, res, next);
-		}
 
 		const book = await Book.findByIdAndRemove(id);
 
