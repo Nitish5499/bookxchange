@@ -19,6 +19,12 @@ router
 	.post(validateMiddleware(bookValidation.addBook), bookController.addBook)
 	.all(errorController.methods(['POST']));
 
+// GET  - Fetch all liked books of a user
+router
+	.route('/liked')
+	.get(bookController.getLikedBooks)
+	.all(errorController.methods(['GET']));
+
 // GET  - Fetch all books of a user
 router
 	.route('/owned')
@@ -34,5 +40,13 @@ router
 	.patch(validateMiddleware(bookValidation.updateBook), bookController.updateBook)
 	.delete(validateMiddleware(bookValidation.deleteBook), bookController.deleteBook)
 	.all(errorController.methods(['GET', 'PATCH', 'DELETE']));
+
+// PUT  - Like a book by its ID
+// DELETE - Remove like for a book by its ID
+router
+	.route('/:id/like')
+	.put(validateMiddleware(bookValidation.getBook), bookController.likeBook)
+	.delete(validateMiddleware(bookValidation.getBook), bookController.unlikeBook)
+	.all(errorController.methods(['PUT', 'DELETE']));
 
 module.exports = router;

@@ -155,3 +155,101 @@ exports.deleteBook = async (req, res, next) => {
 		next(err);
 	}
 };
+
+exports.likeBook = async (req, res, next) => {
+	logger.info('inside likeBooks function');
+	try {
+		const { user } = req;
+
+		logger.info(`request user: ${user}`);
+
+		const { id } = req.params;
+
+		logger.info(`BookId:${id}`);
+
+		const alreadyLiked = await User.findOneAndUpdate(
+			{ _id: user.userId, booksLiked: { $ne: id } },
+			{ $push: { booksLiked: id } },
+		);
+
+		if (!alreadyLiked) {
+			res.status(httpResponse.OK).json({
+				status: 'success',
+				message: 'Book already liked',
+			});
+			return;
+		}
+
+		logger.info('Book Id added to booksLiked of the user');
+
+		await Book.findByIdAndUpdate(id, { $push: { likedBy: user.userId } });
+
+		logger.info('User Id added to likedBy of the book');
+
+		res.status(httpResponse.OK).json({
+			status: 'success',
+			message: 'Book liked successfully',
+		});
+	} catch (err) {
+		next(err);
+	}
+};
+
+exports.unlikeBook = async (req, res, next) => {
+	logger.info('inside unlikeBook function');
+	try {
+		const { user } = req;
+
+		logger.info(`request user: ${user}`);
+
+		const { id } = req.params;
+
+		logger.info(`BookId:${id}`);
+
+		const notLiked = await User.findOneAndUpdate({ _id: user.userId, booksLiked: id }, { $pull: { booksLiked: id } });
+
+		if (!notLiked) {
+			res.status(httpResponse.OK).json({
+				status: 'success',
+				message: 'Book not liked yet',
+			});
+			return;
+		}
+
+		logger.info('Book Id removed from booksLiked of the user');
+
+		await Book.findByIdAndUpdate(id, { $pull: { likedBy: user.userId } });
+
+		logger.info('User Id removed from likedBy of the book');
+
+		res.status(httpResponse.OK).json({
+			status: 'success',
+			message: 'Book unliked successfully',
+		});
+	} catch (err) {
+		next(err);
+	}
+};
+
+exports.getLikedBooks = async (req, res, next) => {
+	logger.info('inside getLikedBooks function');
+	try {
+		const { user } = req;
+
+		logger.info(`request user: ${user}`);
+
+		const userinfo = await User.findById(user.userId).populate('booksLiked');
+		const allLikedBooks = userinfo.booksLiked;
+
+		logger.info(`Books: ${allLikedBooks}`);
+
+		res.status(httpResponse.OK).json({
+			status: 'success',
+			data: {
+				book: allLikedBooks,
+			},
+		});
+	} catch (err) {
+		next(err);
+	}
+};
