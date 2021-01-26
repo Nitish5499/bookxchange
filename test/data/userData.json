@@ -1,0 +1,93 @@
+{
+  "users": [
+    {
+      "_id": "aaaaaaaaaaaaaaaaaaaaa101",
+      "address": "600083",
+      "booksOwned": [],
+      "booksLiked": [],
+      "name": "Tom",
+      "email": "tom@gmail.com",
+      "otp": 123456,
+      "active": false
+    },
+    {
+      "_id": "aaaaaaaaaaaaaaaaaaaaa102",
+      "address": "600017",
+      "booksOwned": [],
+      "booksLiked": [],
+      "name": "John",
+      "email": "john@gmail.com",
+      "otp": null,
+      "active": true
+    },
+    {
+      "_id": "aaaaaaaaaaaaaaaaaaaaa103",
+      "address": "600006",
+      "booksOwned": [
+        "aaaaaaaaaaaaaaaaaaaab101"
+      ],
+      "booksLiked": [],
+      "name": "Smith",
+      "email": "smith@gmail.com",
+      "otp": null,
+      "active": true
+    },
+    {
+      "_id": "aaaaaaaaaaaaaaaaaaaaa104",
+      "address": "518432",
+      "booksOwned": [],
+      "booksLiked": [
+        "aaaaaaaaaaaaaaaaaaaab102"
+      ],
+      "name": "Steve",
+      "email": "steve@gmail.com",
+      "otp": null,
+      "active": true
+    },
+    {
+      "_id": "aaaaaaaaaaaaaaaaaaaaa105",
+      "address": "790104",
+      "booksOwned": [
+        "aaaaaaaaaaaaaaaaaaaab102"
+      ],
+      "booksLiked": [
+        "aaaaaaaaaaaaaaaaaaaab101"
+      ],
+      "name": "Jacob",
+      "email": "jacob@gmail.com",
+      "otp": null,
+      "active": true
+    },
+    {
+      "_id": "aaaaaaaaaaaaaaaaaaaaa106",
+      "address": "600018",
+      "booksOwned": [
+        "aaaaaaaaaaaaaaaaaaaab103",
+        "aaaaaaaaaaaaaaaaaaaab104"
+      ],
+      "booksLiked": [
+        "aaaaaaaaaaaaaaaaaaaab105"
+      ],
+      "name": "Jimmy",
+      "email": "jimmy@gmail.com",
+      "otp": null,
+      "active": true
+    },
+    {
+      "_id": "aaaaaaaaaaaaaaaaaaaaa107",
+      "address": "600006",
+      "booksOwned": [
+        "aaaaaaaaaaaaaaaaaaaab105",
+        "aaaaaaaaaaaaaaaaaaaab106"
+      ],
+      "booksLiked": [
+        "aaaaaaaaaaaaaaaaaaaab103",
+        "aaaaaaaaaaaaaaaaaaaab102"
+      ],
+      "name": "Sam",
+      "email": "sam@gmail.com",
+      "otp": null,
+      "active": true
+    }
+  ]
+}

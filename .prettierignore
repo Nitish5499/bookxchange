@@ -4,4 +4,5 @@ docs/*
 .git/*
 .github/*
 .nyc_output/*
-config/test_data/*
+config/testData/*
+test/data/*

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const httpResponse = require('http-status');
+const zipcodes = require('zipcodes-nearby');
 
 const Book = require('$/models/bookModel');
 const User = require('$/models/userModel');
@@ -251,5 +252,73 @@ exports.getLikedBooks = async (req, res, next) => {
 		});
 	} catch (err) {
 		next(err);
+	}
+};
+
+exports.findBooks = async (req, res, next) => {
+	logger.info('inside findBooks function');
+	try {
+		let { user } = req;
+
+		logger.info(`request user: ${user}`);
+
+		user = await User.findById(mongoose.Types.ObjectId(user.userId));
+
+		logger.info(`User: ${user}`);
+
+		const zipcode = user.address;
+		let result;
+
+		logger.info(`User zipcode: ${zipcode}`);
+
+		await zipcodes.near(zipcode, 3000, { datafile: 'config/data/zipcodes.csv' }).then((response) => {
+			result = response;
+		});
+
+		logger.info(`Nearby zipcodes: ${result}`);
+
+		const books = await User.aggregate([
+			{
+				$match: {
+					address: { $in: result },
+				},
+			},
+			{
+				$lookup: {
+					from: 'books',
+					localField: 'booksOwned',
+					foreignField: '_id',
+					as: 'booksNearby',
+				},
+			},
+			{
+				$unwind: '$booksNearby',
+			},
+			{
+				$addFields: {
+					bookName: '$booksNearby.name',
+					bookId: '$booksNearby._id',
+					bookAuthor: '$booksNearby.author',
+					bookLink: '$booksNearby.link',
+				},
+			},
+			{
+				$group: {
+					_id: '',
+					nearbyBooks: {
+						$push: { id: '$bookId', name: '$bookName', author: '$bookAuthor', link: '$bookLink', userName: '$name' },
+					},
+				},
+			},
+		]);
+
+		res.status(httpResponse.OK).json({
+			status: 'success',
+			data: {
+				book: books[0].nearbyBooks,
+			},
+		});
+	} catch (error) {
+		next(error);
 	}
 };

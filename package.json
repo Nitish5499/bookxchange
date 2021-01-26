@@ -46,10 +46,11 @@
 		"morgan": "^1.10.0",
 		"validator": "^12.0.0",
 		"winston": "^3.3.3",
-		"xss-clean": "^0.1.1"
+		"xss-clean": "^0.1.1",
+		"zipcodes-nearby": "^0.1.4"
 	},
 	"devDependencies": {
-		"basetag": "^1.1.0",
+		"basetag": "^1.2.10",
 		"chai": "^4.2.0",
 		"chai-http": "^4.3.0",
 		"chai-jwt": "^2.0.0",

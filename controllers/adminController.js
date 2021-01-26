@@ -1,78 +1,62 @@
+/* eslint no-restricted-syntax: 0 */
+/* eslint guard-for-in: 0 */
+
 const mongoose = require('mongoose');
 
 const Book = require('$/models/bookModel');
 const User = require('$/models/userModel');
 const Session = require('$/models/sessionModel');
 
-const userData = require('$/config/test_data/userData.json');
-const bookData = require('$/config/test_data/bookData.json');
-
-const authUtil = require('$/utils/authUtil');
+let userData = require('$/config/testData/userData.json');
+let bookData = require('$/config/testData/bookData.json');
 
 exports.populate = async (req, res, next) => {
 	try {
-		const { users } = userData;
-		const { books } = bookData;
+		/* eslint-disable global-require */
+		// Load different data for test environment
+		if (process.env.NODE_ENV === 'test') {
+			userData = require('$/test/data/userData.json');
+			bookData = require('$/test/data/bookData.json');
+		}
+		/* eslint-enable global-require */
 
-		let book = await Book.create(books);
+		/*
+		 * Populate Users
+		 */
+		let { users } = userData;
+		for (const user in users) {
+			user._id = mongoose.Types.ObjectId(user._id);
 
-		// Adding book ids to user's booksOwned array
-		// User 2 Owns Book 1 & 2
-		users[1].booksOwned.push(mongoose.Types.ObjectId(book[0]._id), mongoose.Types.ObjectId(book[1]._id));
-		// User 3 Owns Book 3 & 4
-		users[2].booksOwned.push(mongoose.Types.ObjectId(book[2]._id), mongoose.Types.ObjectId(book[3]._id));
+			for (let bookOwned in user.booksOwned) {
+				bookOwned = mongoose.Types.ObjectId(bookOwned);
+			}
 
-		// User 1 likes Book 3
-		users[1].booksLiked.push(mongoose.Types.ObjectId(book[2]._id));
-		// User 3 like Book 1&2
-		users[2].booksLiked.push(mongoose.Types.ObjectId(book[0]._id), mongoose.Types.ObjectId(book[1]._id));
+			for (let bookLiked in user.booksLiked) {
+				bookLiked = mongoose.Types.ObjectId(bookLiked);
+			}
+		}
 
-		const user = await User.create(users);
+		users = await User.insertMany(users);
 
-		// Updating owner id in Books table
-		await Book.updateMany(
-			{ _id: { $in: [book[0]._id, book[1]._id] } },
-			{ owner: mongoose.Types.ObjectId(user[1]._id) },
-		);
-		await Book.updateMany(
-			{ _id: { $in: [book[2]._id, book[3]._id] } },
-			{ owner: mongoose.Types.ObjectId(user[2]._id) },
-		);
+		/*
+		 * Populate Books
+		 */
+		let { books } = bookData;
+		for (const book in books) {
+			book._id = mongoose.Types.ObjectId(book._id);
+			book.owner = mongoose.Types.ObjectId(book.owner);
 
-		// Updating likedBy of book 3
-		await Book.findByIdAndUpdate(book[2]._id, { $push: { likedBy: user[1]._id } });
-		// Updating likedBy of book 1 & 2
-		await Book.updateMany({ _id: { $in: [book[0]._id, book[1]._id] } }, { $push: { likedBy: user[2]._id } });
+			for (let likedBy in book.likedBy) {
+				likedBy = mongoose.Types.ObjectId(likedBy);
+			}
+		}
 
-		// Setting session token for User 2 & 3
-		const jwtToken1 = authUtil.createToken(user[1]._id);
-		const jwtToken2 = authUtil.createToken(user[2]._id);
-
-		await Session.create(
-			{
-				userId: user[1]._id,
-				sessionToken: jwtToken1,
-			},
-			{
-				userId: user[2]._id,
-				sessionToken: jwtToken2,
-			},
-		);
-
-		book = await Book.find();
-		const session = await Session.find();
+		books = await Book.insertMany(books);
 
 		res.status(200).json({
 			status: 'success',
-			userData: {
-				user,
-			},
-			bookData: {
-				book,
-			},
-			sessionData: {
-				session,
-			},
+			users,
+			books,
 		});
 	} catch (err) {
 		next(err);

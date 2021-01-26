@@ -35,7 +35,7 @@ exports.verifyJWT = async (req, res, next) => {
 		}
 
 		req.user = user;
-		logger.info(`user: ${user.name} has a valid JWT token in the request`);
+		logger.info(`user: ${user._id} has a valid JWT token in the request`);
 
 		next();
 	} catch (err) {

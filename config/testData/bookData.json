@@ -1,0 +1,62 @@
+{
+    "books": [
+      {
+        "_id": "aaaaaaaaaaaaaaaaaaaab101",
+        "name": "The Guest List",
+        "author": "Lucy Foley",
+        "link": "https://www.goodreads.com/book/show/54911607-the-guest-list",
+        "owner": "aaaaaaaaaaaaaaaaaaaaa103",
+        "likedBy": [
+          "aaaaaaaaaaaaaaaaaaaaa105"
+        ]
+      },
+      {
+        "_id": "aaaaaaaaaaaaaaaaaaaab102",
+        "name": "Home Before Dark",
+        "author": "Riley Sager",
+        "link": "https://www.goodreads.com/book/show/50833559-home-before-dark",
+        "owner": "aaaaaaaaaaaaaaaaaaaaa105",
+        "likedBy": [
+          "aaaaaaaaaaaaaaaaaaaaa104",
+          "aaaaaaaaaaaaaaaaaaaaa107"
+        ]
+      },
+      {
+        "_id": "aaaaaaaaaaaaaaaaaaaab103",
+        "name": "The Sun Down Motel",
+        "author": "Simone St. James",
+        "link": "https://www.goodreads.com/book/show/45885644-the-sun-down-motel",
+        "owner": "aaaaaaaaaaaaaaaaaaaaa106",
+        "likedBy": [
+          "aaaaaaaaaaaaaaaaaaaaa107"
+        ]
+      },
+      {
+        "_id": "aaaaaaaaaaaaaaaaaaaab104",
+        "name": "From Blood and Ash",
+        "author": "Jennifer L. Armentrout",
+        "link": "https://www.goodreads.com/book/show/52941854-from-blood-and-ash",
+        "owner": "aaaaaaaaaaaaaaaaaaaaa106",
+        "likedBy": []
+      },
+      {
+        "_id": "aaaaaaaaaaaaaaaaaaaab105",
+        "name": "Pride and Prejudice",
+        "author": "Jane Austen",
+        "link": "https://www.goodreads.com/book/show/1885.Pride_and_Prejudice",
+        "owner": "aaaaaaaaaaaaaaaaaaaaa107",
+        "likedBy": [
+          "aaaaaaaaaaaaaaaaaaaaa106"
+        ]
+      },
+      {
+        "_id": "aaaaaaaaaaaaaaaaaaaab106",
+        "name": "The Great Gatsby",
+        "author": "F. Scott Fitzgerald",
+        "link": "https://www.goodreads.com/book/show/4671.The_Great_Gatsby",
+        "owner": "aaaaaaaaaaaaaaaaaaaaa107",
+        "likedBy": []
+      }
+    ]
+  }
+  

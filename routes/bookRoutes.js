@@ -19,6 +19,12 @@ router
 	.post(validateMiddleware(bookValidation.addBook), bookController.addBook)
 	.all(errorController.methods(['POST']));
 
+// GET - Fetch all the books nearby
+router
+	.route('/find')
+	.get(bookController.findBooks)
+	.all(errorController.methods(['GET']));
+
 // GET  - Fetch all liked books of a user
 router
 	.route('/liked')
