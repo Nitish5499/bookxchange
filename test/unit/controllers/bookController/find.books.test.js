@@ -128,7 +128,7 @@ describe('Unit - Test Book Controller', () => {
 			});
 			const { data } = res._getJSONData();
 
-			expect(data.book).deep.equalInAnyOrder(JSON.parse(JSON.stringify(testResponse)));
+			expect(data.nearbyBooks).deep.equalInAnyOrder(JSON.parse(JSON.stringify(testResponse)));
 		});
 	});
 });

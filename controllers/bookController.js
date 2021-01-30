@@ -315,7 +315,7 @@ exports.findBooks = async (req, res, next) => {
 		res.status(httpResponse.OK).json({
 			status: 'success',
 			data: {
-				book: books[0].nearbyBooks,
+				nearbyBooks: books[0].nearbyBooks,
 			},
 		});
 	} catch (error) {
