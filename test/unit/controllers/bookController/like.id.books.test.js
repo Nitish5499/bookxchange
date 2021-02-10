@@ -14,6 +14,7 @@ const { expect } = chai;
 
 describe('Unit - Test Book Controller', () => {
 	let dbUser = null;
+	let tempUser = null;
 	let user = null;
 	let jwt = null;
 	let book = null;
@@ -82,12 +83,22 @@ describe('Unit - Test Book Controller', () => {
 			console.log('\n1. Creating books in database');
 
 			try {
+				tempUser = await User.create({
+					name,
+					email: 'temp@gmail.com',
+					address,
+					otp: '',
+					active: true,
+					booksOwned: [mongoose.Types.ObjectId()],
+				});
+
 				// Creating a Book for the test
 				const bookinfo = {
+					_id: tempUser.booksOwned[0],
 					name: 'The Guest List',
 					author: 'Lucy Foley',
 					link: 'https://www.goodreads.com/book/show/54911607-the-guest-list?from_choice=true',
-					owner: mongoose.Types.ObjectId(),
+					owner: tempUser._id,
 				};
 
 				book = await Book.create(bookinfo);
@@ -120,6 +131,14 @@ describe('Unit - Test Book Controller', () => {
 			});
 
 			const { message } = res._getJSONData();
+
+			const resUser1 = await User.findById(tempUser._id);
+			const resUser2 = await User.findById(dbUser._id);
+			const resBook = await Book.findById(book._id);
+
+			expect(resUser1.notifications[0].text).equal('jett liked your book, The Guest List');
+			expect(resUser2.booksLiked[0].toString()).equal(book._id.toString());
+			expect(resBook.likedBy[0].toString()).equal(dbUser._id.toString());
 			expect(message).equal('Book liked successfully');
 		});
 
@@ -152,12 +171,22 @@ describe('Unit - Test Book Controller', () => {
 			console.log('\n1. Creating books in database');
 
 			try {
+				tempUser = await User.create({
+					name,
+					email: 'temp2@gmail.com',
+					address,
+					otp: '',
+					active: true,
+					booksOwned: [mongoose.Types.ObjectId()],
+				});
+
 				// Creating a Book for the test
 				const bookinfo = {
+					_id: tempUser.booksOwned[0],
 					name: 'The Guest List',
 					author: 'Lucy Foley',
 					link: 'https://www.goodreads.com/book/show/54911607-the-guest-list?from_choice=true',
-					owner: mongoose.Types.ObjectId(),
+					owner: tempUser._id,
 				};
 
 				book = await Book.create(bookinfo);
@@ -193,6 +222,14 @@ describe('Unit - Test Book Controller', () => {
 			});
 
 			const { message } = res._getJSONData();
+
+			const resUser1 = await User.findById(tempUser._id);
+			const resUser2 = await User.findById(dbUser._id);
+			const resBook = await Book.findById(book._id);
+
+			expect(resUser1.notifications[0].text).equal('jett un-liked your book, The Guest List');
+			expect(resUser2.booksLiked[2]).equal(undefined);
+			expect(resBook.likedBy[0]).equal(undefined);
 			expect(message).equal('Book unliked successfully');
 		});
 

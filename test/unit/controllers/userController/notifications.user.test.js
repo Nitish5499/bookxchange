@@ -63,13 +63,19 @@ describe('Unit - Test User Controller', () => {
 				text: 'A liked your book, B',
 				isRead: false,
 				userId: mongoose.Types.ObjectId(),
-				timestamp: new Date(),
+				timestamp: new Date('2021-01-20T14:56:59.301+00:00'),
 			},
 			{
 				text: 'B liked your book, C',
 				isRead: false,
 				userId: mongoose.Types.ObjectId(),
-				timestamp: new Date(),
+				timestamp: new Date('2021-01-19T14:56:59.301+00:00'),
+			},
+			{
+				text: 'C liked your book, D',
+				isRead: false,
+				userId: mongoose.Types.ObjectId(),
+				timestamp: new Date('2021-01-25T14:56:59.301+00:00'),
 			},
 		];
 
@@ -108,100 +114,37 @@ describe('Unit - Test User Controller', () => {
 			console.log('\n---------------------------------------\n');
 		});
 
-		it('successful retrieval of user details - return 200', async () => {
+		it('successful updation of isRead in notifications - return 200', async () => {
 			const req = mocks.createRequest({
 				user,
-				method: 'GET',
+				method: 'POST',
 				body: {
-					email,
+					timestamp: '2021-01-22T14:56:59.301+00:00',
 				},
 			});
 
 			const res = mocks.createResponse();
 
 			const userData = {
-				name: dbUser.name,
-				email: dbUser.email,
-				address: dbUser.address,
-				notifications: [
-					{
-						text: dbUser.notifications[0].text,
-						userId: dbUser.notifications[0].userId,
-					},
-					{
-						text: dbUser.notifications[1].text,
-						userId: dbUser.notifications[1].userId,
-					},
-				],
-				timestamp: dbUser.notifications[0].timestamp,
+				newNotifications: {
+					notifications: [
+						{
+							text: dbUser.notifications[2].text,
+							userId: dbUser.notifications[2].userId,
+						},
+					],
+					timestamp: new Date('2021-01-25T14:56:59.301+00:00'),
+				},
 			};
 
 			const jsonData = JSON.parse(JSON.stringify(userData));
 
-			await userController.getUser(req, res, (err) => {
+			await userController.readNotifications(req, res, (err) => {
 				expect(err).equal(false);
 			});
 
 			const { data } = res._getJSONData();
 			expect(data).deep.equals(jsonData);
-		});
-	});
-
-	// Test updateUser function
-	// 1. Successful update of user details
-	describe('updateUser() function', () => {
-		const name = 'jett1';
-		const email = 'jett1@rp.com';
-		const address = 'test_address';
-
-		let dbUser;
-
-		// Before all tests begin
-		// 1. Create a new user
-		before(async () => {
-			console.log('\n------------- BEFORE TESTS -------------');
-			console.log('\n1. Creating user in database');
-
-			try {
-				dbUser = await User.create({
-					name,
-					email,
-					address,
-					otp: '',
-					active: true,
-				});
-			} catch (err) {
-				console.log(err);
-				process.exit(1);
-			}
-			console.log('\n---------------------------------------\n');
-		});
-
-		// For better log readability
-		after(() => {
-			console.log('\n---------------------------------------\n');
-		});
-
-		it('successful update of user details - return 200', async () => {
-			const req = mocks.createRequest({
-				user: dbUser,
-				method: 'PATCH',
-				body: {
-					name: 'test_update',
-					address: 'test_address',
-				},
-			});
-
-			const res = mocks.createResponse();
-
-			const message = 'update successful';
-
-			await userController.updateUser(req, res, (err) => {
-				expect(err).equal(false);
-			});
-
-			const { data } = res._getJSONData();
-			expect(data).deep.equals(message);
 		});
 	});
 });

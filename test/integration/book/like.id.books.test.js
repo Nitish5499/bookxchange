@@ -146,6 +146,18 @@ describe('Integration - Test book fetch endpoints', () => {
 					done();
 				});
 		});
+
+		it('Not existent Book ID - return 404', (done) => {
+			chai
+				.request(app)
+				.put(`/api/v1/books/aaaaaaaaaaaaaaaaaaaab105/like`)
+				.set('Cookie', `jwt_token=${jwt}`)
+				.end((err, res) => {
+					expect(res.statusCode).equal(httpResponse.NOT_FOUND);
+					expect(res.body.message).equal('Book not Found!');
+					done();
+				});
+		});
 	});
 
 	// Test DELETE /ap1/v1/books/:id/like API
@@ -217,6 +229,18 @@ describe('Integration - Test book fetch endpoints', () => {
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
 					expect(res.body.message).equal('You are not logged in! Please login in to continue');
+					done();
+				});
+		});
+
+		it('Not existent Book ID - return 404', (done) => {
+			chai
+				.request(app)
+				.delete(`/api/v1/books/aaaaaaaaaaaaaaaaaaaab105/like`)
+				.set('Cookie', `jwt_token=${jwt}`)
+				.end((err, res) => {
+					expect(res.statusCode).equal(httpResponse.NOT_FOUND);
+					expect(res.body.message).equal('Book not Found!');
 					done();
 				});
 		});

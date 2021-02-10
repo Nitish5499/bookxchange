@@ -188,13 +188,60 @@ exports.getUser = async (req, res, next) => {
 
 		logger.info(`request user: ${user}`);
 
-		const dbUser = await User.findById(user.userId).select('name email address -_id');
+		const dbUser = await User.aggregate([
+			{ $match: { _id: user.userId } },
+			{
+				$project: {
+					notifications: {
+						$filter: {
+							input: '$notifications',
+							as: 'notification',
+							cond: { $eq: ['$$notification.isRead', false] },
+						},
+					},
+					name: 1,
+					email: 1,
+					address: 1,
+					_id: 0,
+				},
+			},
+			{
+				$unwind: {
+					path: '$notifications',
+					preserveNullAndEmptyArrays: true,
+				},
+			},
+			{ $sort: { 'notifications.timestamp': -1 } },
+			{
+				$group: {
+					_id: {
+						name: '$name',
+						email: '$email',
+						address: '$address',
+					},
+					notifications: { $push: '$notifications' },
+				},
+			},
+			{
+				$project: {
+					_id: false,
+					name: '$_id.name',
+					email: '$_id.email',
+					address: '$_id.address',
+					timestamp: { $first: '$notifications.timestamp' },
+					'notifications.text': 1,
+					'notifications.userId': 1,
+				},
+			},
+		]);
 
-		logger.info(`user data: "name":${dbUser.name}, "email":${dbUser.email}, "address":${dbUser.address}`);
+		logger.info(
+			`user data: "name":${dbUser[0].name}, "email":${dbUser[0].email}, "address":${dbUser[0].address}, "timestamp":${dbUser[0].timestamp}`,
+		);
 
 		res.status(httpResponse.OK).json({
 			status: 'success',
-			data: dbUser,
+			data: dbUser[0],
 		});
 	} catch (error) {
 		next(error);
@@ -219,6 +266,80 @@ exports.updateUser = async (req, res, next) => {
 		res.status(httpResponse.OK).json({
 			status: 'success',
 			data: 'update successful',
+		});
+	} catch (err) {
+		next(err);
+	}
+};
+
+exports.readNotifications = async (req, res, next) => {
+	logger.info('Inside readNotifications function');
+	try {
+		const { timestamp } = req.body;
+		const { user } = req;
+
+		logger.info(`Request user: ${user}`);
+
+		const resTimestamp = new Date(timestamp).toISOString();
+
+		await User.updateOne(
+			{
+				_id: user.userId,
+			},
+			{ $set: { 'notifications.$[notification].isRead': true } },
+			{
+				arrayFilters: [{ 'notification.timestamp': { $lte: resTimestamp }, 'notification.isRead': false }],
+				multi: true,
+			},
+		);
+
+		logger.info('Updated "isRead" to "true" for existing notifications');
+
+		const dbUser = await User.aggregate([
+			{ $match: { _id: user.userId } },
+			{
+				$project: {
+					notifications: {
+						$filter: {
+							input: '$notifications',
+							as: 'notification',
+							cond: { $eq: ['$$notification.isRead', false] },
+						},
+					},
+					name: 1,
+					email: 1,
+					address: 1,
+					_id: 0,
+				},
+			},
+			{
+				$unwind: {
+					path: '$notifications',
+					preserveNullAndEmptyArrays: true,
+				},
+			},
+			{ $sort: { 'notifications.timestamp': -1 } },
+			{
+				$group: {
+					_id: null,
+					notifications: { $push: '$notifications' },
+				},
+			},
+			{
+				$project: {
+					_id: false,
+					timestamp: { $first: '$notifications.timestamp' },
+					'notifications.text': 1,
+					'notifications.userId': 1,
+				},
+			},
+		]);
+
+		res.status(httpResponse.OK).json({
+			status: 'success',
+			data: {
+				newNotifications: dbUser[0],
+			},
 		});
 	} catch (err) {
 		next(err);

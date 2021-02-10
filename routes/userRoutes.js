@@ -51,4 +51,10 @@ router
 	.patch(validateMiddleware(userValidation.updateUser), userController.updateUser)
 	.all(errorController.methods(['GET', 'PATCH']));
 
+// POST - set the notifications' isRead value
+router
+	.route('/notifications')
+	.post(validateMiddleware(userValidation.readNotifications), userController.readNotifications)
+	.all(errorController.methods(['POST']));
+
 module.exports = router;

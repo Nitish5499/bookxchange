@@ -34,10 +34,17 @@ const updateUser = {
 	}),
 };
 
+const readNotifications = {
+	body: Joi.object().keys({
+		timestamp: Joi.date().iso().required(),
+	}),
+};
+
 module.exports = {
 	signup,
 	signupVerify,
 	login,
 	loginVerify,
 	updateUser,
+	readNotifications,
 };

@@ -38,6 +38,25 @@ const userSchema = new mongoose.Schema({
 			ref: 'Book',
 		},
 	],
+	notifications: [
+		{
+			text: {
+				type: String,
+			},
+			userId: {
+				type: mongoose.Schema.Types.ObjectId,
+				ref: 'User',
+			},
+			isRead: {
+				type: Boolean,
+				default: false,
+				required: [true, 'isRead missing'],
+			},
+			timestamp: {
+				type: Date,
+			},
+		},
+	],
 });
 
 // Mongoose -> Document Middleware

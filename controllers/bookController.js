@@ -6,6 +6,7 @@ const Book = require('$/models/bookModel');
 const User = require('$/models/userModel');
 
 const { ErrorHandler } = require('$/utils/errorHandler');
+const bookUtil = require('$/utils/bookUtil');
 const logger = require('$/config/logger');
 
 exports.addBook = async (req, res, next) => {
@@ -168,12 +169,14 @@ exports.likeBook = async (req, res, next) => {
 
 		logger.info(`BookId:${id}`);
 
-		const alreadyLiked = await User.findOneAndUpdate(
+		const dbUser = await User.findOneAndUpdate(
 			{ _id: user.userId, booksLiked: { $ne: id } },
 			{ $push: { booksLiked: id } },
 		);
 
-		if (!alreadyLiked) {
+		// User has already liked the book if
+		// `dbUser` is `null`
+		if (!dbUser) {
 			res.status(httpResponse.OK).json({
 				status: 'success',
 				message: 'Book already liked',
@@ -181,15 +184,57 @@ exports.likeBook = async (req, res, next) => {
 			return;
 		}
 
-		logger.info('Book Id added to booksLiked of the user');
+		logger.info('"BookId" added to "booksLiked" of the user');
 
-		await Book.findByIdAndUpdate(id, { $push: { likedBy: user.userId } });
+		const dbBook = await Book.findByIdAndUpdate(id, { $push: { likedBy: user.userId } }, { new: true });
 
-		logger.info('User Id added to likedBy of the book');
+		logger.info('"UserId" added to "likedBy" of the book');
+
+		let notification = bookUtil.createNotification(
+			bookUtil.notificationMessage(dbUser.name, dbBook.name, null, 'like'),
+			user.userId,
+		);
+		await User.findByIdAndUpdate(dbBook.owner, {
+			$push: {
+				notifications: notification,
+			},
+		});
+
+		logger.info(`Added "like notification" to the book owner: ${dbBook.owner}`);
+
+		const dbUserMatched = await User.findOne({ _id: dbBook.owner, booksLiked: { $in: dbUser.booksOwned } });
+
+		let responseMessage = 'Book liked successfully';
+
+		if (dbUserMatched) {
+			notification = bookUtil.createNotification(
+				bookUtil.notificationMessage(dbUser.name, null, dbUser.email, 'match'),
+				user.userId,
+			);
+			await User.findByIdAndUpdate(dbBook.owner, {
+				$push: {
+					notifications: notification,
+				},
+			});
+
+			notification = bookUtil.createNotification(
+				bookUtil.notificationMessage(dbUserMatched.name, null, dbUserMatched.email, 'match'),
+				dbBook.owner,
+			);
+			await User.findByIdAndUpdate(user.userId, {
+				$push: {
+					notifications: notification,
+				},
+			});
+
+			responseMessage = 'It is a match!';
+
+			logger.info(`Added "match notifications" to the users: ${dbBook.owner}, ${user.userId}`);
+		}
 
 		res.status(httpResponse.OK).json({
 			status: 'success',
-			message: 'Book liked successfully',
+			message: responseMessage,
 		});
 	} catch (err) {
 		next(err);
@@ -219,9 +264,21 @@ exports.unlikeBook = async (req, res, next) => {
 
 		logger.info('Book Id removed from booksLiked of the user');
 
-		await Book.findByIdAndUpdate(id, { $pull: { likedBy: user.userId } });
+		const book = await Book.findByIdAndUpdate(id, { $pull: { likedBy: user.userId } });
 
 		logger.info('User Id removed from likedBy of the book');
+
+		const notification = bookUtil.createNotification(
+			bookUtil.notificationMessage(notLiked.name, book.name, null, 'unlike'),
+			user.userId,
+		);
+		await User.findByIdAndUpdate(book.owner, {
+			$push: {
+				notifications: notification,
+			},
+		});
+
+		logger.info(`Added the notification to the book owner: ${book.owner}`);
 
 		res.status(httpResponse.OK).json({
 			status: 'success',

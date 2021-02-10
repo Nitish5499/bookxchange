@@ -21,7 +21,7 @@ const { expect } = chai;
 
 chai.use(chaiHttp);
 
-describe('Integration - Test users me endpoints', () => {
+describe('Integration - Test users notifications endpoints', () => {
 	let server;
 
 	// Before all tests begin
@@ -56,10 +56,10 @@ describe('Integration - Test users me endpoints', () => {
 		}
 	});
 
-	// Test /users/me API - GET method
-	// 1. User info retrieval success
+	// Test /users/notifications API - POST method
+	// 1. successful updation of isRead in notifications
 	// 2. User not logged in
-	// 3. Invalid HTTP PUT method
+	// 3. Missing parameters
 	describe('GET /api/v1/users/me', () => {
 		const name = 'test_name';
 		const email = 'test_email@bar.com';
@@ -69,13 +69,19 @@ describe('Integration - Test users me endpoints', () => {
 				text: 'A liked your book, B',
 				isRead: false,
 				userId: mongoose.Types.ObjectId(),
-				timestamp: new Date(),
+				timestamp: new Date('2021-01-20T14:56:59.301+00:00'),
 			},
 			{
 				text: 'B liked your book, C',
 				isRead: false,
 				userId: mongoose.Types.ObjectId(),
-				timestamp: new Date(),
+				timestamp: new Date('2021-01-19T14:56:59.301+00:00'),
+			},
+			{
+				text: 'C liked your book, D',
+				isRead: false,
+				userId: mongoose.Types.ObjectId(),
+				timestamp: new Date('2021-01-25T14:56:59.301+00:00'),
 			},
 		];
 
@@ -112,31 +118,26 @@ describe('Integration - Test users me endpoints', () => {
 			console.log('\n---------------------------------------\n');
 		});
 
-		it('retrieval success - return 200', (done) => {
+		it('successful updation of isRead in notifications - return 200', (done) => {
 			const resBody = {
-				name: user.name,
-				email: user.email,
-				address: user.address,
-				notifications: [
-					{
-						text: user.notifications[0].text,
-						userId: user.notifications[0].userId,
-					},
-					{
-						text: user.notifications[1].text,
-						userId: user.notifications[1].userId,
-					},
-				],
-				timestamp: user.notifications[0].timestamp,
+				newNotifications: {
+					notifications: [
+						{
+							text: user.notifications[2].text,
+							userId: user.notifications[2].userId,
+						},
+					],
+					timestamp: new Date('2021-01-25T14:56:59.301+00:00'),
+				},
 			};
 
 			const jsonData = JSON.parse(JSON.stringify(resBody));
 
 			chai
 				.request(app)
-				.get('/api/v1/users/me')
+				.post('/api/v1/users/notifications')
 				.set('Cookie', `jwt_token=${jwt}`)
-				.send()
+				.send({ timestamp: '2021-01-22T14:56:59.301+00:00' })
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.OK);
 					expect(res.body.data).deep.equals(jsonData);
@@ -147,7 +148,7 @@ describe('Integration - Test users me endpoints', () => {
 		it('user not logged in - return 401', (done) => {
 			chai
 				.request(app)
-				.get('/api/v1/users/me')
+				.post('/api/v1/users/notifications')
 				.send({})
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
@@ -156,93 +157,15 @@ describe('Integration - Test users me endpoints', () => {
 				});
 		});
 
-		it('Invalid HTTP PUT method - return 405', (done) => {
+		it('Missing parameters - return 400', (done) => {
 			chai
 				.request(app)
-				.put('/api/v1/users/me')
+				.post('/api/v1/users/notifications')
 				.set('Cookie', `jwt_token=${jwt}`)
 				.send({})
 				.end((err, res) => {
-					expect(res.statusCode).equal(httpResponse.METHOD_NOT_ALLOWED);
-					expect(res.body.message).equal('Method not allowed');
-					done();
-				});
-		});
-	});
-
-	// Test /users/me PATCH API
-	// 1. Successful update of user info
-	// 2. missing update parameters
-	describe('PATCH /api/v1/users/me', () => {
-		const email = 'foo6@bar.com';
-		const name = 'foo6';
-		const address = 'foo_address';
-		const updateName = 'test_name';
-		const updateAddress = 'test_address';
-
-		let user;
-		let jwt;
-
-		// Before all tests begin
-		// 1. Create a new user
-		before(async () => {
-			console.log('\n------------- BEFORE TESTS -------------');
-			console.log('\n1. Registering and verifying a user');
-
-			user = await User.create({
-				name,
-				email,
-				address,
-				otp: '',
-				active: true,
-			});
-
-			jwt = authUtil.createToken(user._id);
-
-			console.log('\n2. Creating session for user in database');
-			await Session.create({
-				userId: user._id,
-				sessionToken: jwt,
-			});
-
-			console.log('\n---------------------------------------\n');
-		});
-
-		it('Successful update of user info - return 200', (done) => {
-			const resBody = {
-				name: updateName,
-				email,
-				address: updateAddress,
-			};
-
-			const jsonData = JSON.parse(JSON.stringify(resBody));
-
-			chai
-				.request(app)
-				.patch('/api/v1/users/me')
-				.set('cookie', `jwt_token=${jwt}`)
-				.send({ name: updateName, address: updateAddress })
-				.end((err, res) => {
-					expect(res.statusCode).equal(httpResponse.OK);
-					expect(res.body.data).equals('update successful');
-					User.findById(user._id)
-						.select('name email address -_id')
-						.then((user, err) => {
-							expect(JSON.parse(JSON.stringify(user))).deep.equals(jsonData);
-						});
-					done();
-				});
-		});
-
-		it('missing update parameters - return 400', (done) => {
-			chai
-				.request(app)
-				.patch('/api/v1/users/me')
-				.set('cookie', `jwt_token=${jwt}`)
-				.send({})
-				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.BAD_REQUEST);
-					expect(res.body.message).equal('name is required');
+					expect(res.body.message).equal('timestamp is required');
 					done();
 				});
 		});
