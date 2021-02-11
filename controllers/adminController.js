@@ -5,14 +5,23 @@ const Book = require('$/models/bookModel');
 const User = require('$/models/userModel');
 const Session = require('$/models/sessionModel');
 
-const userData = require('$/config/testData/userData.json');
-const bookData = require('$/config/testData/bookData.json');
+let userData = require('$/config/testData/userData.json');
+let bookData = require('$/config/testData/bookData.json');
 
 exports.populate = async (req, res, next) => {
 	try {
 		/*
 		 * Populate Users
 		 */
+
+		/* eslint-disable global-require */
+		// Load different data for test environment
+		if (process.env.NODE_ENV === 'test') {
+			userData = require('$/test/data/userData.json');
+			bookData = require('$/test/data/bookData.json');
+		}
+		/* eslint-enable global-require */
+
 		let { users } = userData;
 		/* for (const user in users) {
 			user._id = mongoose.Types.ObjectId(user._id);

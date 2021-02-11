@@ -46,7 +46,8 @@
       "link": "https://www.goodreads.com/book/show/1885.Pride_and_Prejudice",
       "owner": "aaaaaaaaaaaaaaaaaaaaa107",
       "likedBy": [
-        "aaaaaaaaaaaaaaaaaaaaa106"
+        "aaaaaaaaaaaaaaaaaaaaa106",
+        "aaaaaaaaaaaaaaaaaaaaa108"
       ]
     },
     {
@@ -55,7 +56,9 @@
       "author": "F. Scott Fitzgerald",
       "link": "https://www.goodreads.com/book/show/4671.The_Great_Gatsby",
       "owner": "aaaaaaaaaaaaaaaaaaaaa107",
-      "likedBy": []
+      "likedBy": [
+        "aaaaaaaaaaaaaaaaaaaaa108"
+      ]
     }
   ]
 }

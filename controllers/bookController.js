@@ -296,8 +296,8 @@ exports.getLikedBooks = async (req, res, next) => {
 
 		logger.info(`request user: ${user}`);
 
-		const userinfo = await User.findById(user.userId).populate('booksLiked');
-		const allLikedBooks = userinfo.booksLiked;
+		const userInfo = await User.findById(user.userId).populate('booksLiked');
+		const allLikedBooks = userInfo.booksLiked;
 
 		logger.info(`Books: ${allLikedBooks}`);
 
@@ -305,6 +305,30 @@ exports.getLikedBooks = async (req, res, next) => {
 			status: 'success',
 			data: {
 				book: allLikedBooks,
+			},
+		});
+	} catch (err) {
+		next(err);
+	}
+};
+
+exports.getOthersLikedBooks = async (req, res, next) => {
+	logger.info('inside getOthersLikedBooks function');
+	try {
+		const { user } = req;
+
+		logger.info(`request user: ${user}`);
+
+		const dbBooks = await Book.find({ owner: user.userId, likedBy: { $gt: [] } })
+			.populate('likedBy', 'name')
+			.select('likedBy name author link');
+
+		logger.info(`Books: ${dbBooks}`);
+
+		res.status(httpResponse.OK).json({
+			status: 'success',
+			data: {
+				books: dbBooks,
 			},
 		});
 	} catch (err) {

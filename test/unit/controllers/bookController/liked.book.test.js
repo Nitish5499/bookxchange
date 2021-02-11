@@ -77,7 +77,7 @@ describe('Unit - Test Book Controller', () => {
 		}
 	});
 
-	describe('getAllBooks() function', () => {
+	describe('getLikedBooks() function', () => {
 		// Before all tests begin
 		// 1. Create a new user
 		before(async () => {

@@ -31,6 +31,12 @@ router
 	.get(bookController.getLikedBooks)
 	.all(errorController.methods(['GET']));
 
+// GET  - Fetch all user books liked by others
+router
+	.route('/othersLiked')
+	.get(bookController.getOthersLikedBooks)
+	.all(errorController.methods(['GET']));
+
 // GET  - Fetch all books of a user
 router
 	.route('/owned')

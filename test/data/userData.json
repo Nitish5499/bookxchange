@@ -2,50 +2,65 @@
   "users": [
     {
       "_id": "aaaaaaaaaaaaaaaaaaaaa101",
-      "address": "600083",
-      "booksOwned": [],
-      "booksLiked": [],
       "name": "Tom",
       "email": "tom@gmail.com",
       "otp": 123456,
-      "active": false
+      "active": false,
+      "address": "600083",
+      "booksOwned": [],
+      "booksLiked": [],
+      "notifications": []
     },
     {
       "_id": "aaaaaaaaaaaaaaaaaaaaa102",
-      "address": "600017",
-      "booksOwned": [],
-      "booksLiked": [],
       "name": "John",
       "email": "john@gmail.com",
       "otp": null,
-      "active": true
+      "active": true,
+      "address": "600017",
+      "booksOwned": [],
+      "booksLiked": [],
+      "notifications": []
     },
     {
       "_id": "aaaaaaaaaaaaaaaaaaaaa103",
+      "name": "Smith",
+      "email": "smith@gmail.com",
+      "otp": null,
+      "active": true,
       "address": "600006",
       "booksOwned": [
         "aaaaaaaaaaaaaaaaaaaab101"
       ],
       "booksLiked": [],
-      "name": "Smith",
-      "email": "smith@gmail.com",
-      "otp": null,
-      "active": true
+      "notifications": [
+        {
+          "text": "Jacob liked your book, The Guest List",
+          "userId": "aaaaaaaaaaaaaaaaaaaaa105",
+          "isRead": false,
+          "timestamp": "2021-01-27T14:56:59.301Z"
+        }
+      ]
     },
     {
       "_id": "aaaaaaaaaaaaaaaaaaaaa104",
+      "name": "Steve",
+      "email": "steve@gmail.com",
+      "otp": null,
+      "active": true,
       "address": "518432",
       "booksOwned": [],
       "booksLiked": [
         "aaaaaaaaaaaaaaaaaaaab102"
       ],
-      "name": "Steve",
-      "email": "steve@gmail.com",
-      "otp": null,
-      "active": true
+      "notifications": []
     },
     {
       "_id": "aaaaaaaaaaaaaaaaaaaaa105",
+      "name": "Jacob",
+      "email": "jacob@gmail.com",
+      "otp": null,
+      "active": true,
       "address": "790104",
       "booksOwned": [
         "aaaaaaaaaaaaaaaaaaaab102"
@@ -53,13 +68,27 @@
       "booksLiked": [
         "aaaaaaaaaaaaaaaaaaaab101"
       ],
-      "name": "Jacob",
-      "email": "jacob@gmail.com",
-      "otp": null,
-      "active": true
+      "notifications": [
+        {
+          "text": "Steve liked your book, Home Before Dark",
+          "userId": "aaaaaaaaaaaaaaaaaaaaa104",
+          "isRead": false,
+          "timestamp": "2021-01-27T14:56:59.301Z"
+        },
+        {
+          "text": "Sam liked your book, Home Before Dark",
+          "userId": "aaaaaaaaaaaaaaaaaaaaa107",
+          "isRead": false,
+          "timestamp": "2021-01-27T14:56:59.301Z"
+        }
+      ]
     },
     {
       "_id": "aaaaaaaaaaaaaaaaaaaaa106",
+      "name": "Jimmy",
+      "email": "jimmy@gmail.com",
+      "otp": null,
+      "active": true,
       "address": "600018",
       "booksOwned": [
         "aaaaaaaaaaaaaaaaaaaab103",
@@ -68,13 +97,27 @@
       "booksLiked": [
         "aaaaaaaaaaaaaaaaaaaab105"
       ],
-      "name": "Jimmy",
-      "email": "jimmy@gmail.com",
-      "otp": null,
-      "active": true
+      "notifications": [
+        {
+          "text": "Sam liked your book, The Sun Down Motel",
+          "userId": "aaaaaaaaaaaaaaaaaaaaa107",
+          "isRead": false,
+          "timestamp": "2021-01-27T14:56:59.301Z"
+        },
+        {
+          "text": "It is a match! You can exchange books with Sam (sam@gmail.com)",
+          "userId": "aaaaaaaaaaaaaaaaaaaaa106",
+          "isRead": false,
+          "timestamp": "2021-01-27T14:56:59.301Z"
+        }
+      ]
     },
     {
       "_id": "aaaaaaaaaaaaaaaaaaaaa107",
+      "name": "Sam",
+      "email": "sam@gmail.com",
+      "otp": null,
+      "active": true,
       "address": "600006",
       "booksOwned": [
         "aaaaaaaaaaaaaaaaaaaab105",
@@ -84,10 +127,46 @@
         "aaaaaaaaaaaaaaaaaaaab103",
         "aaaaaaaaaaaaaaaaaaaab102"
       ],
-      "name": "Sam",
-      "email": "sam@gmail.com",
+      "notifications": [
+        {
+          "text": "Jimmy liked your book, Pride and Prejudice",
+          "userId": "aaaaaaaaaaaaaaaaaaaaa106",
+          "isRead": true,
+          "timestamp": "2021-01-22T14:56:59.301Z"
+        },
+        {
+          "text": "Claire liked your book, Pride and Prejudice",
+          "userId": "aaaaaaaaaaaaaaaaaaaaa108",
+          "isRead": true,
+          "timestamp": "2021-01-23T14:56:59.301Z"
+        },
+        {
+          "text": "Claire liked your book, The Great Gatsby",
+          "userId": "aaaaaaaaaaaaaaaaaaaaa108",
+          "isRead": false,
+          "timestamp": "2021-01-24T14:56:59.301Z"
+        },
+        {
+          "text": "It is a match! You can exchange books with Jimmy (jimmy@gmail.com)",
+          "userId": "aaaaaaaaaaaaaaaaaaaaa106",
+          "isRead": false,
+          "timestamp": "2021-01-27T14:56:59.301Z"
+        }
+      ]
+    },
+    {
+      "_id": "aaaaaaaaaaaaaaaaaaaaa108",
+      "name": "Claire",
+      "email": "claire@gmail.com",
       "otp": null,
-      "active": true
+      "active": true,
+      "address": "600006",
+      "booksOwned": [],
+      "booksLiked": [
+        "aaaaaaaaaaaaaaaaaaaab105",
+        "aaaaaaaaaaaaaaaaaaaab106"
+      ],
+      "notifications": []
     }
   ]
 }
