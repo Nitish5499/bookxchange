@@ -57,4 +57,10 @@ router
 	.post(validateMiddleware(userValidation.readNotifications), userController.readNotifications)
 	.all(errorController.methods(['POST']));
 
+// GET - fetch details of a user
+router
+	.route('/:id')
+	.get(validateMiddleware(userValidation.getOtherUser), userController.getOtherUser)
+	.all(errorController.methods(['GET']));
+
 module.exports = router;

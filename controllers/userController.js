@@ -248,6 +248,28 @@ exports.getUser = async (req, res, next) => {
 	}
 };
 
+exports.getOtherUser = async (req, res, next) => {
+	logger.info('Inside getOtherUser function');
+	try {
+		const { user } = req;
+		const { id } = req.params;
+
+		logger.info(`User session: ${user}`);
+		logger.info(`Request for userId: ${id}`);
+
+		const dbUser = await User.findById(id).populate('booksOwned', 'name author link').select('name booksOwned');
+
+		logger.info(`Fetched userId: ${dbUser._id}`);
+
+		res.status(httpResponse.OK).json({
+			status: 'success',
+			data: { user: dbUser },
+		});
+	} catch (error) {
+		next(error);
+	}
+};
+
 exports.updateUser = async (req, res, next) => {
 	logger.info('Inside updateUser function');
 	try {

@@ -2,6 +2,7 @@ const Joi = require('joi');
 const httpStatus = require('http-status');
 
 const Book = require('$/models/bookModel');
+const User = require('$/models/userModel');
 
 const pickUtil = require('$/utils/pickUtil');
 const { ErrorHandler } = require('$/utils/errorHandler');
@@ -21,10 +22,16 @@ const validate = (schema) => async (req, res, next) => {
 
 	const { id } = req.params;
 
-	if (id && req.baseUrl === '/api/v1/books') {
-		const book = await Book.findById(id);
-		if (!book) {
-			return next(new ErrorHandler(httpStatus.NOT_FOUND, 'Book not Found!'));
+	if (id) {
+		let isPresent;
+		if (req.baseUrl === '/api/v1/users') {
+			isPresent = await User.findById(id);
+		} else {
+			isPresent = await Book.findById(id);
+		}
+
+		if (!isPresent) {
+			return next(new ErrorHandler(httpStatus.NOT_FOUND, 'Not found'));
 		}
 	}
 

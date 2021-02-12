@@ -154,7 +154,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.NOT_FOUND);
-					expect(res.body.message).equal('Book not Found!');
+					expect(res.body.message).equal('Not found');
 					done();
 				});
 		});
@@ -240,7 +240,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.NOT_FOUND);
-					expect(res.body.message).equal('Book not Found!');
+					expect(res.body.message).equal('Not found');
 					done();
 				});
 		});

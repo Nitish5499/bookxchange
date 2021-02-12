@@ -80,7 +80,7 @@ exports.getBook = async (req, res, next) => {
 		logger.info(`Book:${book}`);
 
 		if (!book) {
-			return next(new ErrorHandler(404, 'Book not Found!'), req, res, next);
+			return next(new ErrorHandler(404, 'Not found'), req, res, next);
 		}
 
 		res.status(httpResponse.OK).json({
@@ -110,7 +110,7 @@ exports.updateBook = async (req, res, next) => {
 		logger.info(dbBook);
 
 		if (!dbBook) {
-			return next(new ErrorHandler(404, 'Book not Found!'), req, res, next);
+			return next(new ErrorHandler(404, 'Not found'), req, res, next);
 		}
 
 		res.status(httpResponse.OK).json({
@@ -132,7 +132,7 @@ exports.deleteBook = async (req, res, next) => {
 		const book = await Book.findByIdAndRemove(id);
 
 		if (!book) {
-			return next(new ErrorHandler(404, 'Book not Found!'), req, res, next);
+			return next(new ErrorHandler(404, 'Not found'), req, res, next);
 		}
 
 		logger.info('Book successfully deleted from the database');

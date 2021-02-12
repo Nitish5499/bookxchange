@@ -124,7 +124,7 @@ describe('Unit - Test Book Controller', () => {
 
 			await bookController.getBook(req, res, (err) => {
 				expect(err.statusCode).equal(404);
-				expect(err.message).equal('Book not Found!');
+				expect(err.message).equal('Not found');
 			});
 		});
 	});
@@ -177,7 +177,7 @@ describe('Unit - Test Book Controller', () => {
 
 			await bookController.updateBook(req, res, (err) => {
 				expect(err.statusCode).equal(404);
-				expect(err.message).equal('Book not Found!');
+				expect(err.message).equal('Not found');
 			});
 		});
 	});
@@ -200,7 +200,7 @@ describe('Unit - Test Book Controller', () => {
 
 			await bookController.deleteBook(req, res, (err) => {
 				expect(err.statusCode).equal(404);
-				expect(err.message).equal('Book not Found!');
+				expect(err.message).equal('Not found');
 			});
 		});
 

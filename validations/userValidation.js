@@ -1,5 +1,7 @@
 const Joi = require('joi');
 
+const { objectId } = require('$/validations/customValidation');
+
 const signup = {
 	body: Joi.object().keys({
 		email: Joi.string().email().required(),
@@ -40,6 +42,12 @@ const readNotifications = {
 	}),
 };
 
+const getOtherUser = {
+	params: Joi.object().keys({
+		id: Joi.string().custom(objectId),
+	}),
+};
+
 module.exports = {
 	signup,
 	signupVerify,
@@ -47,4 +55,5 @@ module.exports = {
 	loginVerify,
 	updateUser,
 	readNotifications,
+	getOtherUser,
 };
