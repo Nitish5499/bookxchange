@@ -16,11 +16,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: ['12.x']
-        appname: ['bxc-server']
-        deploy-group: ['staging']
-        s3-bucket: ['aws-bxc-deployments']
-        s3-filename: ['staging-aws-bxc']
+        node-version: ["12.x"]
+        app-name: ["bxc-server"]
+        deploy-group: ["staging"]
+        s3-bucket: ["aws-bxc-deployments"]
+        s3-filename: ["staging-aws-bxc"]
     steps:
       # Checkout current repository
       - uses: actions/checkout@v2
@@ -52,20 +52,29 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
 
+      # Delete development and CI related files
+      # These files are not required for production
+      - name: Delete development and CI related files
+        run: |
+          rm -rf "awscliv2.zip" "aws"
+          rm -rf "test" "node_modules"
+          rm README.md
+
       # Deploy push to AWS S3
       - name: AWS Deploy push
         run: |
           aws deploy push \
-          --application-name ${{ matrix.appname }} \
-          --description "This is a revision for the ${{ matrix.appname }}" \
+          --application-name ${{ matrix.app-name }} \
+          --description "This is a revision for the ${{ matrix.app-name }}" \
           --ignore-hidden-files \
           --s3-location s3://${{ matrix.s3-bucket }}/${{ matrix.s3-filename }}.zip \
           --source .
+      
       # Create deployment to CodeDeploy
       - name: AWS Create Deployment
         run: |
           aws deploy create-deployment \
-            --application-name ${{ matrix.appname }} \
+            --application-name ${{ matrix.app-name }} \
             --deployment-config-name CodeDeployDefault.OneAtATime \
             --deployment-group-name ${{ matrix.deploy-group }} \
             --file-exists-behavior OVERWRITE \

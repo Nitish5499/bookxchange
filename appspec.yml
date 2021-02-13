@@ -12,6 +12,10 @@ permissions:
       - file
 hooks:
   ApplicationStart:
-    - location: scripts/reload-pm2.sh
+    - location: scripts/restart.sh
       timeout: 300
+      runas: ubuntu
+  ValidateService:
+    - location: scripts/health.sh
+      timeout: 30
       runas: ubuntu
