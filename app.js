@@ -5,18 +5,14 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const cors = require('cors');
-const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 const httpResponse = require('http-status');
 
-const userRoutes = require('$/routes/userRoutes');
-const bookRoutes = require('$/routes/bookRoutes');
-const adminRoutes = require('$/routes/adminRoutes');
+const routes = require('$/routes/index');
 
 const { ErrorHandler, handleError } = require('$/utils/errorHandler');
 const logger = require('$/config/logger');
-const constants = require('$/config/constants');
 
 const app = express();
 
@@ -62,17 +58,8 @@ if (process.env.NODE_ENV !== 'test') {
 // cookie-parser
 app.use(cookieParser());
 
-// Test routes
-app.get('/status', (req, res) => res.json({ status: constants.MONGO_STATES[mongoose.connection.readyState] }));
-
-// Routes
-app.use('/api/v1/users', userRoutes);
-
-// Sample route
-app.use('/api/v1/books', bookRoutes);
-
-// Admin route
-app.use('/api/v1/admin', adminRoutes);
+// Main router
+app.use('/', routes);
 
 // handle undefined Routes
 app.use('*', (req, res, next) => {
