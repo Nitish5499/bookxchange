@@ -11,14 +11,26 @@ class ErrorHandler extends Error {
 }
 
 const handleError = (err, res) => {
-	const { statusCode, message } = err;
+	let { statusCode, message } = err;
+	const { name } = err;
 
-	logger.error(`${err}, statuscode:${statusCode}`);
+	/*
+	 * Handle MongoError and unexpected errors.
+	 *
+	 * In unexpected errors, the `statusCode`
+	 * will be `undefined`.
+	 */
+	if (name === 'MongoError' || !statusCode) {
+		logger.error(`Unhandled error: ${err}`);
+		statusCode = httpResponse.INTERNAL_SERVER_ERROR;
+		message = 'Internal Server Error';
+	}
 
-	res.status(statusCode || httpResponse.INTERNAL_SERVER_ERROR).json({
-		status: 'error',
-		code: statusCode || httpResponse.INTERNAL_SERVER_ERROR,
-		message: message || 'Internal Server Error',
+	logger.error(`Error response: statusCode: ${statusCode}, name: ${name}, message: ${message}`);
+
+	res.status(statusCode).json({
+		status: 'Error',
+		message,
 	});
 };
 
