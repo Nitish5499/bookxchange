@@ -28,7 +28,7 @@ describe('Integration - Test root endpoints', () => {
 		it('GET /status - return 200', (done) => {
 			chai
 				.request(app)
-				.get('/status')
+				.get('/api/v1/status')
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.OK);
 

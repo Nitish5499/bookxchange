@@ -7,19 +7,20 @@ const adminRoutes = require('$/routes/adminRoutes');
 
 const constants = require('$/config/constants');
 
-// const app = express();
 const router = express.Router();
 
-// Test routes
-router.get('/status', (req, res) => res.json({ status: constants.MONGO_STATES[mongoose.connection.readyState] }));
+// Health route
+router.get('/api/v1/status', (req, res) =>
+	res.json({ status: constants.MONGO_STATES[mongoose.connection.readyState] }),
+);
 
-// Routes
+// User routes
 router.use('/api/v1/users', userRoutes);
 
-// Sample route
+// Books routes
 router.use('/api/v1/books', bookRoutes);
 
-// Admin route
+// Admin routes
 router.use('/api/v1/admin', adminRoutes);
 
 module.exports = router;
