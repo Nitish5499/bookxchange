@@ -41,7 +41,6 @@ describe('Integration - Test user fetch endpoints', () => {
 	};
 
 	const reqCorrectUserId = mongoose.Types.ObjectId('aaaaaaaaaaaaaaaaaaaaa106');
-	const reqWrongUserId = mongoose.Types.ObjectId('aaaaaaaaaaaaaaaaaaaaa069');
 
 	// Before all tests begin
 	// 1. Clear database
@@ -104,18 +103,6 @@ describe('Integration - Test user fetch endpoints', () => {
 					expect(res.statusCode).equal(httpResponse.OK);
 					const { data } = res.body;
 					expect(JSON.stringify(data.user)).equal(JSON.stringify(resUser));
-					done();
-				});
-		});
-
-		it('invalid id, not found - return 404', (done) => {
-			chai
-				.request(app)
-				.get(`/api/v1/users/${reqWrongUserId}`)
-				.set('Cookie', `jwt_token=${jwtUser}`)
-				.end((err, res) => {
-					expect(res.statusCode).equal(httpResponse.NOT_FOUND);
-					expect(res.body.message).equal(httpResponse[httpResponse.NOT_FOUND]);
 					done();
 				});
 		});

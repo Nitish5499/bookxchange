@@ -170,6 +170,14 @@ exports.likeBook = async (req, res, next) => {
 
 		logger.info(`BookId:${id}`);
 
+		const dbBook = await Book.findByIdAndUpdate(id, { $addToSet: { likedBy: user.userId } });
+
+		if (!dbBook) {
+			return next(new ErrorHandler(httpResponse.NOT_FOUND, httpResponse[httpResponse.NOT_FOUND]), req, res, next);
+		}
+
+		logger.info('"UserId" added to "likedBy" of the book');
+
 		const dbUser = await User.findOneAndUpdate(
 			{ _id: user.userId, booksLiked: { $ne: id } },
 			{ $push: { booksLiked: id } },
@@ -187,15 +195,11 @@ exports.likeBook = async (req, res, next) => {
 
 		logger.info('"BookId" added to "booksLiked" of the user');
 
-		const dbBook = await Book.findByIdAndUpdate(id, { $push: { likedBy: user.userId } }, { new: true });
-
-		logger.info('"UserId" added to "likedBy" of the book');
-
 		let notification = bookUtil.createNotification(
 			bookUtil.notificationMessage(dbUser.name, dbBook.name, null, 'like'),
 			user.userId,
 		);
-		await User.findByIdAndUpdate(dbBook.owner, {
+		const dbUserMatched = await User.findByIdAndUpdate(dbBook.owner, {
 			$push: {
 				notifications: notification,
 			},
@@ -203,30 +207,30 @@ exports.likeBook = async (req, res, next) => {
 
 		logger.info(`Added "like notification" to the book owner: ${dbBook.owner}`);
 
-		const dbUserMatched = await User.findOne({ _id: dbBook.owner, booksLiked: { $in: dbUser.booksOwned } });
+		const isMatch = dbUserMatched.booksLiked.some((item) => dbUser.booksOwned.includes(item));
 
 		let responseMessage = constants.RESPONSE_BOOK_LIKE_SUCCESS;
 
-		if (dbUserMatched) {
+		if (isMatch) {
 			notification = bookUtil.createNotification(
 				bookUtil.notificationMessage(dbUser.name, null, dbUser.email, 'match'),
 				user.userId,
 			);
-			await User.findByIdAndUpdate(dbBook.owner, {
+			User.findByIdAndUpdate(dbBook.owner, {
 				$push: {
 					notifications: notification,
 				},
-			});
+			}).exec();
 
 			notification = bookUtil.createNotification(
 				bookUtil.notificationMessage(dbUserMatched.name, null, dbUserMatched.email, 'match'),
 				dbBook.owner,
 			);
-			await User.findByIdAndUpdate(user.userId, {
+			User.findByIdAndUpdate(user.userId, {
 				$push: {
 					notifications: notification,
 				},
-			});
+			}).exec();
 
 			responseMessage = constants.RESPONSE_BOOK_LIKE_MATCH;
 
@@ -253,6 +257,14 @@ exports.unlikeBook = async (req, res, next) => {
 
 		logger.info(`BookId:${id}`);
 
+		const book = await Book.findByIdAndUpdate(id, { $pull: { likedBy: user.userId } });
+
+		if (!book) {
+			return next(new ErrorHandler(httpResponse.NOT_FOUND, httpResponse[httpResponse.NOT_FOUND]), req, res, next);
+		}
+
+		logger.info('User Id removed from likedBy of the book');
+
 		const notLiked = await User.findOneAndUpdate({ _id: user.userId, booksLiked: id }, { $pull: { booksLiked: id } });
 
 		if (!notLiked) {
@@ -265,19 +277,15 @@ exports.unlikeBook = async (req, res, next) => {
 
 		logger.info('Book Id removed from booksLiked of the user');
 
-		const book = await Book.findByIdAndUpdate(id, { $pull: { likedBy: user.userId } });
-
-		logger.info('User Id removed from likedBy of the book');
-
 		const notification = bookUtil.createNotification(
 			bookUtil.notificationMessage(notLiked.name, book.name, null, 'unlike'),
 			user.userId,
 		);
-		await User.findByIdAndUpdate(book.owner, {
+		User.findByIdAndUpdate(book.owner, {
 			$push: {
 				notifications: notification,
 			},
-		});
+		}).exec();
 
 		logger.info(`Added the notification to the book owner: ${book.owner}`);
 

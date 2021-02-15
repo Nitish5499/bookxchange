@@ -16,6 +16,7 @@ chai.use(chaiHttp);
 
 describe('Integration - Test book fetch endpoints', () => {
 	let dbUser = null;
+	let tempUser = null;
 	let jwt = null;
 	let book = null;
 	const name = 'jett';
@@ -88,11 +89,22 @@ describe('Integration - Test book fetch endpoints', () => {
 
 			try {
 				// Creating a Book for the test
+				tempUser = await User.create({
+					name,
+					email: 'temp@gmail.com',
+					address,
+					otp: '',
+					active: true,
+					booksOwned: [mongoose.Types.ObjectId()],
+				});
+
+				// Creating a Book for the test
 				const bookinfo = {
+					_id: tempUser.booksOwned[0],
 					name: 'The Guest List',
 					author: 'Lucy Foley',
 					link: 'https://www.goodreads.com/book/show/54911607-the-guest-list?from_choice=true',
-					owner: mongoose.Types.ObjectId(),
+					owner: tempUser._id,
 				};
 
 				book = await Book.create(bookinfo);
