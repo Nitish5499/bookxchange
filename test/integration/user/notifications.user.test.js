@@ -16,6 +16,7 @@ const Session = require('$/models/sessionModel');
 const app = require('$/app');
 
 const authUtil = require('$/utils/authUtil');
+const constants = require('$/config/constants');
 
 const { expect } = chai;
 
@@ -152,7 +153,7 @@ describe('Integration - Test users notifications endpoints', () => {
 				.send({})
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
-					expect(res.body.message).equal('You are not logged in! Please login in to continue');
+					expect(res.body.message).equal(constants.RESPONSE_NOT_LOGGED_IN);
 					done();
 				});
 		});

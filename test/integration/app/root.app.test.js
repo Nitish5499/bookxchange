@@ -46,7 +46,7 @@ describe('Integration - Test root endpoints', () => {
 				.request(app)
 				.get('/404')
 				.end((err, res) => {
-					expect(res.statusCode).equal(404);
+					expect(res.statusCode).equal(httpResponse.NOT_FOUND);
 					done();
 				});
 		});

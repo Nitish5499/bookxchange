@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const httpResponse = require('http-status');
 
+const constants = require('$/config/constants');
 const { ErrorHandler } = require('$/utils/errorHandler');
 
 const userSchema = new mongoose.Schema({
@@ -61,8 +63,8 @@ const userSchema = new mongoose.Schema({
 
 // Mongoose -> Document Middleware
 userSchema.post('save', (error, doc, next) => {
-	if (error.name === 'MongoError' && error.code === 11000) {
-		next(new ErrorHandler(409, 'Email already exists'));
+	if (error.name === constants.MONGO_ERROR && error.code === 11000) {
+		next(new ErrorHandler(httpResponse.CONFLICT, constants.RESPONSE_EMAIL_EXISTS));
 	} else {
 		next(error);
 	}

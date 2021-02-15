@@ -10,6 +10,7 @@ const Session = require('$/models/sessionModel');
 const app = require('$/app');
 
 const authUtil = require('$/utils/authUtil');
+const constants = require('$/config/constants');
 
 chai.use(chaiHttp);
 
@@ -115,7 +116,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.OK);
-					expect(res.body.message).equal('Book liked successfully');
+					expect(res.body.message).equal(constants.RESPONSE_BOOK_LIKE_SUCCESS);
 					done();
 				});
 		});
@@ -129,7 +130,7 @@ describe('Integration - Test book fetch endpoints', () => {
 						.set('Cookie', `jwt_token=${jwt}`)
 						.end((err, res) => {
 							expect(res.statusCode).equal(httpResponse.OK);
-							expect(res.body.message).equal('Book already liked');
+							expect(res.body.message).equal(constants.RESPONSE_BOOK_LIKE_FAIL);
 							done();
 						});
 				});
@@ -142,7 +143,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.put(`/api/v1/books/${book._id}/like`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
-					expect(res.body.message).equal('You are not logged in! Please login in to continue');
+					expect(res.body.message).equal(constants.RESPONSE_NOT_LOGGED_IN);
 					done();
 				});
 		});
@@ -154,7 +155,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.NOT_FOUND);
-					expect(res.body.message).equal('Not found');
+					expect(res.body.message).equal(httpResponse[httpResponse.NOT_FOUND]);
 					done();
 				});
 		});
@@ -201,7 +202,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.OK);
-					expect(res.body.message).equal('Book unliked successfully');
+					expect(res.body.message).equal(constants.RESPONSE_BOOK_UNLIKE_SUCCESS);
 					done();
 				});
 		});
@@ -215,7 +216,7 @@ describe('Integration - Test book fetch endpoints', () => {
 						.set('Cookie', `jwt_token=${jwt}`)
 						.end((err, res) => {
 							expect(res.statusCode).equal(httpResponse.OK);
-							expect(res.body.message).equal('Book not liked yet');
+							expect(res.body.message).equal(constants.RESPONSE_BOOK_UNLIKE_FAIL);
 							done();
 						});
 				});
@@ -228,7 +229,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.delete(`/api/v1/books/${book._id}/like`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
-					expect(res.body.message).equal('You are not logged in! Please login in to continue');
+					expect(res.body.message).equal(constants.RESPONSE_NOT_LOGGED_IN);
 					done();
 				});
 		});
@@ -240,7 +241,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.NOT_FOUND);
-					expect(res.body.message).equal('Not found');
+					expect(res.body.message).equal(httpResponse[httpResponse.NOT_FOUND]);
 					done();
 				});
 		});

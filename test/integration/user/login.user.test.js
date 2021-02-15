@@ -13,6 +13,8 @@ const httpResponse = require('http-status');
 const User = require('$/models/userModel');
 const app = require('$/app');
 
+const constants = require('$/config/constants');
+
 const { expect } = chai;
 
 chai.use(chaiHttp);
@@ -109,7 +111,7 @@ describe('Integration - Test users login endpoints', () => {
 				.send({ email })
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.METHOD_NOT_ALLOWED);
-					expect(res.body.message).equal('Method not allowed');
+					expect(res.body.message).equal(httpResponse[httpResponse.METHOD_NOT_ALLOWED]);
 					done();
 				});
 		});
@@ -121,7 +123,7 @@ describe('Integration - Test users login endpoints', () => {
 				.send({ email: email2 })
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
-					expect(res.body.message).equal('Email not registered');
+					expect(res.body.message).equal(constants.RESPONSE_USER_AUTH_NO_EMAIL_FAIL);
 					done();
 				});
 		});
@@ -186,7 +188,7 @@ describe('Integration - Test users login endpoints', () => {
 				.send({ email, otp: otpCorrect })
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.METHOD_NOT_ALLOWED);
-					expect(res.body.message).equal('Method not allowed');
+					expect(res.body.message).equal(httpResponse[httpResponse.METHOD_NOT_ALLOWED]);
 					done();
 				});
 		});
@@ -198,7 +200,7 @@ describe('Integration - Test users login endpoints', () => {
 				.send({ email: email2, otp: otpCorrect })
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
-					expect(res.body.message).equal('Email not registered');
+					expect(res.body.message).equal(constants.RESPONSE_USER_AUTH_NO_EMAIL_FAIL);
 					done();
 				});
 		});
@@ -210,7 +212,7 @@ describe('Integration - Test users login endpoints', () => {
 				.send({ email, otp: otpWrong })
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
-					expect(res.body.message).equal('Invalid OTP or email');
+					expect(res.body.message).equal(constants.RESPONSE_USER_AUTH_FAIL);
 					done();
 				});
 		});

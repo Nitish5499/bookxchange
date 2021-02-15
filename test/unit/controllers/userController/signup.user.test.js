@@ -12,6 +12,8 @@ const userController = require('$/controllers/userController');
 
 const User = require('$/models/userModel');
 
+const constants = require('$/config/constants');
+
 const { expect } = chai;
 
 describe('Unit - Test User Controller', () => {
@@ -129,7 +131,7 @@ describe('Unit - Test User Controller', () => {
 
 			await userController.signupVerify(req, res, (err) => {
 				expect(err.statusCode).equal(httpResponse.UNAUTHORIZED);
-				expect(err.message).equal('Email or otp is wrong');
+				expect(err.message).equal(constants.RESPONSE_USER_AUTH_FAIL);
 			});
 		});
 
@@ -148,7 +150,7 @@ describe('Unit - Test User Controller', () => {
 			});
 
 			const { data } = res._getJSONData();
-			expect(data).equal('Email verified');
+			expect(data).equal(constants.RESPONSE_USER_SIGNUP_VERIFY_SUCCESS);
 		});
 	});
 });

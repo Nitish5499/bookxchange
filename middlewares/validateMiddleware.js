@@ -31,7 +31,7 @@ const validate = (schema) => async (req, res, next) => {
 		}
 
 		if (!isPresent) {
-			return next(new ErrorHandler(httpStatus.NOT_FOUND, 'Not found'));
+			return next(new ErrorHandler(httpStatus.NOT_FOUND, httpStatus[httpStatus.NOT_FOUND]));
 		}
 	}
 

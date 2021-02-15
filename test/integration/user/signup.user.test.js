@@ -13,6 +13,8 @@ const httpResponse = require('http-status');
 const User = require('$/models/userModel');
 const app = require('$/app');
 
+const constants = require('$/config/constants');
+
 const { expect } = chai;
 
 chai.use(chaiHttp);
@@ -111,7 +113,7 @@ describe('Integration - Test users signup endpoints', () => {
 				.send({ name: 'foo', email: 'foo@bar.com' })
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.METHOD_NOT_ALLOWED);
-					expect(res.body.message).equal('Method not allowed');
+					expect(res.body.message).equal(httpResponse[httpResponse.METHOD_NOT_ALLOWED]);
 					done();
 				});
 		});
@@ -123,7 +125,7 @@ describe('Integration - Test users signup endpoints', () => {
 				.send({ name, email })
 				.end((err, res) => {
 					expect(res.statusCode).equal(409);
-					expect(res.body.message).equal('Email already exists');
+					expect(res.body.message).equal(constants.RESPONSE_EMAIL_EXISTS);
 					done();
 				});
 		});
@@ -176,7 +178,7 @@ describe('Integration - Test users signup endpoints', () => {
 				.send({ email, otp: otpCorrect })
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.OK);
-					expect(res.body.data).equal('Email verified');
+					expect(res.body.data).equal(constants.RESPONSE_USER_SIGNUP_VERIFY_SUCCESS);
 					done();
 				});
 		});
@@ -188,7 +190,7 @@ describe('Integration - Test users signup endpoints', () => {
 				.send({ email: email2, otp: otpCorrect2 })
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.FORBIDDEN);
-					expect(res.body.message).equal('User email has already been verified');
+					expect(res.body.message).equal(constants.RESPONSE_USER_SIGNUP_VERIFY_FAIL);
 					done();
 				});
 		});

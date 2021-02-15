@@ -12,6 +12,7 @@ const Session = require('$/models/sessionModel');
 
 const authUtil = require('$/utils/authUtil');
 const app = require('$/app');
+const constants = require('$/config/constants');
 
 const { expect } = chai;
 chai.use(chaiHttp);
@@ -114,7 +115,7 @@ describe('Integration - Test user fetch endpoints', () => {
 				.set('Cookie', `jwt_token=${jwtUser}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.NOT_FOUND);
-					expect(res.body.message).equal('Not found');
+					expect(res.body.message).equal(httpResponse[httpResponse.NOT_FOUND]);
 					done();
 				});
 		});
@@ -125,7 +126,7 @@ describe('Integration - Test user fetch endpoints', () => {
 				.get(`/api/v1/users/${reqCorrectUserId}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
-					expect(res.body.message).equal('You are not logged in! Please login in to continue');
+					expect(res.body.message).equal(constants.RESPONSE_NOT_LOGGED_IN);
 					done();
 				});
 		});

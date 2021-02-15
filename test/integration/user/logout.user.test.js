@@ -15,6 +15,7 @@ const Session = require('$/models/sessionModel');
 const app = require('$/app');
 
 const authUtil = require('$/utils/authUtil');
+const constants = require('$/config/constants');
 
 const { expect } = chai;
 
@@ -118,7 +119,7 @@ describe('Integration - Test users logout endpoints', () => {
 				.set('Cookie', `jwt_token=${jwtTokenInvalid}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.OK);
-					expect(res.body.data).equal('successfully logged out');
+					expect(res.body.data).equal(constants.RESPONSE_USER_LOGOUT_SUCCESS);
 					done();
 				});
 		});
@@ -130,7 +131,7 @@ describe('Integration - Test users logout endpoints', () => {
 				.set('Cookie', `jwt_token=${jwtTokenValid}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.OK);
-					expect(res.body.data).equal('successfully logged out');
+					expect(res.body.data).equal(constants.RESPONSE_USER_LOGOUT_SUCCESS);
 					done();
 				});
 		});

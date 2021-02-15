@@ -13,6 +13,7 @@ const routes = require('$/routes/index');
 
 const { ErrorHandler, handleError } = require('$/utils/errorHandler');
 const logger = require('$/config/logger');
+const constants = require('$/config/constants');
 
 const app = express();
 
@@ -27,9 +28,9 @@ const limiter = rateLimit({
 	max: 150,
 	windowMs: 60 * 60 * 1000,
 	message: {
-		code: 429,
-		message: 'Too many requests, please try again later.',
-		status: 'error',
+		code: httpResponse.TOO_MANY_REQUESTS,
+		message: httpResponse[httpResponse.TOO_MANY_REQUESTS],
+		status: constants.STATUS_ERROR,
 	},
 });
 app.use('/api', limiter);
@@ -63,7 +64,7 @@ app.use('/', routes);
 
 // handle undefined Routes
 app.use('*', (req, res, next) => {
-	const err = new ErrorHandler(httpResponse.NOT_FOUND, 'undefined route');
+	const err = new ErrorHandler(httpResponse.NOT_FOUND, httpResponse[httpResponse.NOT_FOUND]);
 	next(err, req, res, next);
 });
 

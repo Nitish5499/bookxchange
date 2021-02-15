@@ -10,6 +10,7 @@ const Session = require('$/models/sessionModel');
 const app = require('$/app');
 
 const authUtil = require('$/utils/authUtil');
+const constants = require('$/config/constants');
 
 chai.use(chaiHttp);
 
@@ -113,7 +114,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.get(`/api/v1/books/${book._id}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
-					expect(res.body.message).equal('You are not logged in! Please login in to continue');
+					expect(res.body.message).equal(constants.RESPONSE_NOT_LOGGED_IN);
 					done();
 				});
 		});
@@ -124,8 +125,8 @@ describe('Integration - Test book fetch endpoints', () => {
 				.get(`/api/v1/books/${mongoose.Types.ObjectId()}`)
 				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
-					expect(res.statusCode).equal(404);
-					expect(res.body.message).equal('Not found');
+					expect(res.statusCode).equal(httpResponse.NOT_FOUND);
+					expect(res.body.message).equal(httpResponse[httpResponse.NOT_FOUND]);
 					done();
 				});
 		});
@@ -175,7 +176,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.send({ name: 'changedName', author: 'changedAuthor', link: 'https://foo.com' })
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
-					expect(res.body.message).equal('You are not logged in! Please login in to continue');
+					expect(res.body.message).equal(constants.RESPONSE_NOT_LOGGED_IN);
 					done();
 				});
 		});
@@ -212,8 +213,8 @@ describe('Integration - Test book fetch endpoints', () => {
 				.send({ name: 'changedName', author: 'changedAuthor', link: 'https://foo.com' })
 				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
-					expect(res.statusCode).equal(404);
-					expect(res.body.message).equal('Not found');
+					expect(res.statusCode).equal(httpResponse.NOT_FOUND);
+					expect(res.body.message).equal(httpResponse[httpResponse.NOT_FOUND]);
 					done();
 				});
 		});
@@ -242,7 +243,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.delete(`/api/v1/books/${book._id}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
-					expect(res.body.message).equal('You are not logged in! Please login in to continue');
+					expect(res.body.message).equal(constants.RESPONSE_NOT_LOGGED_IN);
 					done();
 				});
 		});
@@ -253,8 +254,8 @@ describe('Integration - Test book fetch endpoints', () => {
 				.delete(`/api/v1/books/${mongoose.Types.ObjectId()}`)
 				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
-					expect(res.statusCode).equal(404);
-					expect(res.body.message).equal('Not found');
+					expect(res.statusCode).equal(httpResponse.NOT_FOUND);
+					expect(res.body.message).equal(httpResponse[httpResponse.NOT_FOUND]);
 					done();
 				});
 		});

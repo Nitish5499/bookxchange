@@ -12,6 +12,8 @@ const userController = require('$/controllers/userController');
 
 const User = require('$/models/userModel');
 
+const constants = require('$/config/constants');
+
 const { expect } = chai;
 
 describe('Unit - Test User Controller', () => {
@@ -104,7 +106,7 @@ describe('Unit - Test User Controller', () => {
 			const res = mocks.createResponse();
 			await userController.login(req, res, (err) => {
 				expect(err.statusCode).equal(httpResponse.UNAUTHORIZED);
-				expect(err.message).equal('Email not registered');
+				expect(err.message).equal(constants.RESPONSE_USER_AUTH_NO_EMAIL_FAIL);
 			});
 		});
 
@@ -118,7 +120,7 @@ describe('Unit - Test User Controller', () => {
 			const res = mocks.createResponse();
 			await userController.login(req, res, (err) => {
 				expect(err.statusCode).equal(httpResponse.FORBIDDEN);
-				expect(err.message).equal('Email not verified');
+				expect(err.message).equal(constants.RESPONSE_USER_AUTH_NO_VERIFY_FAIL);
 			});
 		});
 
@@ -202,7 +204,7 @@ describe('Unit - Test User Controller', () => {
 			const res = mocks.createResponse();
 			await userController.loginVerify(req, res, (err) => {
 				expect(err.statusCode).equal(httpResponse.UNAUTHORIZED);
-				expect(err.message).equal('Email not registered');
+				expect(err.message).equal(constants.RESPONSE_USER_AUTH_NO_EMAIL_FAIL);
 			});
 		});
 
@@ -217,7 +219,7 @@ describe('Unit - Test User Controller', () => {
 			const res = mocks.createResponse();
 			await userController.loginVerify(req, res, (err) => {
 				expect(err.statusCode).equal(httpResponse.FORBIDDEN);
-				expect(err.message).equal('Email not verified');
+				expect(err.message).equal(constants.RESPONSE_USER_AUTH_NO_VERIFY_FAIL);
 			});
 		});
 
@@ -234,7 +236,7 @@ describe('Unit - Test User Controller', () => {
 
 			await userController.loginVerify(req, res, (err) => {
 				expect(err.statusCode).equal(httpResponse.UNAUTHORIZED);
-				expect(err.message).equal('Invalid OTP or email');
+				expect(err.message).equal(constants.RESPONSE_USER_AUTH_FAIL);
 			});
 		});
 

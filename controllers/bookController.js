@@ -8,6 +8,7 @@ const User = require('$/models/userModel');
 const { ErrorHandler } = require('$/utils/errorHandler');
 const bookUtil = require('$/utils/bookUtil');
 const logger = require('$/config/logger');
+const constants = require('$/config/constants');
 
 exports.addBook = async (req, res, next) => {
 	logger.info('inside addBook function');
@@ -35,7 +36,7 @@ exports.addBook = async (req, res, next) => {
 		await User.findByIdAndUpdate(user.userId, { $push: { booksOwned: book._id } });
 
 		res.status(httpResponse.OK).json({
-			status: 'success',
+			status: constants.STATUS_SUCCESS,
 			data: {
 				book,
 			},
@@ -58,7 +59,7 @@ exports.getAllBooks = async (req, res, next) => {
 		logger.info(`Books: ${allBooks}`);
 
 		res.status(httpResponse.OK).json({
-			status: 'success',
+			status: constants.STATUS_SUCCESS,
 			data: {
 				book: allBooks,
 			},
@@ -80,11 +81,11 @@ exports.getBook = async (req, res, next) => {
 		logger.info(`Book:${book}`);
 
 		if (!book) {
-			return next(new ErrorHandler(404, 'Not found'), req, res, next);
+			return next(new ErrorHandler(httpResponse.NOT_FOUND, httpResponse[httpResponse.NOT_FOUND]), req, res, next);
 		}
 
 		res.status(httpResponse.OK).json({
-			status: 'success',
+			status: constants.STATUS_SUCCESS,
 			data: {
 				book,
 			},
@@ -110,11 +111,11 @@ exports.updateBook = async (req, res, next) => {
 		logger.info(dbBook);
 
 		if (!dbBook) {
-			return next(new ErrorHandler(404, 'Not found'), req, res, next);
+			return next(new ErrorHandler(httpResponse.NOT_FOUND, httpResponse[httpResponse.NOT_FOUND]), req, res, next);
 		}
 
 		res.status(httpResponse.OK).json({
-			status: 'success',
+			status: constants.STATUS_SUCCESS,
 			data: dbBook,
 		});
 	} catch (err) {
@@ -132,7 +133,7 @@ exports.deleteBook = async (req, res, next) => {
 		const book = await Book.findByIdAndRemove(id);
 
 		if (!book) {
-			return next(new ErrorHandler(404, 'Not found'), req, res, next);
+			return next(new ErrorHandler(httpResponse.NOT_FOUND, httpResponse[httpResponse.NOT_FOUND]), req, res, next);
 		}
 
 		logger.info('Book successfully deleted from the database');
@@ -148,7 +149,7 @@ exports.deleteBook = async (req, res, next) => {
 		logger.info('users updated to remove book from liked field');
 
 		res.status(httpResponse.OK).json({
-			status: 'success',
+			status: constants.STATUS_SUCCESS,
 			data: {
 				book,
 			},
@@ -178,8 +179,8 @@ exports.likeBook = async (req, res, next) => {
 		// `dbUser` is `null`
 		if (!dbUser) {
 			res.status(httpResponse.OK).json({
-				status: 'success',
-				message: 'Book already liked',
+				status: constants.STATUS_SUCCESS,
+				message: constants.RESPONSE_BOOK_LIKE_FAIL,
 			});
 			return;
 		}
@@ -204,7 +205,7 @@ exports.likeBook = async (req, res, next) => {
 
 		const dbUserMatched = await User.findOne({ _id: dbBook.owner, booksLiked: { $in: dbUser.booksOwned } });
 
-		let responseMessage = 'Book liked successfully';
+		let responseMessage = constants.RESPONSE_BOOK_LIKE_SUCCESS;
 
 		if (dbUserMatched) {
 			notification = bookUtil.createNotification(
@@ -227,13 +228,13 @@ exports.likeBook = async (req, res, next) => {
 				},
 			});
 
-			responseMessage = 'It is a match!';
+			responseMessage = constants.RESPONSE_BOOK_LIKE_MATCH;
 
 			logger.info(`Added "match notifications" to the users: ${dbBook.owner}, ${user.userId}`);
 		}
 
 		res.status(httpResponse.OK).json({
-			status: 'success',
+			status: constants.STATUS_SUCCESS,
 			message: responseMessage,
 		});
 	} catch (err) {
@@ -256,8 +257,8 @@ exports.unlikeBook = async (req, res, next) => {
 
 		if (!notLiked) {
 			res.status(httpResponse.OK).json({
-				status: 'success',
-				message: 'Book not liked yet',
+				status: constants.STATUS_SUCCESS,
+				message: constants.RESPONSE_BOOK_UNLIKE_FAIL,
 			});
 			return;
 		}
@@ -281,8 +282,8 @@ exports.unlikeBook = async (req, res, next) => {
 		logger.info(`Added the notification to the book owner: ${book.owner}`);
 
 		res.status(httpResponse.OK).json({
-			status: 'success',
-			message: 'Book unliked successfully',
+			status: constants.STATUS_SUCCESS,
+			message: constants.RESPONSE_BOOK_UNLIKE_SUCCESS,
 		});
 	} catch (err) {
 		next(err);
@@ -302,7 +303,7 @@ exports.getLikedBooks = async (req, res, next) => {
 		logger.info(`Books: ${allLikedBooks}`);
 
 		res.status(httpResponse.OK).json({
-			status: 'success',
+			status: constants.STATUS_SUCCESS,
 			data: {
 				book: allLikedBooks,
 			},
@@ -326,7 +327,7 @@ exports.getOthersLikedBooks = async (req, res, next) => {
 		logger.info(`Books: ${dbBooks}`);
 
 		res.status(httpResponse.OK).json({
-			status: 'success',
+			status: constants.STATUS_SUCCESS,
 			data: {
 				books: dbBooks,
 			},
@@ -352,9 +353,11 @@ exports.findBooks = async (req, res, next) => {
 
 		logger.info(`User zipcode: ${zipcode}`);
 
-		await zipcodes.near(zipcode, 3000, { datafile: 'config/data/zipcodes.csv' }).then((response) => {
-			result = response;
-		});
+		await zipcodes
+			.near(zipcode, constants.BOOKS_FIND_DISTANCE, { datafile: 'config/data/zipcodes.csv' })
+			.then((response) => {
+				result = response;
+			});
 
 		logger.info(`Nearby zipcodes: ${result}`);
 
@@ -394,7 +397,7 @@ exports.findBooks = async (req, res, next) => {
 		]);
 
 		res.status(httpResponse.OK).json({
-			status: 'success',
+			status: constants.STATUS_SUCCESS,
 			data: {
 				nearbyBooks: books[0].nearbyBooks,
 			},

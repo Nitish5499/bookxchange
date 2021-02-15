@@ -9,6 +9,7 @@ const { ErrorHandler } = require('$/utils/errorHandler');
 const authUtil = require('$/utils/authUtil');
 const externalUtil = require('$/utils/externalUtil');
 const logger = require('$/config/logger');
+const constants = require('$/config/constants');
 
 exports.signup = async (req, res, next) => {
 	logger.info('Inside signup function');
@@ -34,13 +35,13 @@ exports.signup = async (req, res, next) => {
 			data = otp;
 		} else {
 			data = await externalUtil.sendEmail(dbResult.email, dbResult.name, otp);
-			data = 'Email has been sent';
+			data = constants.RESPONSE_USER_SIGNUP_SUCCESS;
 		}
 
 		logger.info('Email successfully sent');
 
 		res.status(httpResponse.OK).json({
-			status: 'success',
+			status: constants.STATUS_SUCCESS,
 			data,
 		});
 	} catch (error) {
@@ -62,11 +63,11 @@ exports.signupVerify = async (req, res, next) => {
 		});
 
 		if (dbUser.active) {
-			return next(new ErrorHandler(httpResponse.FORBIDDEN, 'User email has already been verified'), req, res, next);
+			return next(new ErrorHandler(httpResponse.FORBIDDEN, constants.RESPONSE_USER_SIGNUP_VERIFY_FAIL), req, res, next);
 		}
 
 		if (!dbUser || otpNum !== dbUser.otp) {
-			return next(new ErrorHandler(httpResponse.UNAUTHORIZED, 'Email or otp is wrong'), req, res, next);
+			return next(new ErrorHandler(httpResponse.UNAUTHORIZED, constants.RESPONSE_USER_AUTH_FAIL), req, res, next);
 		}
 
 		logger.info(`database user : ${dbUser}`);
@@ -77,8 +78,8 @@ exports.signupVerify = async (req, res, next) => {
 		});
 
 		res.status(httpResponse.OK).json({
-			status: 'success',
-			data: 'Email verified',
+			status: constants.STATUS_SUCCESS,
+			data: constants.RESPONSE_USER_SIGNUP_VERIFY_SUCCESS,
 		});
 	} catch (error) {
 		next(error);
@@ -95,11 +96,21 @@ exports.login = async (req, res, next) => {
 		let dbUser = await User.findOne({ email });
 
 		if (!dbUser) {
-			return next(new ErrorHandler(httpResponse.UNAUTHORIZED, 'Email not registered'), req, res, next);
+			return next(
+				new ErrorHandler(httpResponse.UNAUTHORIZED, constants.RESPONSE_USER_AUTH_NO_EMAIL_FAIL),
+				req,
+				res,
+				next,
+			);
 		}
 
 		if (!dbUser.active) {
-			return next(new ErrorHandler(httpResponse.FORBIDDEN, 'Email not verified'), req, res, next);
+			return next(
+				new ErrorHandler(httpResponse.FORBIDDEN, constants.RESPONSE_USER_AUTH_NO_VERIFY_FAIL),
+				req,
+				res,
+				next,
+			);
 		}
 
 		logger.info(`database user: ${dbUser}`);
@@ -114,15 +125,15 @@ exports.login = async (req, res, next) => {
 
 		if (process.env.NODE_ENV !== 'production') {
 			res.status(httpResponse.OK).json({
-				status: 'success',
+				status: constants.STATUS_SUCCESS,
 				data: otp,
 			});
 		} else {
 			externalUtil.sendEmail(dbUser.email, dbUser.name, otp);
 			logger.info('email sent successfully');
 			res.status(httpResponse.OK).json({
-				status: 'success',
-				data: 'check mail',
+				status: constants.STATUS_SUCCESS,
+				data: constants.RESPONSE_USER_LOGIN_SUCCESS,
 			});
 		}
 	} catch (error) {
@@ -142,15 +153,25 @@ exports.loginVerify = async (req, res, next) => {
 		let user = await User.findOne({ email });
 
 		if (!user) {
-			return next(new ErrorHandler(httpResponse.UNAUTHORIZED, 'Email not registered'), req, res, next);
+			return next(
+				new ErrorHandler(httpResponse.UNAUTHORIZED, constants.RESPONSE_USER_AUTH_NO_EMAIL_FAIL),
+				req,
+				res,
+				next,
+			);
 		}
 
 		if (!user.active) {
-			return next(new ErrorHandler(httpResponse.FORBIDDEN, 'Email not verified'), req, res, next);
+			return next(
+				new ErrorHandler(httpResponse.FORBIDDEN, constants.RESPONSE_USER_AUTH_NO_VERIFY_FAIL),
+				req,
+				res,
+				next,
+			);
 		}
 
 		if (user.otp !== otpNum) {
-			return next(new ErrorHandler(httpResponse.UNAUTHORIZED, 'Invalid OTP or email'), req, res, next);
+			return next(new ErrorHandler(httpResponse.UNAUTHORIZED, constants.RESPONSE_USER_AUTH_FAIL), req, res, next);
 		}
 
 		logger.info(`database user : ${user}`);
@@ -173,8 +194,8 @@ exports.loginVerify = async (req, res, next) => {
 		logger.info('JWT token created and added');
 
 		res.status(httpResponse.OK).json({
-			status: 'success',
-			data: 'login successful',
+			status: constants.STATUS_SUCCESS,
+			data: constants.RESPONSE_USER_LOGIN_VERIFY_SUCCESS,
 		});
 	} catch (err) {
 		next(err);
@@ -240,7 +261,7 @@ exports.getUser = async (req, res, next) => {
 		);
 
 		res.status(httpResponse.OK).json({
-			status: 'success',
+			status: constants.STATUS_SUCCESS,
 			data: dbUser[0],
 		});
 	} catch (error) {
@@ -262,7 +283,7 @@ exports.getOtherUser = async (req, res, next) => {
 		logger.info(`Fetched userId: ${dbUser._id}`);
 
 		res.status(httpResponse.OK).json({
-			status: 'success',
+			status: constants.STATUS_SUCCESS,
 			data: { user: dbUser },
 		});
 	} catch (error) {
@@ -286,8 +307,8 @@ exports.updateUser = async (req, res, next) => {
 		logger.info(`user after update: ${user}`);
 
 		res.status(httpResponse.OK).json({
-			status: 'success',
-			data: 'update successful',
+			status: constants.STATUS_SUCCESS,
+			data: constants.RESPONSE_USER_UPDATE_SUCCESS,
 		});
 	} catch (err) {
 		next(err);
@@ -358,7 +379,7 @@ exports.readNotifications = async (req, res, next) => {
 		]);
 
 		res.status(httpResponse.OK).json({
-			status: 'success',
+			status: constants.STATUS_SUCCESS,
 			data: {
 				newNotifications: dbUser[0],
 			},
@@ -391,15 +412,15 @@ exports.logout = async (req, res, next) => {
 		logger.info('user session removed from db');
 
 		res.status(httpResponse.OK).json({
-			status: 'success',
-			data: 'successfully logged out',
+			status: constants.STATUS_SUCCESS,
+			data: constants.RESPONSE_USER_LOGOUT_SUCCESS,
 		});
 	} catch (error) {
 		// Do not care about malformed JWT tokens
 		if (error.name === 'JsonWebTokenError' || error.name === 'SyntaxError') {
 			res.status(httpResponse.OK).json({
-				status: 'success',
-				data: 'successfully logged out',
+				status: constants.STATUS_SUCCESS,
+				data: constants.RESPONSE_USER_LOGOUT_SUCCESS,
 			});
 		} else {
 			next(error);

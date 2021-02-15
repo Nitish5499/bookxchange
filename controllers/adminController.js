@@ -8,6 +8,8 @@ const Session = require('$/models/sessionModel');
 let userData = require('$/config/testData/userData.json');
 let bookData = require('$/config/testData/bookData.json');
 
+const constants = require('$/config/constants');
+
 exports.populate = async (req, res, next) => {
 	try {
 		/*
@@ -58,7 +60,7 @@ exports.populate = async (req, res, next) => {
 		books = await Book.insertMany(books);
 
 		res.status(200).json({
-			status: 'success',
+			status: constants.STATUS_SUCCESS,
 			users,
 			books,
 		});
@@ -74,7 +76,7 @@ exports.purge = async (req, res, next) => {
 		await Session.deleteMany({});
 
 		res.status(200).json({
-			status: 'success',
+			status: constants.STATUS_SUCCESS,
 		});
 	} catch (err) {
 		next(err);

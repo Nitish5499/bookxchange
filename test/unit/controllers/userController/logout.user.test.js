@@ -13,6 +13,7 @@ const User = require('$/models/userModel');
 const Session = require('$/models/sessionModel');
 
 const authUtil = require('$/utils/authUtil');
+const constants = require('$/config/constants');
 
 const { expect } = chai;
 
@@ -120,7 +121,7 @@ describe('Unit - Test User Controller', () => {
 			});
 
 			const { data } = res._getJSONData();
-			expect(data).equal('successfully logged out');
+			expect(data).equal(constants.RESPONSE_USER_LOGOUT_SUCCESS);
 		});
 
 		it('logout successful - valid session, return 200', async () => {
@@ -139,7 +140,7 @@ describe('Unit - Test User Controller', () => {
 			});
 
 			const { data } = res._getJSONData();
-			expect(data).equal('successfully logged out');
+			expect(data).equal(constants.RESPONSE_USER_LOGOUT_SUCCESS);
 
 			const dbSession = await Session.findOne({ userId: dbUser._id, sessionToken: jwtTokenValid });
 			// eslint-disable-next-line no-unused-expressions

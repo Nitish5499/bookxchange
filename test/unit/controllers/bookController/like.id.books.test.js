@@ -9,6 +9,7 @@ const User = require('$/models/userModel');
 const Session = require('$/models/sessionModel');
 
 const authUtil = require('$/utils/authUtil');
+const constants = require('$/config/constants');
 
 const { expect } = chai;
 
@@ -139,7 +140,7 @@ describe('Unit - Test Book Controller', () => {
 			expect(resUser1.notifications[0].text).equal('jett liked your book, The Guest List');
 			expect(resUser2.booksLiked[0].toString()).equal(book._id.toString());
 			expect(resBook.likedBy[0].toString()).equal(dbUser._id.toString());
-			expect(message).equal('Book liked successfully');
+			expect(message).equal(constants.RESPONSE_BOOK_LIKE_SUCCESS);
 		});
 
 		it('book already liked - return 200', async () => {
@@ -161,7 +162,7 @@ describe('Unit - Test Book Controller', () => {
 			});
 
 			const { message } = res._getJSONData();
-			expect(message).equal('Book already liked');
+			expect(message).equal(constants.RESPONSE_BOOK_LIKE_FAIL);
 		});
 	});
 
@@ -230,7 +231,7 @@ describe('Unit - Test Book Controller', () => {
 			expect(resUser1.notifications[0].text).equal('jett un-liked your book, The Guest List');
 			expect(resUser2.booksLiked[2]).equal(undefined);
 			expect(resBook.likedBy[0]).equal(undefined);
-			expect(message).equal('Book unliked successfully');
+			expect(message).equal(constants.RESPONSE_BOOK_UNLIKE_SUCCESS);
 		});
 
 		it('book already liked - return 200', async () => {
@@ -252,7 +253,7 @@ describe('Unit - Test Book Controller', () => {
 			});
 
 			const { message } = res._getJSONData();
-			expect(message).equal('Book not liked yet');
+			expect(message).equal(constants.RESPONSE_BOOK_UNLIKE_FAIL);
 		});
 	});
 });

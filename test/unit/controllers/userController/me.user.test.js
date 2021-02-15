@@ -14,6 +14,7 @@ const User = require('$/models/userModel');
 const Session = require('$/models/sessionModel');
 
 const authUtil = require('$/utils/authUtil');
+const constants = require('$/config/constants');
 
 const { expect } = chai;
 
@@ -194,7 +195,7 @@ describe('Unit - Test User Controller', () => {
 
 			const res = mocks.createResponse();
 
-			const message = 'update successful';
+			const message = constants.RESPONSE_USER_UPDATE_SUCCESS;
 
 			await userController.updateUser(req, res, (err) => {
 				expect(err).equal(false);

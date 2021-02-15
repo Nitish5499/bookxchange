@@ -1,6 +1,7 @@
 const sgMail = require('@sendgrid/mail');
 const httpResponse = require('http-status');
 
+const constants = require('$/config/constants');
 const { ErrorHandler } = require('$/utils/errorHandler');
 
 exports.sendEmail = (recipientEmail, name, otp) => {
@@ -19,6 +20,6 @@ exports.sendEmail = (recipientEmail, name, otp) => {
 	try {
 		return sgMail.send(msg);
 	} catch (err) {
-		throw new ErrorHandler(httpResponse.INTERNAL_SERVER_ERROR, 'Error sending email');
+		throw new ErrorHandler(httpResponse.INTERNAL_SERVER_ERROR, constants.RESPONSE_EMAIL_ERROR);
 	}
 };

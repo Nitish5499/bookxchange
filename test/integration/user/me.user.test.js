@@ -16,6 +16,7 @@ const Session = require('$/models/sessionModel');
 const app = require('$/app');
 
 const authUtil = require('$/utils/authUtil');
+const constants = require('$/config/constants');
 
 const { expect } = chai;
 
@@ -151,7 +152,7 @@ describe('Integration - Test users me endpoints', () => {
 				.send({})
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
-					expect(res.body.message).equal('You are not logged in! Please login in to continue');
+					expect(res.body.message).equal(constants.RESPONSE_NOT_LOGGED_IN);
 					done();
 				});
 		});
@@ -164,7 +165,7 @@ describe('Integration - Test users me endpoints', () => {
 				.send({})
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.METHOD_NOT_ALLOWED);
-					expect(res.body.message).equal('Method not allowed');
+					expect(res.body.message).equal(httpResponse[httpResponse.METHOD_NOT_ALLOWED]);
 					done();
 				});
 		});
@@ -224,7 +225,7 @@ describe('Integration - Test users me endpoints', () => {
 				.send({ name: updateName, address: updateAddress })
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.OK);
-					expect(res.body.data).equals('update successful');
+					expect(res.body.data).equals(constants.RESPONSE_USER_UPDATE_SUCCESS);
 					User.findById(user._id)
 						.select('name email address -_id')
 						.then((user, err) => {

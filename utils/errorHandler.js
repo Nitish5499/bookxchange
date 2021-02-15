@@ -1,6 +1,7 @@
 const httpResponse = require('http-status');
 
 const logger = require('$/config/logger');
+const constants = require('$/config/constants');
 
 class ErrorHandler extends Error {
 	constructor(statusCode, message) {
@@ -20,16 +21,16 @@ const handleError = (err, res) => {
 	 * In unexpected errors, the `statusCode`
 	 * will be `undefined`.
 	 */
-	if (name === 'MongoError' || !statusCode) {
+	if (name === constants.MONGO_ERROR || !statusCode) {
 		logger.error(`Unhandled error: ${err}`);
 		statusCode = httpResponse.INTERNAL_SERVER_ERROR;
-		message = 'Internal Server Error';
+		message = httpResponse[httpResponse.INTERNAL_SERVER_ERROR];
 	}
 
 	logger.error(`Error response: statusCode: ${statusCode}, name: ${name}, message: ${message}`);
 
 	res.status(statusCode).json({
-		status: 'Error',
+		status: constants.STATUS_ERROR,
 		message,
 	});
 };
