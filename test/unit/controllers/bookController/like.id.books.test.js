@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const mocks = require('node-mocks-http');
 const chai = require('chai');
+const { promisify } = require('util');
 
 const bookController = require('$/controllers/bookController');
 
@@ -12,6 +13,7 @@ const authUtil = require('$/utils/authUtil');
 const constants = require('$/config/constants');
 
 const { expect } = chai;
+const sleep = promisify(setTimeout);
 
 describe('Unit - Test Book Controller', () => {
 	let dbUser = null;
@@ -223,6 +225,9 @@ describe('Unit - Test Book Controller', () => {
 			});
 
 			const { message } = res._getJSONData();
+
+			// Waiting for `unlikeBook()` function to update database completely
+			await sleep(3000);
 
 			const resUser1 = await User.findById(tempUser._id);
 			const resUser2 = await User.findById(dbUser._id);
