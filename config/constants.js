@@ -11,6 +11,9 @@ module.exports = Object.freeze({
 		3: 'disconnecting',
 	},
 
+	// Validation
+	RESPONSE_MISSING_PARAMETERS: 'Missing parameters',
+
 	// Distance for finding nearby zipcodes
 	BOOKS_FIND_DISTANCE: 3000,
 

@@ -166,7 +166,7 @@ describe('Integration - Test users notifications endpoints', () => {
 				.send({})
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.BAD_REQUEST);
-					expect(res.body.message).equal('timestamp is required');
+					expect(res.body.message).equal(constants.RESPONSE_MISSING_PARAMETERS);
 					done();
 				});
 		});

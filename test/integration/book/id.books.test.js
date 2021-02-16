@@ -138,7 +138,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.BAD_REQUEST);
-					expect(res.body.message).equal('"id" must be a valid MongoDB document ID');
+					expect(res.body.message).equal(httpResponse[httpResponse.BAD_REQUEST]);
 					done();
 				});
 		});
@@ -188,7 +188,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.BAD_REQUEST);
-					expect(res.body.message).equal('name is required');
+					expect(res.body.message).equal(constants.RESPONSE_MISSING_PARAMETERS);
 					done();
 				});
 		});
@@ -201,7 +201,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.BAD_REQUEST);
-					expect(res.body.message).equal('"id" must be a valid MongoDB document ID');
+					expect(res.body.message).equal(httpResponse[httpResponse.BAD_REQUEST]);
 					done();
 				});
 		});
@@ -232,7 +232,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				.set('Cookie', `jwt_token=${jwt}`)
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.BAD_REQUEST);
-					expect(res.body.message).equal('"id" must be a valid MongoDB document ID');
+					expect(res.body.message).equal(httpResponse[httpResponse.BAD_REQUEST]);
 					done();
 				});
 		});
