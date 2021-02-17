@@ -5,7 +5,7 @@ exports.mochaGlobalSetup = async () => {
 	console.log('\n------------- GLOBAL SETUP -------------');
 	console.log('\n1. Loading environment');
 	dotenv.config({
-		path: './config/test.env',
+		path: './config/env/test.env',
 	});
 
 	const database = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);

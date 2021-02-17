@@ -3,15 +3,15 @@ const dotenv = require('dotenv');
 
 if (process.env.NODE_ENV === 'development') {
 	dotenv.config({
-		path: './config/development.env',
+		path: './config/env/development.env',
 	});
 } else if (process.env.NODE_ENV === 'development-frontend') {
 	dotenv.config({
-		path: './config/development-frontend.env',
+		path: './config/env/development-frontend.env',
 	});
 } else {
 	dotenv.config({
-		path: './config/production.env',
+		path: './config/env/production.env',
 	});
 }
 

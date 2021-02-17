@@ -362,7 +362,7 @@ exports.findBooks = async (req, res, next) => {
 		logger.info(`User zipcode: ${zipcode}`);
 
 		await zipcodes
-			.near(zipcode, constants.BOOKS_FIND_DISTANCE, { datafile: 'config/data/zipcodes.csv' })
+			.near(zipcode, constants.BOOKS_FIND_DISTANCE, { datafile: 'config/zipcodesData/zipcodes.csv' })
 			.then((response) => {
 				result = response;
 			});

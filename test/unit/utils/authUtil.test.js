@@ -24,7 +24,7 @@ describe('Unit - Test Auth Util', () => {
 		console.log('\n1. Loading environment');
 
 		dotenv.config({
-			path: './config/test.env',
+			path: './config/env/test.env',
 		});
 
 		console.log('\n---------------------------------------\n');

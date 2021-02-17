@@ -22,7 +22,7 @@ describe('Config - Test config setup', () => {
 		console.log('\n------------- BEFORE TESTS -------------');
 		console.log('\n1. Loading environment\n');
 		dotenv.config({
-			path: './config/test.env',
+			path: './config/env/test.env',
 		});
 
 		console.log('\n2. Fetching SendGrid API KEY');
