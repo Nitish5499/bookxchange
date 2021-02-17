@@ -6,7 +6,7 @@
       "email": "tom@gmail.com",
       "otp": 123456,
       "active": false,
-      "address": "600083",
+      "location": "600083",
       "booksOwned": [],
       "booksLiked": [],
       "notifications": []
@@ -17,7 +17,7 @@
       "email": "john@gmail.com",
       "otp": null,
       "active": true,
-      "address": "600017",
+      "location": "600017",
       "booksOwned": [],
       "booksLiked": [],
       "notifications": []
@@ -28,7 +28,7 @@
       "email": "smith@gmail.com",
       "otp": null,
       "active": true,
-      "address": "600006",
+      "location": "600006",
       "booksOwned": [
         "aaaaaaaaaaaaaaaaaaaab101"
       ],
@@ -48,7 +48,7 @@
       "email": "steve@gmail.com",
       "otp": null,
       "active": true,
-      "address": "518432",
+      "location": "518432",
       "booksOwned": [],
       "booksLiked": [
         "aaaaaaaaaaaaaaaaaaaab102"
@@ -61,7 +61,7 @@
       "email": "jacob@gmail.com",
       "otp": null,
       "active": true,
-      "address": "790104",
+      "location": "790104",
       "booksOwned": [
         "aaaaaaaaaaaaaaaaaaaab102"
       ],
@@ -89,7 +89,7 @@
       "email": "jimmy@gmail.com",
       "otp": null,
       "active": true,
-      "address": "600018",
+      "location": "600018",
       "booksOwned": [
         "aaaaaaaaaaaaaaaaaaaab103",
         "aaaaaaaaaaaaaaaaaaaab104"
@@ -118,7 +118,7 @@
       "email": "sam@gmail.com",
       "otp": null,
       "active": true,
-      "address": "600006",
+      "location": "600006",
       "booksOwned": [
         "aaaaaaaaaaaaaaaaaaaab105",
         "aaaaaaaaaaaaaaaaaaaab106"
@@ -160,7 +160,7 @@
       "email": "claire@gmail.com",
       "otp": null,
       "active": true,
-      "address": "600006",
+      "location": "600006",
       "booksOwned": [],
       "booksLiked": [
         "aaaaaaaaaaaaaaaaaaaab105",

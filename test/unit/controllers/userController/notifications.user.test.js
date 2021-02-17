@@ -57,7 +57,7 @@ describe('Unit - Test User Controller', () => {
 	describe('getUser() function', () => {
 		const name = 'jett';
 		const email = 'jett@rp.com';
-		const address = 'test_address';
+		const location = 'test_location';
 		const notification = [
 			{
 				text: 'A liked your book, B',
@@ -92,7 +92,7 @@ describe('Unit - Test User Controller', () => {
 				dbUser = await User.create({
 					name,
 					email,
-					address,
+					location,
 					otp: '',
 					active: true,
 					notifications: notification,

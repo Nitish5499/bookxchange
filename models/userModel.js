@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
 		type: Boolean,
 		required: [true, 'Active missing'],
 	},
-	address: {
+	location: {
 		type: String,
 		default: '',
 	},

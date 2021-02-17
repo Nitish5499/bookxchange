@@ -62,7 +62,7 @@ describe('Integration - Test users signup endpoints', () => {
 	describe('POST /api/v1/users/signup', () => {
 		const name = 'foo1';
 		const email = 'foo1@bar.com';
-		const address = '515870';
+		const location = '515870';
 
 		// Before all tests begin
 		// 1. Register a user
@@ -87,7 +87,7 @@ describe('Integration - Test users signup endpoints', () => {
 			chai
 				.request(app)
 				.post('/api/v1/users/signup')
-				.send({ name: 'foo', email: 'foo@bar.com', address: '515870' })
+				.send({ name: 'foo', email: 'foo@bar.com', location: '515870' })
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.OK);
 					expect(res.body.data).to.be.a('number');
@@ -111,7 +111,7 @@ describe('Integration - Test users signup endpoints', () => {
 			chai
 				.request(app)
 				.put('/api/v1/users/signup')
-				.send({ name: 'foo', email: 'foo@bar.com', address: '515870' })
+				.send({ name: 'foo', email: 'foo@bar.com', location: '515870' })
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.METHOD_NOT_ALLOWED);
 					expect(res.body.message).equal(httpResponse[httpResponse.METHOD_NOT_ALLOWED]);
@@ -123,7 +123,7 @@ describe('Integration - Test users signup endpoints', () => {
 			chai
 				.request(app)
 				.post('/api/v1/users/signup')
-				.send({ name, email, address })
+				.send({ name, email, location })
 				.end((err, res) => {
 					expect(res.statusCode).equal(409);
 					expect(res.body.message).equal(constants.RESPONSE_EMAIL_EXISTS);

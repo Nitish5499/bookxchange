@@ -25,7 +25,7 @@ describe('Unit - Test Book Controller', () => {
 	let user = null;
 	const userName = 'jett';
 	const userEmail = 'jett@rp.com';
-	const userAddress = 'test_address';
+	const userLocation = 'test_location';
 
 	// Before all tests begin
 	// 1. Load environment
@@ -51,7 +51,7 @@ describe('Unit - Test Book Controller', () => {
 			dbUser = await User.create({
 				name: userName,
 				email: userEmail,
-				address: userAddress,
+				location: userLocation,
 				otp: '',
 				active: true,
 			});

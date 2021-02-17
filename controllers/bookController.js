@@ -356,7 +356,7 @@ exports.findBooks = async (req, res, next) => {
 
 		logger.info(`User: ${user}`);
 
-		const zipcode = user.address;
+		const zipcode = user.location;
 		let result;
 
 		logger.info(`User zipcode: ${zipcode}`);
@@ -372,7 +372,7 @@ exports.findBooks = async (req, res, next) => {
 		const books = await User.aggregate([
 			{
 				$match: {
-					address: { $in: result },
+					location: { $in: result },
 				},
 			},
 			{

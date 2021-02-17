@@ -14,16 +14,16 @@ const constants = require('$/config/constants');
 exports.signup = async (req, res, next) => {
 	logger.info('Inside signup function');
 	try {
-		const { name, email, address } = req.body;
+		const { name, email, location } = req.body;
 
 		const otp = authUtil.getOTP();
 
-		logger.info(`data: "name":${name}, "email":${email}, "address":${address}, "otp":${otp}`);
+		logger.info(`data: "name":${name}, "email":${email}, "location":${location}, "otp":${otp}`);
 
 		const dbResult = await User.create({
 			name,
 			email,
-			address,
+			location,
 			otp,
 			active: false,
 		});
@@ -223,7 +223,7 @@ exports.getUser = async (req, res, next) => {
 					},
 					name: 1,
 					email: 1,
-					address: 1,
+					location: 1,
 					_id: 0,
 				},
 			},
@@ -239,7 +239,7 @@ exports.getUser = async (req, res, next) => {
 					_id: {
 						name: '$name',
 						email: '$email',
-						address: '$address',
+						location: '$location',
 					},
 					notifications: { $push: '$notifications' },
 				},
@@ -249,7 +249,7 @@ exports.getUser = async (req, res, next) => {
 					_id: false,
 					name: '$_id.name',
 					email: '$_id.email',
-					address: '$_id.address',
+					location: '$_id.location',
 					timestamp: { $first: '$notifications.timestamp' },
 					'notifications.text': 1,
 					'notifications.userId': 1,
@@ -258,7 +258,7 @@ exports.getUser = async (req, res, next) => {
 		]);
 
 		logger.info(
-			`user data: "name":${dbUser[0].name}, "email":${dbUser[0].email}, "address":${dbUser[0].address}, "timestamp":${dbUser[0].timestamp}`,
+			`user data: "name":${dbUser[0].name}, "email":${dbUser[0].email}, "location":${dbUser[0].location}, "timestamp":${dbUser[0].timestamp}`,
 		);
 
 		res.status(httpResponse.OK).json({
@@ -295,14 +295,14 @@ exports.getOtherUser = async (req, res, next) => {
 exports.updateUser = async (req, res, next) => {
 	logger.info('Inside updateUser function');
 	try {
-		const { name, address } = req.body;
+		const { name, location } = req.body;
 		let { user } = req;
 
 		logger.info(`request user: ${user}`);
 
 		user = await User.findByIdAndUpdate(user.userId, {
 			name,
-			address,
+			location,
 		});
 
 		logger.info(`user after update: ${user}`);
@@ -352,7 +352,7 @@ exports.readNotifications = async (req, res, next) => {
 					},
 					name: 1,
 					email: 1,
-					address: 1,
+					location: 1,
 					_id: 0,
 				},
 			},

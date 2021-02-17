@@ -58,7 +58,7 @@ describe('Unit - Test User Controller', () => {
 	describe('getUser() function', () => {
 		const name = 'jett';
 		const email = 'jett@rp.com';
-		const address = 'test_address';
+		const location = 'test_location';
 		const notification = [
 			{
 				text: 'A liked your book, B',
@@ -87,7 +87,7 @@ describe('Unit - Test User Controller', () => {
 				dbUser = await User.create({
 					name,
 					email,
-					address,
+					location,
 					otp: '',
 					active: true,
 					notifications: notification,
@@ -123,7 +123,7 @@ describe('Unit - Test User Controller', () => {
 			const userData = {
 				name: dbUser.name,
 				email: dbUser.email,
-				address: dbUser.address,
+				location: dbUser.location,
 				notifications: [
 					{
 						text: dbUser.notifications[0].text,
@@ -153,7 +153,7 @@ describe('Unit - Test User Controller', () => {
 	describe('updateUser() function', () => {
 		const name = 'jett1';
 		const email = 'jett1@rp.com';
-		const address = 'test_address';
+		const location = 'test_location';
 
 		let dbUser;
 
@@ -167,7 +167,7 @@ describe('Unit - Test User Controller', () => {
 				dbUser = await User.create({
 					name,
 					email,
-					address,
+					location,
 					otp: '',
 					active: true,
 				});
@@ -189,7 +189,7 @@ describe('Unit - Test User Controller', () => {
 				method: 'PATCH',
 				body: {
 					name: 'test_update',
-					address: 'test_address',
+					location: 'test_location',
 				},
 			});
 

@@ -20,7 +20,7 @@ describe('Unit - Test Book Controller', () => {
 	let jwt = null;
 	const name = 'jett';
 	const email = 'jett@rp.com';
-	const address = 'test_address';
+	const location = 'test_location';
 	// Before all tests begin
 	// 1. Load environment
 	// 2. Connect to test database
@@ -39,7 +39,7 @@ describe('Unit - Test Book Controller', () => {
 			dbUser = await User.create({
 				name,
 				email,
-				address,
+				location,
 				otp: '',
 				active: true,
 			});

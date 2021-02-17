@@ -64,7 +64,7 @@ describe('Integration - Test users me endpoints', () => {
 	describe('GET /api/v1/users/me', () => {
 		const name = 'test_name';
 		const email = 'test_email@bar.com';
-		const address = 'test_address';
+		const location = 'test_location';
 		const notification = [
 			{
 				text: 'A liked your book, B',
@@ -93,7 +93,7 @@ describe('Integration - Test users me endpoints', () => {
 				user = await User.create({
 					name,
 					email,
-					address,
+					location,
 					otp: '',
 					active: true,
 					notifications: notification,
@@ -117,7 +117,7 @@ describe('Integration - Test users me endpoints', () => {
 			const resBody = {
 				name: user.name,
 				email: user.email,
-				address: user.address,
+				location: user.location,
 				notifications: [
 					{
 						text: user.notifications[0].text,
@@ -177,9 +177,9 @@ describe('Integration - Test users me endpoints', () => {
 	describe('PATCH /api/v1/users/me', () => {
 		const email = 'foo6@bar.com';
 		const name = 'foo6';
-		const address = 'foo_address';
+		const location = 'foo_location';
 		const updateName = 'test_name';
-		const updateAddress = 'test_address';
+		const updateLocation = 'test_location';
 
 		let user;
 		let jwt;
@@ -193,7 +193,7 @@ describe('Integration - Test users me endpoints', () => {
 			user = await User.create({
 				name,
 				email,
-				address,
+				location,
 				otp: '',
 				active: true,
 			});
@@ -213,7 +213,7 @@ describe('Integration - Test users me endpoints', () => {
 			const resBody = {
 				name: updateName,
 				email,
-				address: updateAddress,
+				location: updateLocation,
 			};
 
 			const jsonData = JSON.parse(JSON.stringify(resBody));
@@ -222,12 +222,12 @@ describe('Integration - Test users me endpoints', () => {
 				.request(app)
 				.patch('/api/v1/users/me')
 				.set('cookie', `jwt_token=${jwt}`)
-				.send({ name: updateName, address: updateAddress })
+				.send({ name: updateName, location: updateLocation })
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.OK);
 					expect(res.body.data).equals(constants.RESPONSE_USER_UPDATE_SUCCESS);
 					User.findById(user._id)
-						.select('name email address -_id')
+						.select('name email location -_id')
 						.then((user, err) => {
 							expect(JSON.parse(JSON.stringify(user))).deep.equals(jsonData);
 						});

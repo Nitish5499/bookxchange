@@ -18,7 +18,7 @@ describe('Integration - Test book fetch endpoints', () => {
 	let jwt = null;
 	const name = 'jett';
 	const email = 'jett@rp.com';
-	const address = 'test_address';
+	const location = 'test_location';
 
 	// Before all tests begin
 	// 1. Load environment
@@ -37,7 +37,7 @@ describe('Integration - Test book fetch endpoints', () => {
 			dbUser = await User.create({
 				name,
 				email,
-				address,
+				location,
 				otp: '',
 				active: true,
 			});

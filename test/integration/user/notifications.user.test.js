@@ -64,7 +64,7 @@ describe('Integration - Test users notifications endpoints', () => {
 	describe('GET /api/v1/users/me', () => {
 		const name = 'test_name';
 		const email = 'test_email@bar.com';
-		const address = 'test_address';
+		const location = 'test_location';
 		const notification = [
 			{
 				text: 'A liked your book, B',
@@ -99,7 +99,7 @@ describe('Integration - Test users notifications endpoints', () => {
 				user = await User.create({
 					name,
 					email,
-					address,
+					location,
 					otp: '',
 					active: true,
 					notifications: notification,

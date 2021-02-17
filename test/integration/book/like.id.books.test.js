@@ -21,7 +21,7 @@ describe('Integration - Test book fetch endpoints', () => {
 	let book = null;
 	const name = 'jett';
 	const email = 'jett@rp.com';
-	const address = 'test_address';
+	const location = 'test_location';
 
 	// Before all tests begin
 	// 1. Load environment
@@ -40,7 +40,7 @@ describe('Integration - Test book fetch endpoints', () => {
 			dbUser = await User.create({
 				name,
 				email,
-				address,
+				location,
 				otp: '',
 				active: true,
 			});
@@ -92,7 +92,7 @@ describe('Integration - Test book fetch endpoints', () => {
 				tempUser = await User.create({
 					name,
 					email: 'temp@gmail.com',
-					address,
+					location,
 					otp: '',
 					active: true,
 					booksOwned: [mongoose.Types.ObjectId()],
