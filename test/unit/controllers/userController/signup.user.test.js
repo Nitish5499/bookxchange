@@ -71,6 +71,7 @@ describe('Unit - Test User Controller', () => {
 				body: {
 					name: 'foo',
 					email: 'foo@bar.com',
+					address: '515870',
 				},
 			});
 			const res = mocks.createResponse();
