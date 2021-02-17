@@ -30,7 +30,12 @@ exports.addBook = async (req, res, next) => {
 		logger.info(`Book: ${book}`);
 
 		if (!book) {
-			return next(new ErrorHandler(httpResponse.INTERNAL_SERVER_ERROR, 'Book creation Failed!'), req, res, next);
+			return next(
+				new ErrorHandler(httpResponse.INTERNAL_SERVER_ERROR, constants.RESPONSE_BOOK_CREATE_FAIL),
+				req,
+				res,
+				next,
+			);
 		}
 
 		await User.findByIdAndUpdate(user.userId, { $push: { booksOwned: book._id } });

@@ -34,6 +34,8 @@ module.exports = Object.freeze({
 	RESPONSE_BOOK_UNLIKE_FAIL: 'Book not liked yet',
 	RESPONSE_BOOK_UNLIKE_SUCCESS: 'Book unliked successfully',
 
+	RESPONSE_BOOK_ADD_FAIL: 'Book creation failed!',
+
 	// User endpoints
 	RESPONSE_USER_AUTH_FAIL: 'Email or otp is wrong',
 	RESPONSE_USER_AUTH_NO_EMAIL_FAIL: 'Email not registered',
