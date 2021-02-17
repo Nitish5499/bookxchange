@@ -6,6 +6,7 @@ const signup = {
 	body: Joi.object().keys({
 		email: Joi.string().email().required(),
 		name: Joi.string().min(2).max(20).required(),
+		address: Joi.string().min(6).max(20).required(),
 	}),
 };
 

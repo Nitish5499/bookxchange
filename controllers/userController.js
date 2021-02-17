@@ -14,15 +14,16 @@ const constants = require('$/config/constants');
 exports.signup = async (req, res, next) => {
 	logger.info('Inside signup function');
 	try {
-		const { name, email } = req.body;
+		const { name, email, address } = req.body;
 
 		const otp = authUtil.getOTP();
 
-		logger.info(`data: "name":${name}, "email":${email}, "otp":${otp}`);
+		logger.info(`data: "name":${name}, "email":${email}, "address":${address}, "otp":${otp}`);
 
 		const dbResult = await User.create({
 			name,
 			email,
+			address,
 			otp,
 			active: false,
 		});
