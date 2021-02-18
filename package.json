@@ -17,7 +17,9 @@
 		"start": "NODE_ENV=development nodemon server.js",
 		"start-frontend": "NODE_ENV=development-frontend nodemon server.js",
 		"test": "NODE_ENV=test nyc mocha --require ./test/fixtures.js --recursive --timeout 20000 --exit",
-		"test-report": "nyc report --reporter=html && open ./coverage/index.html"
+		"test-report": "run-script-os",
+		"test-report:nix": "nyc report --reporter=html && xdg-open ./coverage/index.html",
+		"test-report:macos": "nyc report --reporter=html && open ./coverage/index.html"
 	},
 	"husky": {
 		"hooks": {
@@ -67,6 +69,7 @@
 		"nodemon": "^2.0.6",
 		"nyc": "^15.1.0",
 		"prettier": "2.1.2",
-		"request": "^2.88.2"
+		"request": "^2.88.2",
+		"run-script-os": "^1.1.5"
 	}
 }

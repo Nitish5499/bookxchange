@@ -45,6 +45,7 @@ describe('Unit - Test Book Controller', () => {
 				location,
 				otp: '',
 				active: true,
+				booksOwned: [mongoose.Types.ObjectId()],
 			});
 
 			jwt = authUtil.createToken(dbUser._id);
@@ -115,6 +116,7 @@ describe('Unit - Test Book Controller', () => {
 		after(async () => {
 			// Clearing collections
 			await Book.deleteMany({});
+			await User.findByIdAndUpdate(dbUser._id, { $set: { booksLiked: [] } }, { multi: true });
 			console.log('\n---------------------------------------\n');
 		});
 
@@ -165,6 +167,91 @@ describe('Unit - Test Book Controller', () => {
 
 			const { message } = res._getJSONData();
 			expect(message).equal(constants.RESPONSE_BOOK_LIKE_FAIL);
+		});
+	});
+
+	describe('likeBook() function Match Scenario', () => {
+		before(async () => {
+			console.log('\n------------- BEFORE TESTS -------------');
+			console.log('\n1. Creating books in database');
+
+			try {
+				tempUser = await User.create({
+					name,
+					email: 'temp1@gmail.com',
+					location,
+					otp: '',
+					active: true,
+					booksOwned: [mongoose.Types.ObjectId()],
+					booksLiked: [dbUser.booksOwned[0]],
+				});
+
+				// Creating a Book for the test
+				const bookinfo = {
+					_id: tempUser.booksOwned[0],
+					name: 'The Guest List',
+					author: 'Lucy Foley',
+					link: 'https://www.goodreads.com/book/show/54911607-the-guest-list?from_choice=true',
+					owner: tempUser._id,
+				};
+
+				const bookinfo2 = {
+					_id: dbUser.booksOwned[0],
+					name: 'Home Before Dark',
+					author: 'Riley Sager',
+					link: 'https://www.goodreads.com/book/show/50833559-home-before-dark',
+					owner: dbUser._id,
+					likedBy: [tempUser._id],
+				};
+
+				book = await Book.create(bookinfo);
+				await Book.create(bookinfo2);
+			} catch (err) {
+				console.log(err);
+				process.exit(1);
+			}
+			console.log('\n---------------------------------------\n');
+		});
+
+		after(async () => {
+			// Clearing collections
+			await Book.deleteMany({});
+			await User.findByIdAndUpdate(dbUser._id, { $set: { booksLiked: [] } }, { multi: true });
+			console.log('\n---------------------------------------\n');
+		});
+
+		it('successful book match - return 200', async () => {
+			const req = mocks.createRequest({
+				user,
+				method: 'PUT',
+				params: {
+					id: book._id,
+				},
+			});
+
+			const res = mocks.createResponse();
+
+			await bookController.likeBook(req, res, (err) => {
+				expect(err).equal(false);
+			});
+
+			const { message } = res._getJSONData();
+
+			// Waiting for `unlikeBook()` function to update database completely
+			await sleep(3000);
+
+			const resUser1 = await User.findById(tempUser._id);
+			const resUser2 = await User.findById(dbUser._id);
+			const resBook = await Book.findById(book._id);
+
+			expect(resUser1.notifications[0].text).equal('jett liked your book, The Guest List');
+			expect(resUser1.notifications[1].text).equal('It is a match! jett(jett@rp.com) and you can now exchange book(s)');
+			expect(resUser2.notifications[0].text).equal(
+				'It is a match! jett(temp1@gmail.com) and you can now exchange book(s)',
+			);
+			expect(resUser2.booksLiked[0].toString()).equal(book._id.toString());
+			expect(resBook.likedBy[0].toString()).equal(dbUser._id.toString());
+			expect(message).equal(constants.RESPONSE_BOOK_LIKE_MATCH);
 		});
 	});
 
@@ -234,7 +321,7 @@ describe('Unit - Test Book Controller', () => {
 			const resBook = await Book.findById(book._id);
 
 			expect(resUser1.notifications[0].text).equal('jett un-liked your book, The Guest List');
-			expect(resUser2.booksLiked[2]).equal(undefined);
+			expect(resUser2.booksLiked[0]).equal(undefined);
 			expect(resBook.likedBy[0]).equal(undefined);
 			expect(message).equal(constants.RESPONSE_BOOK_UNLIKE_SUCCESS);
 		});
