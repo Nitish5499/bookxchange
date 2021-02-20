@@ -18,6 +18,14 @@ jobs:
         with:
           persist-credentials: false
       - name: Download artifact - code coverage report
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          # Optional, GitHub token
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          # Required, workflow file name or ID
+          workflow: Lint and Test
+          name: code-coverage-report
+      - name: Download artifact - code coverage report
         uses: actions/download-artifact@v2
         with:
           name: code-coverage-report
