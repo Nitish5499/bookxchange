@@ -34,14 +34,14 @@ router
 	.post(validateMiddleware(userValidation.loginVerify), userController.loginVerify)
 	.all(errorController.methods(['POST']));
 
+// JWT Middleware
+router.use(authMiddleware.verifyJWT);
+
 // GET - logout user
 router
 	.route('/logout')
 	.get(userController.logout)
 	.all(errorController.methods(['GET']));
-
-// JWT Middleware
-router.use(authMiddleware.verifyJWT);
 
 // GET   - fetch details of user
 // PATCH - update details of user

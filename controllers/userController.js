@@ -1,5 +1,3 @@
-const jwt = require('jsonwebtoken');
-const { promisify } = require('util');
 const httpResponse = require('http-status');
 
 const User = require('$/models/userModel');
@@ -393,24 +391,15 @@ exports.readNotifications = async (req, res, next) => {
 exports.logout = async (req, res, next) => {
 	logger.info('Inside Logout function');
 	try {
-		const token = req.cookies.jwt_token;
-		if (!token) {
-			return next(new ErrorHandler(httpResponse.UNAUTHORIZED, 'You are not logged in'), req, res, next);
-		}
+		const { user } = req;
 
 		res.clearCookie('jwt_token');
 
-		logger.info('user cookie cleared');
+		logger.info('Response cookie cleared');
 
-		const decode = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-		const { id } = decode;
+		await Session.deleteOne({ _id: user._id });
 
-		await Session.deleteOne({
-			userId: id,
-			sessionToken: token,
-		});
-
-		logger.info('user session removed from db');
+		logger.info('User session removed from database');
 
 		res.status(httpResponse.OK).json({
 			status: constants.STATUS_SUCCESS,

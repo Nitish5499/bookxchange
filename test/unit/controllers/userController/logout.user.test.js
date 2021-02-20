@@ -5,7 +5,6 @@
 
 const mocks = require('node-mocks-http');
 const chai = require('chai');
-const mongoose = require('mongoose');
 
 const userController = require('$/controllers/userController');
 
@@ -63,9 +62,9 @@ describe('Unit - Test User Controller', () => {
 		const email = 'foo@bar.com';
 
 		let jwtTokenValid;
-		let jwtTokenInvalid;
 
 		let dbUser;
+		let sessionUser;
 
 		// Before all tests begin
 		// 1. Register new user
@@ -84,11 +83,8 @@ describe('Unit - Test User Controller', () => {
 
 				jwtTokenValid = authUtil.createToken(dbUser._id);
 
-				const fakeUserId = mongoose.Types.ObjectId();
-				jwtTokenInvalid = authUtil.createToken(fakeUserId);
-
 				console.log('\n2. Creating session for user in database');
-				await Session.create({
+				sessionUser = await Session.create({
 					userId: dbUser._id,
 					sessionToken: jwtTokenValid,
 				});
@@ -105,32 +101,10 @@ describe('Unit - Test User Controller', () => {
 			console.log('\n---------------------------------------\n');
 		});
 
-		it('logout successful - invalid session, return 200', async () => {
-			const req = mocks.createRequest({
-				method: 'GET',
-				cookies: {
-					// eslint-disable-next-line camelcase
-					jwt_token: jwtTokenInvalid,
-				},
-			});
-			const res = mocks.createResponse();
-
-			await userController.logout(req, res, (err) => {
-				console.log(err);
-				expect(err).equal(false);
-			});
-
-			const { data } = res._getJSONData();
-			expect(data).equal(constants.RESPONSE_USER_LOGOUT_SUCCESS);
-		});
-
 		it('logout successful - valid session, return 200', async () => {
 			const req = mocks.createRequest({
 				method: 'GET',
-				cookies: {
-					// eslint-disable-next-line camelcase
-					jwt_token: jwtTokenValid,
-				},
+				user: sessionUser,
 			});
 			const res = mocks.createResponse();
 

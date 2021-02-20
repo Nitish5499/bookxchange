@@ -107,7 +107,7 @@ describe('Integration - Test users logout endpoints', () => {
 				.get('/api/v1/users/logout')
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
-					expect(res.body.message).equal('You are not logged in');
+					expect(res.body.message).equal(constants.RESPONSE_NOT_LOGGED_IN);
 					done();
 				});
 		});
@@ -118,8 +118,7 @@ describe('Integration - Test users logout endpoints', () => {
 				.get('/api/v1/users/logout')
 				.set('Cookie', `jwt_token=${jwtTokenInvalid}`)
 				.end((err, res) => {
-					expect(res.statusCode).equal(httpResponse.OK);
-					expect(res.body.data).equal(constants.RESPONSE_USER_LOGOUT_SUCCESS);
+					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
 					done();
 				});
 		});
