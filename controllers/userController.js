@@ -30,6 +30,7 @@ exports.signup = async (req, res, next) => {
 
 		let data;
 
+		/* istanbul ignore else */
 		if (process.env.NODE_ENV !== 'production') {
 			data = otp;
 		} else {
@@ -121,6 +122,7 @@ exports.login = async (req, res, next) => {
 
 		logger.info(`database user after update: ${dbUser}`);
 
+		/* istanbul ignore else */
 		if (process.env.NODE_ENV !== 'production') {
 			res.status(httpResponse.OK).json({
 				status: constants.STATUS_SUCCESS,
@@ -409,14 +411,6 @@ exports.logout = async (req, res, next) => {
 			data: constants.RESPONSE_USER_LOGOUT_SUCCESS,
 		});
 	} catch (error) {
-		// Do not care about malformed JWT tokens
-		if (error.name === 'JsonWebTokenError' || error.name === 'SyntaxError') {
-			res.status(httpResponse.OK).json({
-				status: constants.STATUS_SUCCESS,
-				data: constants.RESPONSE_USER_LOGOUT_SUCCESS,
-			});
-		} else {
-			next(error);
-		}
+		next(error);
 	}
 };

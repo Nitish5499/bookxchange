@@ -21,6 +21,7 @@ const handleError = (err, res) => {
 	 * In unexpected errors, the `statusCode`
 	 * will be `undefined`.
 	 */
+	/* istanbul ignore if */
 	if (name === constants.MONGO_ERROR || !statusCode) {
 		logger.error(`Unhandled error: ${err}`);
 		statusCode = httpResponse.INTERNAL_SERVER_ERROR;

@@ -30,7 +30,7 @@ exports.verifyJWT = async (req, res, next) => {
 
 		next();
 	} catch (err) {
-		if (err.message === 'invalid signature') {
+		if (err.name === 'JsonWebTokenError' || err.name === 'SyntaxError') {
 			next(new ErrorHandler(httpResponse.UNAUTHORIZED, constants.RESPONSE_NOT_LOGGED_IN));
 		}
 		next(err);

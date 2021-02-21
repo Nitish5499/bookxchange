@@ -32,6 +32,14 @@
 		"*.js": "eslint --cache --fix",
 		"*.{js,css,md}": "prettier --write"
 	},
+	"nyc": {
+		"exclude": [
+			"config/logger.js",
+			"controllers/adminController.js",
+			"utils/externalUtil.js",
+			"test/**"
+		]
+	},
 	"dependencies": {
 		"@sendgrid/mail": "^7.3.0",
 		"basetag": "^1.2.10",
