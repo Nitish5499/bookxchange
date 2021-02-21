@@ -24,7 +24,7 @@ module.exports = Object.freeze({
 	// Authentication - general responses
 	RESPONSE_EMAIL_ERROR: 'Error sending email',
 	RESPONSE_EMAIL_EXISTS: 'Email already exists',
-	RESPONSE_NOT_LOGGED_IN: 'You are not logged in, please login in to continue',
+	RESPONSE_NOT_LOGGED_IN: 'You are not logged in, please login to continue',
 
 	// Book endpoints
 	RESPONSE_BOOK_LIKE_FAIL: 'Book already liked',
@@ -43,14 +43,14 @@ module.exports = Object.freeze({
 
 	RESPONSE_USER_SIGNUP_SUCCESS: 'Email has been sent',
 
-	RESPONSE_USER_SIGNUP_VERIFY_FAIL: 'User email has already been verified',
+	RESPONSE_USER_SIGNUP_VERIFY_FAIL: 'You cannot perform this action',
 	RESPONSE_USER_SIGNUP_VERIFY_SUCCESS: 'Email verified',
 
-	RESPONSE_USER_LOGIN_SUCCESS: 'Check mail',
+	RESPONSE_USER_LOGIN_SUCCESS: 'OTP has been sent to the mail',
 
-	RESPONSE_USER_LOGIN_VERIFY_SUCCESS: 'Login successful',
+	RESPONSE_USER_LOGIN_VERIFY_SUCCESS: 'Login success',
 
-	RESPONSE_USER_UPDATE_SUCCESS: 'Update successful',
+	RESPONSE_USER_UPDATE_SUCCESS: 'Update success',
 
-	RESPONSE_USER_LOGOUT_SUCCESS: 'Successfully logged out',
+	RESPONSE_USER_LOGOUT_SUCCESS: 'Logout success',
 });

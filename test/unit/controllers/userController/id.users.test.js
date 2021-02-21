@@ -2,6 +2,7 @@ const mocks = require('node-mocks-http');
 const chai = require('chai');
 const mongoose = require('mongoose');
 const deepEqualInAnyOrder = require('deep-equal-in-any-order');
+const httpResponse = require('http-status');
 
 const userController = require('$/controllers/userController');
 const adminController = require('$/controllers/adminController');
@@ -39,6 +40,7 @@ describe('Unit - Test User Controller', () => {
 	};
 
 	const reqUserId = mongoose.Types.ObjectId('aaaaaaaaaaaaaaaaaaaaa106');
+	const reqUserIdFake = mongoose.Types.ObjectId('aaaaaaaaaaaaaaaaaaaaa196');
 
 	// Before all tests begin
 	// 1. Clear database
@@ -89,6 +91,7 @@ describe('Unit - Test User Controller', () => {
 
 	// Test GET /users/:id API
 	// 1. successful retrieval
+	// 2. user not found
 	describe('getOtherUser() function', () => {
 		it('Successful retrieval - return 200', async () => {
 			const req = mocks.createRequest({
@@ -107,6 +110,23 @@ describe('Unit - Test User Controller', () => {
 
 			const { data } = res._getJSONData();
 			expect(JSON.stringify(data.user)).equal(JSON.stringify(resUser));
+		});
+
+		it('User not found - return 404', async () => {
+			const req = mocks.createRequest({
+				user: sessionUser,
+				method: 'GET',
+				params: {
+					id: reqUserIdFake,
+				},
+			});
+
+			const res = mocks.createResponse();
+
+			await userController.getOtherUser(req, res, (err) => {
+				expect(err.statusCode).equal(httpResponse.NOT_FOUND);
+				expect(err.message).equal(httpResponse[httpResponse.NOT_FOUND]);
+			});
 		});
 	});
 });

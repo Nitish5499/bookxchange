@@ -94,6 +94,8 @@ describe('Unit - Test User Controller', () => {
 		const otpCorrect = 313371;
 		const otpWrong = 313370;
 
+		const email1 = 'foo2@bar.com';
+
 		// Before all tests begin
 		// 1. Register new user, yet to verify
 		before(async () => {
@@ -152,6 +154,22 @@ describe('Unit - Test User Controller', () => {
 
 			const { data } = res._getJSONData();
 			expect(data).equal(constants.RESPONSE_USER_SIGNUP_VERIFY_SUCCESS);
+		});
+
+		it('unregistered email - return 403', async () => {
+			const req = mocks.createRequest({
+				method: 'POST',
+				body: {
+					email1,
+					otp: otpCorrect,
+				},
+			});
+			const res = mocks.createResponse();
+
+			await userController.signupVerify(req, res, (err) => {
+				expect(err.statusCode).equal(httpResponse.FORBIDDEN);
+				expect(err.message).equal(constants.RESPONSE_USER_SIGNUP_VERIFY_FAIL);
+			});
 		});
 	});
 });

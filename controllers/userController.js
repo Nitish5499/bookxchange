@@ -61,6 +61,10 @@ exports.signupVerify = async (req, res, next) => {
 			email,
 		});
 
+		if (!dbUser) {
+			return next(new ErrorHandler(httpResponse.FORBIDDEN, constants.RESPONSE_USER_SIGNUP_VERIFY_FAIL), req, res, next);
+		}
+
 		if (dbUser.active) {
 			return next(new ErrorHandler(httpResponse.FORBIDDEN, constants.RESPONSE_USER_SIGNUP_VERIFY_FAIL), req, res, next);
 		}
@@ -95,12 +99,7 @@ exports.login = async (req, res, next) => {
 		let dbUser = await User.findOne({ email });
 
 		if (!dbUser) {
-			return next(
-				new ErrorHandler(httpResponse.UNAUTHORIZED, constants.RESPONSE_USER_AUTH_NO_EMAIL_FAIL),
-				req,
-				res,
-				next,
-			);
+			return next(new ErrorHandler(httpResponse.FORBIDDEN, constants.RESPONSE_USER_AUTH_NO_EMAIL_FAIL), req, res, next);
 		}
 
 		if (!dbUser.active) {
@@ -153,7 +152,7 @@ exports.loginVerify = async (req, res, next) => {
 
 		if (!user) {
 			return next(
-				new ErrorHandler(httpResponse.UNAUTHORIZED, constants.RESPONSE_USER_AUTH_NO_EMAIL_FAIL),
+				new ErrorHandler(httpResponse.FORBIDDEN, constants.RESPONSE_USER_AUTH_NO_VERIFY_FAIL),
 				req,
 				res,
 				next,
@@ -278,6 +277,10 @@ exports.getOtherUser = async (req, res, next) => {
 		logger.info(`Request for userId: ${id}`);
 
 		const dbUser = await User.findById(id).populate('booksOwned', 'name author link').select('name booksOwned');
+
+		if (!dbUser) {
+			return next(new ErrorHandler(httpResponse.NOT_FOUND, httpResponse[httpResponse.NOT_FOUND]), req, res, next);
+		}
 
 		logger.info(`Fetched userId: ${dbUser._id}`);
 

@@ -105,7 +105,7 @@ describe('Unit - Test User Controller', () => {
 			});
 			const res = mocks.createResponse();
 			await userController.login(req, res, (err) => {
-				expect(err.statusCode).equal(httpResponse.UNAUTHORIZED);
+				expect(err.statusCode).equal(httpResponse.FORBIDDEN);
 				expect(err.message).equal(constants.RESPONSE_USER_AUTH_NO_EMAIL_FAIL);
 			});
 		});
@@ -203,8 +203,8 @@ describe('Unit - Test User Controller', () => {
 			});
 			const res = mocks.createResponse();
 			await userController.loginVerify(req, res, (err) => {
-				expect(err.statusCode).equal(httpResponse.UNAUTHORIZED);
-				expect(err.message).equal(constants.RESPONSE_USER_AUTH_NO_EMAIL_FAIL);
+				expect(err.statusCode).equal(httpResponse.FORBIDDEN);
+				expect(err.message).equal(constants.RESPONSE_USER_AUTH_NO_VERIFY_FAIL);
 			});
 		});
 

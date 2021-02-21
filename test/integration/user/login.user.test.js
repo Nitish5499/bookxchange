@@ -122,7 +122,7 @@ describe('Integration - Test users login endpoints', () => {
 				.post('/api/v1/users/login')
 				.send({ email: email2 })
 				.end((err, res) => {
-					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
+					expect(res.statusCode).equal(httpResponse.FORBIDDEN);
 					expect(res.body.message).equal(constants.RESPONSE_USER_AUTH_NO_EMAIL_FAIL);
 					done();
 				});
@@ -199,8 +199,8 @@ describe('Integration - Test users login endpoints', () => {
 				.post('/api/v1/users/login/verify')
 				.send({ email: email2, otp: otpCorrect })
 				.end((err, res) => {
-					expect(res.statusCode).equal(httpResponse.UNAUTHORIZED);
-					expect(res.body.message).equal(constants.RESPONSE_USER_AUTH_NO_EMAIL_FAIL);
+					expect(res.statusCode).equal(httpResponse.FORBIDDEN);
+					expect(res.body.message).equal(constants.RESPONSE_USER_AUTH_NO_VERIFY_FAIL);
 					done();
 				});
 		});
