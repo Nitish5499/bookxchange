@@ -126,10 +126,10 @@ describe('Integration - Test book fetch endpoints', () => {
 					expect(res.statusCode).equal(httpResponse.OK);
 					const { data } = res.body;
 
-					Book.find({ likedBy: dbUser._id }, (err1, books) => {
+					Book.find({ likedBy: dbUser._id }, { _id: 1, name: 1, author: 1, link: 1, owner: 1 }, (err1, books) => {
 						if (err1) console.log(err1);
 
-						expect(data.book).deep.equalInAnyOrder(JSON.parse(JSON.stringify(books)));
+						expect(data.books).deep.equalInAnyOrder(JSON.parse(JSON.stringify(books)));
 						done();
 					});
 				});

@@ -49,11 +49,13 @@ describe('Unit - Test Book Controller', () => {
 			});
 
 			dbUser = await User.create({
+				_id: owner,
 				name: userName,
 				email: userEmail,
 				location: userLocation,
 				otp: '',
 				active: true,
+				booksOwned: [book._id],
 			});
 
 			jwt = authUtil.createToken(dbUser._id);
@@ -94,6 +96,12 @@ describe('Unit - Test Book Controller', () => {
 	// 2. book not found
 	describe('getBook() function', () => {
 		it('successful book retrival - return 200', async () => {
+			const resBook = {
+				_id: book._id,
+				name: book.name,
+				author: book.author,
+				link: book.link,
+			};
 			const req = mocks.createRequest({
 				user,
 				method: 'GET',
@@ -109,7 +117,7 @@ describe('Unit - Test Book Controller', () => {
 			});
 
 			const { data } = res._getJSONData();
-			expect(JSON.stringify(data.book)).equal(JSON.stringify(book));
+			expect(JSON.stringify(data.books)).equal(JSON.stringify(resBook));
 		});
 
 		it('Book not found - return 404', async () => {
@@ -151,13 +159,14 @@ describe('Unit - Test Book Controller', () => {
 			const res = mocks.createResponse();
 
 			await bookController.updateBook(req, res, (err) => {
+				console.log(err);
 				expect(err).equal(false);
 			});
 
 			const { data } = res._getJSONData();
 
-			const updatedBook = await Book.findById(book._id);
-			expect(JSON.stringify(data)).equal(JSON.stringify(updatedBook));
+			const updatedBook = await Book.findById(book._id).select('_id name author link');
+			expect(JSON.stringify(data.books)).equal(JSON.stringify(updatedBook));
 		});
 
 		it('Book not found - return 404', async () => {

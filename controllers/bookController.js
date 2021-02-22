@@ -43,7 +43,12 @@ exports.addBook = async (req, res, next) => {
 		res.status(httpResponse.OK).json({
 			status: constants.STATUS_SUCCESS,
 			data: {
-				book,
+				books: {
+					_id: book._id,
+					author: book.author,
+					link: book.link,
+					owner: book.owner,
+				},
 			},
 		});
 	} catch (err) {
@@ -58,15 +63,15 @@ exports.getAllBooks = async (req, res, next) => {
 
 		logger.info(`request user: ${user}`);
 
-		const userinfo = await User.findById(user.userId).populate('booksOwned');
-		const allBooks = userinfo.booksOwned;
+		const userInfo = await User.findById(user.userId).populate('booksOwned', '_id name author link');
+		const allBooks = userInfo.booksOwned;
 
 		logger.info(`Books: ${allBooks}`);
 
 		res.status(httpResponse.OK).json({
 			status: constants.STATUS_SUCCESS,
 			data: {
-				book: allBooks,
+				books: allBooks,
 			},
 		});
 	} catch (err) {
@@ -81,7 +86,7 @@ exports.getBook = async (req, res, next) => {
 
 		logger.info(`BookId:${id}`);
 
-		const book = await Book.findById(id);
+		const book = await Book.findById(id).select('_id name author link');
 
 		logger.info(`Book:${book}`);
 
@@ -92,7 +97,7 @@ exports.getBook = async (req, res, next) => {
 		res.status(httpResponse.OK).json({
 			status: constants.STATUS_SUCCESS,
 			data: {
-				book,
+				books: book,
 			},
 		});
 	} catch (err) {
@@ -103,6 +108,7 @@ exports.getBook = async (req, res, next) => {
 exports.updateBook = async (req, res, next) => {
 	logger.info('inside updateBook function');
 	try {
+		const { user } = req;
 		const { id } = req.params;
 
 		logger.info(`BookId:${id}`);
@@ -111,7 +117,11 @@ exports.updateBook = async (req, res, next) => {
 
 		logger.info(`Name:${name}, Author:${author}, link:${link}`);
 
-		const dbBook = await Book.findByIdAndUpdate(id, { name, author, link }, { new: true });
+		const dbBook = await Book.findOneAndUpdate(
+			{ _id: id, owner: user.userId },
+			{ name, author, link },
+			{ new: true },
+		).select('_id name author link');
 
 		logger.info(dbBook);
 
@@ -121,7 +131,9 @@ exports.updateBook = async (req, res, next) => {
 
 		res.status(httpResponse.OK).json({
 			status: constants.STATUS_SUCCESS,
-			data: dbBook,
+			data: {
+				books: dbBook,
+			},
 		});
 	} catch (err) {
 		next(err);
@@ -131,11 +143,12 @@ exports.updateBook = async (req, res, next) => {
 exports.deleteBook = async (req, res, next) => {
 	logger.info('inside deleteBook function');
 	try {
+		const { user } = req;
 		const { id } = req.params;
 
 		logger.info(`BookId:${id}`);
 
-		const book = await Book.findByIdAndRemove(id);
+		const book = await Book.findOneAndDelete({ _id: id, owner: user.userId });
 
 		if (!book) {
 			return next(new ErrorHandler(httpResponse.NOT_FOUND, httpResponse[httpResponse.NOT_FOUND]), req, res, next);
@@ -155,9 +168,7 @@ exports.deleteBook = async (req, res, next) => {
 
 		res.status(httpResponse.OK).json({
 			status: constants.STATUS_SUCCESS,
-			data: {
-				book,
-			},
+			message: constants.RESPONSE_BOOK_DELETE_SUCCESS,
 		});
 	} catch (err) {
 		next(err);
@@ -175,7 +186,10 @@ exports.likeBook = async (req, res, next) => {
 
 		logger.info(`BookId:${id}`);
 
-		const dbBook = await Book.findByIdAndUpdate(id, { $addToSet: { likedBy: user.userId } });
+		const dbBook = await Book.findOneAndUpdate(
+			{ _id: id, owner: { $ne: user.userId } },
+			{ $addToSet: { likedBy: user.userId } },
+		);
 
 		if (!dbBook) {
 			return next(new ErrorHandler(httpResponse.NOT_FOUND, httpResponse[httpResponse.NOT_FOUND]), req, res, next);
@@ -310,7 +324,7 @@ exports.getLikedBooks = async (req, res, next) => {
 
 		logger.info(`request user: ${user}`);
 
-		const userInfo = await User.findById(user.userId).populate('booksLiked');
+		const userInfo = await User.findById(user.userId).populate('booksLiked', '_id name author link owner');
 		const allLikedBooks = userInfo.booksLiked;
 
 		logger.info(`Books: ${allLikedBooks}`);
@@ -318,7 +332,7 @@ exports.getLikedBooks = async (req, res, next) => {
 		res.status(httpResponse.OK).json({
 			status: constants.STATUS_SUCCESS,
 			data: {
-				book: allLikedBooks,
+				books: allLikedBooks,
 			},
 		});
 	} catch (err) {
@@ -408,6 +422,14 @@ exports.findBooks = async (req, res, next) => {
 				},
 			},
 		]);
+
+		if (!books) {
+			res.status(httpResponse.OK).json({
+				status: constants.STATUS_SUCCESS,
+				message: constants.RESPONSE_NEARBY_BOOKS_EMPTY,
+			});
+			return;
+		}
 
 		res.status(httpResponse.OK).json({
 			status: constants.STATUS_SUCCESS,

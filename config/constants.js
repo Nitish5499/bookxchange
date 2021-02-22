@@ -27,12 +27,16 @@ module.exports = Object.freeze({
 	RESPONSE_NOT_LOGGED_IN: 'You are not logged in, please login to continue',
 
 	// Book endpoints
+	RESPONSE_BOOK_DELETE_SUCCESS: 'Book deleted',
+
 	RESPONSE_BOOK_LIKE_FAIL: 'Book already liked',
 	RESPONSE_BOOK_LIKE_SUCCESS: 'Book liked successfully',
 	RESPONSE_BOOK_LIKE_MATCH: 'It is a match!',
 
 	RESPONSE_BOOK_UNLIKE_FAIL: 'Book not liked yet',
 	RESPONSE_BOOK_UNLIKE_SUCCESS: 'Book unliked successfully',
+
+	RESPONSE_NEARBY_BOOKS_EMPTY: 'No nearby books found',
 
 	RESPONSE_BOOK_ADD_FAIL: 'Book creation failed!',
 

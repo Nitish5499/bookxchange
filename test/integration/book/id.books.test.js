@@ -22,7 +22,9 @@ describe('Integration - Test book fetch endpoints', () => {
 	const owner = mongoose.Types.ObjectId();
 	const likedBy = new Array(mongoose.Types.ObjectId());
 	let dbUser = null;
+	let tempUser = null;
 	let jwt = null;
+	let tempJwt = null;
 	const userName = 'jett';
 	const userEmail = 'jett@rp.com';
 	const userLocation = 'test_location';
@@ -50,17 +52,34 @@ describe('Integration - Test book fetch endpoints', () => {
 			});
 
 			dbUser = await User.create({
+				_id: owner,
 				name: userName,
 				email: userEmail,
 				location: userLocation,
 				otp: '',
 				active: true,
+				booksOwned: [book._id],
+			});
+
+			tempUser = await User.create({
+				name: 'tempUser',
+				email: 'temp@gmail.com',
+				location: userLocation,
+				otp: '',
+				active: true,
+				booksOwned: [mongoose.Types.ObjectId()],
 			});
 
 			jwt = authUtil.createToken(dbUser._id);
 			await Session.create({
 				userId: dbUser._id,
 				sessionToken: jwt,
+			});
+
+			tempJwt = authUtil.createToken(tempUser._id);
+			await Session.create({
+				userId: tempUser._id,
+				sessionToken: tempJwt,
 			});
 
 			console.log('\n---------------------------------------\n');
@@ -103,7 +122,13 @@ describe('Integration - Test book fetch endpoints', () => {
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.OK);
 					const { data } = res.body;
-					expect(JSON.stringify(data.book)).equal(JSON.stringify(book));
+					const resBook = {
+						_id: book._id,
+						name: book.name,
+						author: book.author,
+						link: book.link,
+					};
+					expect(JSON.stringify(data.books)).equal(JSON.stringify(resBook));
 					done();
 				});
 		});
@@ -160,12 +185,25 @@ describe('Integration - Test book fetch endpoints', () => {
 					expect(res.statusCode).equal(httpResponse.OK);
 					const { data } = res.body;
 
-					Book.findById(book._id, (err1, newBook) => {
+					Book.findById(book._id, { _id: 1, name: 1, author: 1, link: 1 }, (err1, newBook) => {
 						if (err1) console.log(err1);
 						const updatedBook = newBook;
-						expect(JSON.stringify(data)).equal(JSON.stringify(updatedBook));
+						expect(JSON.stringify(data.books)).equal(JSON.stringify(updatedBook));
 						done();
 					});
+				});
+		});
+
+		it("one user trying to modify other user's book - return 404", (done) => {
+			chai
+				.request(app)
+				.patch(`/api/v1/books/${book._id}`)
+				.send({ name: 'changedName', author: 'changedAuthor', link: 'https://foo.com' })
+				.set('Cookie', `jwt_token=${tempJwt}`)
+				.end((err, res) => {
+					expect(res.statusCode).equal(httpResponse.NOT_FOUND);
+					expect(res.body.message).equal(httpResponse[httpResponse.NOT_FOUND]);
+					done();
 				});
 		});
 
@@ -233,6 +271,18 @@ describe('Integration - Test book fetch endpoints', () => {
 				.end((err, res) => {
 					expect(res.statusCode).equal(httpResponse.BAD_REQUEST);
 					expect(res.body.message).equal(httpResponse[httpResponse.BAD_REQUEST]);
+					done();
+				});
+		});
+
+		it("one user trying to delete other user's book - return 404", (done) => {
+			chai
+				.request(app)
+				.delete(`/api/v1/books/${book._id}`)
+				.set('Cookie', `jwt_token=${tempJwt}`)
+				.end((err, res) => {
+					expect(res.statusCode).equal(httpResponse.NOT_FOUND);
+					expect(res.body.message).equal(httpResponse[httpResponse.NOT_FOUND]);
 					done();
 				});
 		});

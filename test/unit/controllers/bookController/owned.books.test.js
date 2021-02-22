@@ -127,8 +127,8 @@ describe('Unit - Test Book Controller', () => {
 			});
 			const { data } = res._getJSONData();
 
-			const books = await Book.find({ owner: dbUser._id });
-			expect(data.book).deep.equalInAnyOrder(JSON.parse(JSON.stringify(books)));
+			const books = await Book.find({ owner: dbUser._id }).select('_id name author link');
+			expect(data.books).deep.equalInAnyOrder(JSON.parse(JSON.stringify(books)));
 		});
 	});
 });
