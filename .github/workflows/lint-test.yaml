@@ -32,6 +32,7 @@ jobs:
     strategy:
       matrix:
         node-version: [12.x]
+        redis-version: [4]
     steps:
       - name: Git checkout
         uses: actions/checkout@v2
@@ -39,6 +40,17 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Install and start Redis
+        uses: supercharge/redis-github-action@1.2.0
+        with:
+          redis-version: ${{ matrix.redis-version }}
+      - name: Install python dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install -r scripts/requirements.txt
+      - name: Insert zipcodes into Redis
+        run: |
+          python3 scripts/redis_setup.py config/zipcodesData/zipcodes.csv 0
       - name: npm install, build and test
         run: |
           npm install

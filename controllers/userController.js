@@ -6,6 +6,8 @@ const Session = require('$/models/sessionModel');
 const { ErrorHandler } = require('$/utils/errorHandler');
 const authUtil = require('$/utils/authUtil');
 const externalUtil = require('$/utils/externalUtil');
+const redisUtil = require('$/utils/redisUtil');
+
 const logger = require('$/config/logger');
 const constants = require('$/config/constants');
 
@@ -13,6 +15,17 @@ exports.signup = async (req, res, next) => {
 	logger.info('Inside signup function');
 	try {
 		const { name, email, location } = req.body;
+
+		const reply = await redisUtil.get(location);
+
+		if (reply !== '1') {
+			logger.info(`User with non-operating location: "name":${name}, "email":${email}, "location":${location}`);
+			res.status(httpResponse.OK).json({
+				status: constants.STATUS_SUCCESS,
+				data: constants.RESPONSE_USER_SIGNUP_INVALID_LOCATION,
+			});
+			return;
+		}
 
 		const otp = authUtil.getOTP();
 

@@ -1,5 +1,7 @@
 ![Lint & test](https://github.com/shreyas-sriram/bookxchange-server/workflows/Lint%20and%20Test/badge.svg)
-![coverage](https://img.shields.io/badge/Coverage-94.73%25-brightgreen?logo=npm&labelColor=363E46&color=00C251)
+
+![coverage](https://img.shields.io/badge/Coverage-91.08%25-brightgreen?logo=npm&labelColor=363E46&color=00C251)
+
 ![AWS-Deploy](https://github.com/shreyas-sriram/bookxchange-server/workflows/Deploy/badge.svg)
 
 # bookxchange-server

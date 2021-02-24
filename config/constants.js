@@ -11,6 +11,12 @@ module.exports = Object.freeze({
 		3: 'disconnecting',
 	},
 
+	// Redis
+	REDIS_CLIENT_ERROR: 'Error creating redis client',
+	REDIS_CONNECTION_SUCCESS: 'Redis connection established',
+	REDIS_GET_ERROR: 'Error retrieving value from redis',
+	REDIS_SET_ERROR: 'Error setting value to redis',
+
 	// Validation
 	RESPONSE_MISSING_PARAMETERS: 'Missing parameters',
 
@@ -49,6 +55,7 @@ module.exports = Object.freeze({
 
 	RESPONSE_USER_SIGNUP_VERIFY_FAIL: 'You cannot perform this action',
 	RESPONSE_USER_SIGNUP_VERIFY_SUCCESS: 'Email verified',
+	RESPONSE_USER_SIGNUP_INVALID_LOCATION: 'We do not operate in your location!',
 
 	RESPONSE_USER_LOGIN_SUCCESS: 'OTP has been sent to the mail',
 

@@ -42,6 +42,7 @@
 	},
 	"dependencies": {
 		"@sendgrid/mail": "^7.3.0",
+		"async-redis": "^1.1.7",
 		"basetag": "^1.2.10",
 		"cookie-parser": "^1.4.5",
 		"cors": "^2.8.5",

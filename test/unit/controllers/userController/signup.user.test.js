@@ -54,9 +54,10 @@ describe('Unit - Test User Controller', () => {
 
 	// Test signup()
 	// 1. registration successful
+	// 2. non-operating location
 	describe('signup() function', () => {
 		// For better log readability
-		before(() => {
+		before(async () => {
 			console.log('\n---------------------------------------\n');
 		});
 
@@ -82,6 +83,25 @@ describe('Unit - Test User Controller', () => {
 
 			const { data } = res._getJSONData();
 			expect(data).to.be.a('number');
+		});
+
+		it('location not serviceable - return 200', async () => {
+			const req = mocks.createRequest({
+				method: 'POST',
+				body: {
+					name: 'foo1',
+					email: 'foo1@bar.com',
+					location: '8927361',
+				},
+			});
+			const res = mocks.createResponse();
+
+			await userController.signup(req, res, (err) => {
+				expect(err).equal(false);
+			});
+
+			const { data } = res._getJSONData();
+			expect(data).equal(constants.RESPONSE_USER_SIGNUP_INVALID_LOCATION);
 		});
 	});
 
