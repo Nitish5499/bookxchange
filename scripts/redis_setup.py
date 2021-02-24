@@ -20,6 +20,10 @@ def main():
     column = 0 if len(sys.argv) < 3 else int(sys.argv[2])
     
     data = read_csv_data(sys.argv[1], column)
+
+    # to remove the name of the columns
+    del data[0]
+    
     conn = redis.Redis(REDIS_HOST)
     store_data(conn, data)
 if '__main__' == __name__:
