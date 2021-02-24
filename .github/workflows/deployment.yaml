@@ -57,7 +57,7 @@ jobs:
       - name: Delete development and CI related files
         run: |
           rm -rf "awscliv2.zip" "aws"
-          rm -rf "test" "node_modules"
+          rm -rf "test" "node_modules" "docs"
           rm README.md
 
       # Deploy push to AWS S3
@@ -69,7 +69,7 @@ jobs:
           --ignore-hidden-files \
           --s3-location s3://${{ matrix.s3-bucket }}/${{ matrix.s3-filename }}.zip \
           --source .
-      
+
       # Create deployment to CodeDeploy
       - name: AWS Create Deployment
         run: |

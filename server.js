@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
+const logger = require('$/config/logger');
+
 if (process.env.NODE_ENV === 'development') {
 	dotenv.config({
 		path: './config/env/development.env',
@@ -34,14 +36,14 @@ mongoose
 		useUnifiedTopology: true,
 	})
 	.then(() => {
-		console.log(`Connected to database - ${mongoose.connection.name}\n\n`);
+		logger.info(`Connected to database - ${mongoose.connection.name}`);
 	});
 
 // Start the server
 const port = process.env.PORT;
 const server = app.listen(port, () => {
-	console.log(`Application is running on port ${port}`);
-	console.log(`Environment - ${process.env.NODE_ENV}\n`);
+	logger.info(`Application is running on port ${port}`);
+	logger.info(`Environment - ${process.env.NODE_ENV}`);
 });
 
 process.on('unhandledRejection', (err) => {

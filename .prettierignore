@@ -6,3 +6,4 @@ docs/*
 .nyc_output/*
 config/testData/*
 test/data/*
+coverage/*

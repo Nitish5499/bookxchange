@@ -6,7 +6,7 @@
 
 The server-side API for the BookXchange Application.
 
-## Commands
+## Usage
 
 > All executable npm commands are under `scripts` in `package.json`, please look there for more.
 
@@ -56,12 +56,6 @@ branches:
 ```
 
 ## Guidelines
-
-### Installing Packages
-
-```
-npm install --save-dev <package-name>
-```
 
 ### Requires
 
