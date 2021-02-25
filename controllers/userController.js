@@ -197,6 +197,8 @@ exports.loginVerify = async (req, res, next) => {
 
 		const jwtToken = authUtil.createToken(user._id);
 
+		redisUtil.set(user._id.toString(), jwtToken);
+
 		await Session.create({
 			userId: user._id,
 			sessionToken: jwtToken,
@@ -223,7 +225,7 @@ exports.getUser = async (req, res, next) => {
 		logger.info(`request user: ${user}`);
 
 		const dbUser = await User.aggregate([
-			{ $match: { _id: user.userId } },
+			{ $match: { _id: user } },
 			{
 				$project: {
 					notifications: {
@@ -288,7 +290,7 @@ exports.getOtherUser = async (req, res, next) => {
 		const { user } = req;
 		const { id } = req.params;
 
-		logger.info(`User session: ${user}`);
+		logger.info(`Request userId: ${user}`);
 		logger.info(`Request for userId: ${id}`);
 
 		const dbUser = await User.findById(id).populate('booksOwned', 'name author link').select('name booksOwned');
@@ -316,7 +318,7 @@ exports.updateUser = async (req, res, next) => {
 
 		logger.info(`request user: ${user}`);
 
-		user = await User.findByIdAndUpdate(user.userId, {
+		user = await User.findByIdAndUpdate(user, {
 			name,
 			location,
 		});
@@ -344,7 +346,7 @@ exports.readNotifications = async (req, res, next) => {
 
 		await User.updateOne(
 			{
-				_id: user.userId,
+				_id: user,
 			},
 			{ $set: { 'notifications.$[notification].isRead': true } },
 			{
@@ -356,7 +358,7 @@ exports.readNotifications = async (req, res, next) => {
 		logger.info('Updated "isRead" to "true" for existing notifications');
 
 		const dbUser = await User.aggregate([
-			{ $match: { _id: user.userId } },
+			{ $match: { _id: user } },
 			{
 				$project: {
 					notifications: {
@@ -415,7 +417,9 @@ exports.logout = async (req, res, next) => {
 
 		logger.info('Response cookie cleared');
 
-		await Session.deleteOne({ _id: user._id });
+		redisUtil.del(user.toString());
+
+		await Session.deleteOne({ _id: user });
 
 		logger.info('User session removed from database');
 

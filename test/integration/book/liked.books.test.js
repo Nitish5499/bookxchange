@@ -79,7 +79,7 @@ describe('Integration - Test book fetch endpoints', () => {
 	});
 
 	// Test GET /api/v1/books/owned API
-	// 1. User's book retrival success
+	// 1. User's book retrieval success
 	// 2. user not logged in
 	describe('GET /api/v1/books/liked', () => {
 		before(async () => {
@@ -117,7 +117,7 @@ describe('Integration - Test book fetch endpoints', () => {
 			console.log('\n---------------------------------------\n');
 		});
 
-		it("successful user's liked books retrival - return 200", (done) => {
+		it("successful user's liked books retrieval - return 200", (done) => {
 			chai
 				.request(app)
 				.get(`/api/v1/books/liked`)

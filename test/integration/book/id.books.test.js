@@ -110,11 +110,11 @@ describe('Integration - Test book fetch endpoints', () => {
 	});
 
 	// Test GET /book/:id API
-	// 1. book retrival success
+	// 1. book retrieval success
 	// 2. book not found
 	// 3. invalid book id
 	describe('GET /api/v1/books/:id', () => {
-		it('successful book retrival - return 200', (done) => {
+		it('successful book retrieval - return 200', (done) => {
 			chai
 				.request(app)
 				.get(`/api/v1/books/${book._id}`)

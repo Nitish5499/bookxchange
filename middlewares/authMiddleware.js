@@ -1,8 +1,11 @@
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
+const mongoose = require('mongoose');
 const httpResponse = require('http-status');
 
 const Session = require('$/models/sessionModel');
+
+const redisUtil = require('$/utils/redisUtil');
 
 const { ErrorHandler } = require('$/utils/errorHandler');
 const logger = require('$/config/logger');
@@ -20,14 +23,19 @@ exports.verifyJWT = async (req, res, next) => {
 		const decode = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 		const { id } = decode;
 
-		const user = await Session.findOne({ userId: id, sessionToken: token });
+		let user = await redisUtil.get(id);
+
 		if (!user) {
-			return next(new ErrorHandler(httpResponse.UNAUTHORIZED, constants.RESPONSE_NOT_LOGGED_IN), req, res, next);
+			user = await Session.findOne({ userId: id, sessionToken: token });
+			if (!user) {
+				return next(new ErrorHandler(httpResponse.UNAUTHORIZED, constants.RESPONSE_NOT_LOGGED_IN), req, res, next);
+			}
+			logger.info(`Valid token found in MongoDB for user: ${id}`);
+		} else {
+			logger.info(`Valid token found in Redis for user: ${id}`);
 		}
 
-		req.user = user;
-		logger.info(`user: ${user._id} has a valid JWT token in the request`);
-
+		req.user = mongoose.Types.ObjectId(id);
 		next();
 	} catch (err) {
 		if (err.name === 'JsonWebTokenError' || err.name === 'SyntaxError') {

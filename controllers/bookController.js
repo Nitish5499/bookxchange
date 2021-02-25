@@ -22,7 +22,7 @@ exports.addBook = async (req, res, next) => {
 			name,
 			author,
 			link,
-			owner: mongoose.Types.ObjectId(user.userId),
+			owner: mongoose.Types.ObjectId(user),
 		};
 
 		const book = await Book.create(data);
@@ -38,7 +38,7 @@ exports.addBook = async (req, res, next) => {
 			);
 		}
 
-		await User.findByIdAndUpdate(user.userId, { $push: { booksOwned: book._id } });
+		await User.findByIdAndUpdate(user, { $push: { booksOwned: book._id } });
 
 		res.status(httpResponse.OK).json({
 			status: constants.STATUS_SUCCESS,
@@ -63,7 +63,7 @@ exports.getAllBooks = async (req, res, next) => {
 
 		logger.info(`request user: ${user}`);
 
-		const userInfo = await User.findById(user.userId).populate('booksOwned', '_id name author link');
+		const userInfo = await User.findById(user).populate('booksOwned', '_id name author link');
 		const allBooks = userInfo.booksOwned;
 
 		logger.info(`Books: ${allBooks}`);
@@ -117,11 +117,9 @@ exports.updateBook = async (req, res, next) => {
 
 		logger.info(`Name:${name}, Author:${author}, link:${link}`);
 
-		const dbBook = await Book.findOneAndUpdate(
-			{ _id: id, owner: user.userId },
-			{ name, author, link },
-			{ new: true },
-		).select('_id name author link');
+		const dbBook = await Book.findOneAndUpdate({ _id: id, owner: user }, { name, author, link }, { new: true }).select(
+			'_id name author link',
+		);
 
 		logger.info(dbBook);
 
@@ -148,7 +146,7 @@ exports.deleteBook = async (req, res, next) => {
 
 		logger.info(`BookId:${id}`);
 
-		const book = await Book.findOneAndDelete({ _id: id, owner: user.userId });
+		const book = await Book.findOneAndDelete({ _id: id, owner: user });
 
 		if (!book) {
 			return next(new ErrorHandler(httpResponse.NOT_FOUND, httpResponse[httpResponse.NOT_FOUND]), req, res, next);
@@ -186,10 +184,7 @@ exports.likeBook = async (req, res, next) => {
 
 		logger.info(`BookId:${id}`);
 
-		const dbBook = await Book.findOneAndUpdate(
-			{ _id: id, owner: { $ne: user.userId } },
-			{ $addToSet: { likedBy: user.userId } },
-		);
+		const dbBook = await Book.findOneAndUpdate({ _id: id, owner: { $ne: user } }, { $addToSet: { likedBy: user } });
 
 		if (!dbBook) {
 			return next(new ErrorHandler(httpResponse.NOT_FOUND, httpResponse[httpResponse.NOT_FOUND]), req, res, next);
@@ -197,10 +192,7 @@ exports.likeBook = async (req, res, next) => {
 
 		logger.info('"UserId" added to "likedBy" of the book');
 
-		const dbUser = await User.findOneAndUpdate(
-			{ _id: user.userId, booksLiked: { $ne: id } },
-			{ $push: { booksLiked: id } },
-		);
+		const dbUser = await User.findOneAndUpdate({ _id: user, booksLiked: { $ne: id } }, { $push: { booksLiked: id } });
 
 		// User has already liked the book if
 		// `dbUser` is `null`
@@ -216,7 +208,7 @@ exports.likeBook = async (req, res, next) => {
 
 		let notification = bookUtil.createNotification(
 			bookUtil.notificationMessage(dbUser.name, dbBook.name, null, 'like'),
-			user.userId,
+			user,
 		);
 		const dbUserMatched = await User.findByIdAndUpdate(dbBook.owner, {
 			$push: {
@@ -233,7 +225,7 @@ exports.likeBook = async (req, res, next) => {
 		if (isMatch) {
 			notification = bookUtil.createNotification(
 				bookUtil.notificationMessage(dbUser.name, null, dbUser.email, 'match'),
-				user.userId,
+				user,
 			);
 			User.findByIdAndUpdate(dbBook.owner, {
 				$push: {
@@ -245,7 +237,7 @@ exports.likeBook = async (req, res, next) => {
 				bookUtil.notificationMessage(dbUserMatched.name, null, dbUserMatched.email, 'match'),
 				dbBook.owner,
 			);
-			User.findByIdAndUpdate(user.userId, {
+			User.findByIdAndUpdate(user, {
 				$push: {
 					notifications: notification,
 				},
@@ -253,7 +245,7 @@ exports.likeBook = async (req, res, next) => {
 
 			responseMessage = constants.RESPONSE_BOOK_LIKE_MATCH;
 
-			logger.info(`Added "match notifications" to the users: ${dbBook.owner}, ${user.userId}`);
+			logger.info(`Added "match notifications" to the users: ${dbBook.owner}, ${user}`);
 		}
 
 		res.status(httpResponse.OK).json({
@@ -276,7 +268,7 @@ exports.unlikeBook = async (req, res, next) => {
 
 		logger.info(`BookId:${id}`);
 
-		const book = await Book.findByIdAndUpdate(id, { $pull: { likedBy: user.userId } });
+		const book = await Book.findByIdAndUpdate(id, { $pull: { likedBy: user } });
 
 		if (!book) {
 			return next(new ErrorHandler(httpResponse.NOT_FOUND, httpResponse[httpResponse.NOT_FOUND]), req, res, next);
@@ -284,7 +276,7 @@ exports.unlikeBook = async (req, res, next) => {
 
 		logger.info('User Id removed from likedBy of the book');
 
-		const notLiked = await User.findOneAndUpdate({ _id: user.userId, booksLiked: id }, { $pull: { booksLiked: id } });
+		const notLiked = await User.findOneAndUpdate({ _id: user, booksLiked: id }, { $pull: { booksLiked: id } });
 
 		if (!notLiked) {
 			res.status(httpResponse.OK).json({
@@ -298,7 +290,7 @@ exports.unlikeBook = async (req, res, next) => {
 
 		const notification = bookUtil.createNotification(
 			bookUtil.notificationMessage(notLiked.name, book.name, null, 'unlike'),
-			user.userId,
+			user,
 		);
 		User.findByIdAndUpdate(book.owner, {
 			$push: {
@@ -324,7 +316,7 @@ exports.getLikedBooks = async (req, res, next) => {
 
 		logger.info(`request user: ${user}`);
 
-		const userInfo = await User.findById(user.userId).populate('booksLiked', '_id name author link owner');
+		const userInfo = await User.findById(user).populate('booksLiked', '_id name author link owner');
 		const allLikedBooks = userInfo.booksLiked;
 
 		logger.info(`Books: ${allLikedBooks}`);
@@ -347,7 +339,7 @@ exports.getOthersLikedBooks = async (req, res, next) => {
 
 		logger.info(`request user: ${user}`);
 
-		const dbBooks = await Book.find({ owner: user.userId, likedBy: { $gt: [] } })
+		const dbBooks = await Book.find({ owner: user, likedBy: { $gt: [] } })
 			.populate('likedBy', 'name')
 			.select('likedBy name author link');
 
@@ -371,7 +363,7 @@ exports.findBooks = async (req, res, next) => {
 
 		logger.info(`request user: ${user}`);
 
-		user = await User.findById(mongoose.Types.ObjectId(user.userId));
+		user = await User.findById(mongoose.Types.ObjectId(user));
 
 		logger.info(`User: ${user}`);
 

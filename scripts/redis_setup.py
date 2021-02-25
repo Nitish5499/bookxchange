@@ -25,6 +25,7 @@ def main():
     del data[0]
     
     conn = redis.Redis(REDIS_HOST)
+    conn.flushall()
     store_data(conn, data)
 if '__main__' == __name__:
     main()

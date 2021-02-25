@@ -18,7 +18,6 @@ const sleep = promisify(setTimeout);
 describe('Unit - Test Book Controller', () => {
 	let dbUser = null;
 	let tempUser = null;
-	let user = null;
 	let jwt = null;
 	let book = null;
 	const name = 'jett';
@@ -49,7 +48,7 @@ describe('Unit - Test Book Controller', () => {
 			});
 
 			jwt = authUtil.createToken(dbUser._id);
-			user = await Session.create({
+			await Session.create({
 				userId: dbUser._id,
 				sessionToken: jwt,
 			});
@@ -122,7 +121,7 @@ describe('Unit - Test Book Controller', () => {
 
 		it('successful book like - return 200', async () => {
 			const req = mocks.createRequest({
-				user,
+				user: dbUser._id,
 				method: 'PUT',
 				params: {
 					id: book._id,
@@ -152,7 +151,7 @@ describe('Unit - Test Book Controller', () => {
 			await Book.findByIdAndUpdate(book._id, { $push: { likedBy: dbUser._id } });
 
 			const req = mocks.createRequest({
-				user,
+				user: dbUser._id,
 				method: 'PUT',
 				params: {
 					id: book._id,
@@ -222,7 +221,7 @@ describe('Unit - Test Book Controller', () => {
 
 		it('successful book match - return 200', async () => {
 			const req = mocks.createRequest({
-				user,
+				user: dbUser._id,
 				method: 'PUT',
 				params: {
 					id: book._id,
@@ -298,7 +297,7 @@ describe('Unit - Test Book Controller', () => {
 
 		it('successful book unlike - return 200', async () => {
 			const req = mocks.createRequest({
-				user,
+				user: dbUser._id,
 				method: 'DELETE',
 				params: {
 					id: book._id,
@@ -331,7 +330,7 @@ describe('Unit - Test Book Controller', () => {
 			await Book.findByIdAndUpdate(book._id, { $pull: { likedBy: dbUser._id } });
 
 			const req = mocks.createRequest({
-				user,
+				user: dbUser._id,
 				method: 'DELETE',
 				params: {
 					id: book._id,

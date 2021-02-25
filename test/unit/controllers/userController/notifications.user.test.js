@@ -80,7 +80,6 @@ describe('Unit - Test User Controller', () => {
 		];
 
 		let dbUser;
-		let user;
 
 		// Before all tests begin
 		// 1. Create a new user
@@ -98,7 +97,7 @@ describe('Unit - Test User Controller', () => {
 					notifications: notification,
 				});
 				const jwt = authUtil.createToken(dbUser._id);
-				user = await Session.create({
+				await Session.create({
 					userId: dbUser._id,
 					sessionToken: jwt,
 				});
@@ -116,7 +115,7 @@ describe('Unit - Test User Controller', () => {
 
 		it('successful updation of isRead in notifications - return 200', async () => {
 			const req = mocks.createRequest({
-				user,
+				user: dbUser._id,
 				method: 'POST',
 				body: {
 					timestamp: '2021-01-22T14:56:59.301+00:00',

@@ -22,7 +22,6 @@ describe('Unit - Test Book Controller', () => {
 	const likedBy = new Array(mongoose.Types.ObjectId());
 	let dbUser = null;
 	let jwt = null;
-	let user = null;
 	const userName = 'jett';
 	const userEmail = 'jett@rp.com';
 	const userLocation = 'test_location';
@@ -59,7 +58,7 @@ describe('Unit - Test Book Controller', () => {
 			});
 
 			jwt = authUtil.createToken(dbUser._id);
-			user = await Session.create({
+			await Session.create({
 				userId: dbUser._id,
 				sessionToken: jwt,
 			});
@@ -92,10 +91,10 @@ describe('Unit - Test Book Controller', () => {
 	});
 
 	// Test GET /book/:id API
-	// 1. book retrival success
+	// 1. book retrieval success
 	// 2. book not found
 	describe('getBook() function', () => {
-		it('successful book retrival - return 200', async () => {
+		it('successful book retrieval - return 200', async () => {
 			const resBook = {
 				_id: book._id,
 				name: book.name,
@@ -103,7 +102,7 @@ describe('Unit - Test Book Controller', () => {
 				link: book.link,
 			};
 			const req = mocks.createRequest({
-				user,
+				user: dbUser._id,
 				method: 'GET',
 				params: {
 					id: book._id,
@@ -122,7 +121,7 @@ describe('Unit - Test Book Controller', () => {
 
 		it('Book not found - return 404', async () => {
 			const req = mocks.createRequest({
-				user,
+				user: dbUser._id,
 				method: 'GET',
 				params: {
 					id: mongoose.Types.ObjectId(),
@@ -144,7 +143,7 @@ describe('Unit - Test Book Controller', () => {
 	describe('updateBook() function', () => {
 		it('successful book update - return 200', async () => {
 			const req = mocks.createRequest({
-				user,
+				user: dbUser._id,
 				method: 'PATCH',
 				params: {
 					id: book._id,
@@ -171,7 +170,7 @@ describe('Unit - Test Book Controller', () => {
 
 		it('Book not found - return 404', async () => {
 			const req = mocks.createRequest({
-				user,
+				user: dbUser._id,
 				method: 'POST',
 				params: {
 					id: mongoose.Types.ObjectId(),
@@ -199,7 +198,7 @@ describe('Unit - Test Book Controller', () => {
 	describe('deleteBook() function', () => {
 		it('Book not found - return 404', async () => {
 			const req = mocks.createRequest({
-				user,
+				user: dbUser._id,
 				method: 'DELETE',
 				params: {
 					id: mongoose.Types.ObjectId(),
@@ -216,7 +215,7 @@ describe('Unit - Test Book Controller', () => {
 
 		it('successful book delete - return 200', async () => {
 			const req = mocks.createRequest({
-				user,
+				user: dbUser._id,
 				method: 'DELETE',
 				params: {
 					id: book._id,

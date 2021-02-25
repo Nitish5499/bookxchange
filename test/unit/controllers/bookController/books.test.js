@@ -13,7 +13,6 @@ const { expect } = chai;
 
 describe('Unit - Test Book Controller', () => {
 	let dbUser = null;
-	let user = null;
 	let jwt = null;
 	const name = 'jett';
 	const email = 'jett@rp.com';
@@ -42,7 +41,7 @@ describe('Unit - Test Book Controller', () => {
 			});
 
 			jwt = authUtil.createToken(dbUser._id);
-			user = await Session.create({
+			await Session.create({
 				userId: dbUser._id,
 				sessionToken: jwt,
 			});
@@ -84,7 +83,7 @@ describe('Unit - Test Book Controller', () => {
 
 		it('successful book addition - return 200', async () => {
 			const req = mocks.createRequest({
-				user,
+				user: dbUser._id,
 				method: 'POST',
 				body: {
 					name: 'To Sleep in a Sea of Stars',

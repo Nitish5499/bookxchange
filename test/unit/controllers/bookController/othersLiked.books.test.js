@@ -17,7 +17,6 @@ const { expect } = chai;
 
 describe('Unit - Test Book Controller', () => {
 	const dbUserId1 = mongoose.Types.ObjectId('aaaaaaaaaaaaaaaaaaaaa107');
-	let sessionUser1;
 	let jwtUser1;
 	const resUser1 = [
 		{
@@ -72,7 +71,7 @@ describe('Unit - Test Book Controller', () => {
 
 			console.log('\n3. Inserting test data into sessions collection');
 			jwtUser1 = authUtil.createToken(dbUserId1);
-			sessionUser1 = await Session.create({
+			await Session.create({
 				userId: dbUserId1,
 				sessionToken: jwtUser1,
 			});
@@ -116,7 +115,7 @@ describe('Unit - Test Book Controller', () => {
 
 		it('successful retrieval, multiple entries - return 200', async () => {
 			const req = mocks.createRequest({
-				user: sessionUser1,
+				user: dbUserId1,
 				method: 'GET',
 			});
 

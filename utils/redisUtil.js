@@ -23,3 +23,7 @@ exports.get = async (key) => {
 exports.set = async (key, value) => {
 	await client.set(key, value);
 };
+
+exports.del = async (key) => {
+	await client.del(key);
+};
