@@ -384,6 +384,7 @@ exports.findBooks = async (req, res, next) => {
 			{
 				$match: {
 					location: { $in: result },
+					_id: { $ne: user._id },
 				},
 			},
 			{
@@ -396,6 +397,11 @@ exports.findBooks = async (req, res, next) => {
 			},
 			{
 				$unwind: '$booksNearby',
+			},
+			{
+				$match: {
+					'booksNearby._id': { $nin: user.booksLiked },
+				},
 			},
 			{
 				$addFields: {

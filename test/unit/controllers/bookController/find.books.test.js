@@ -86,32 +86,11 @@ describe('Unit - Test Book Controller', () => {
 					userName: 'Smith',
 				},
 				{
-					id: 'aaaaaaaaaaaaaaaaaaaab103',
-					name: 'The Sun Down Motel',
-					author: 'Simone St. James',
-					link: 'https://www.goodreads.com/book/show/45885644-the-sun-down-motel',
-					userName: 'Jimmy',
-				},
-				{
 					id: 'aaaaaaaaaaaaaaaaaaaab104',
 					name: 'From Blood and Ash',
 					author: 'Jennifer L. Armentrout',
 					link: 'https://www.goodreads.com/book/show/52941854-from-blood-and-ash',
 					userName: 'Jimmy',
-				},
-				{
-					id: 'aaaaaaaaaaaaaaaaaaaab105',
-					name: 'Pride and Prejudice',
-					author: 'Jane Austen',
-					link: 'https://www.goodreads.com/book/show/1885.Pride_and_Prejudice',
-					userName: 'Sam',
-				},
-				{
-					id: 'aaaaaaaaaaaaaaaaaaaab106',
-					name: 'The Great Gatsby',
-					author: 'F. Scott Fitzgerald',
-					link: 'https://www.goodreads.com/book/show/4671.The_Great_Gatsby',
-					userName: 'Sam',
 				},
 			];
 
