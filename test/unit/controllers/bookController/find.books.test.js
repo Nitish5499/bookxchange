@@ -2,6 +2,7 @@ const mocks = require('node-mocks-http');
 const deepEqualInAnyOrder = require('deep-equal-in-any-order');
 const chai = require('chai');
 const mongoose = require('mongoose');
+const httpResponse = require('http-status');
 
 const bookController = require('$/controllers/bookController');
 const adminController = require('$/controllers/adminController');
@@ -10,14 +11,14 @@ const Book = require('$/models/bookModel');
 const User = require('$/models/userModel');
 const Session = require('$/models/sessionModel');
 
-const authUtil = require('$/utils/authUtil');
+const constants = require('$/config/constants');
 
 chai.use(deepEqualInAnyOrder);
 const { expect } = chai;
 
 describe('Unit - Test Book Controller', () => {
-	const dbUserId = mongoose.Types.ObjectId('aaaaaaaaaaaaaaaaaaaaa107');
-	let jwt = null;
+	const dbUserIdOne = mongoose.Types.ObjectId('aaaaaaaaaaaaaaaaaaaaa107');
+	const dbUserIdTwo = mongoose.Types.ObjectId('aaaaaaaaaaaaaaaaaaaaa104');
 
 	// Before all tests begin
 	// 1. Load environment
@@ -33,14 +34,6 @@ describe('Unit - Test Book Controller', () => {
 
 			console.log('\n2. Inserting records into Users, Books collection');
 			adminController.populate();
-
-			console.log('\n3. Inserting record into sessions collection');
-
-			jwt = authUtil.createToken(dbUserId);
-			await Session.create({
-				userId: dbUserId,
-				sessionToken: jwt,
-			});
 		} catch (err) {
 			console.log(err);
 			process.exit(1);
@@ -95,7 +88,7 @@ describe('Unit - Test Book Controller', () => {
 			];
 
 			const req = mocks.createRequest({
-				user: dbUserId,
+				user: dbUserIdOne,
 				method: 'GET',
 			});
 
@@ -107,6 +100,25 @@ describe('Unit - Test Book Controller', () => {
 			const { data } = res._getJSONData();
 
 			expect(data.nearbyBooks).deep.equalInAnyOrder(JSON.parse(JSON.stringify(testResponse)));
+		});
+
+		it('no nearby books - return 200', async () => {
+			const req = mocks.createRequest({
+				user: dbUserIdTwo,
+				method: 'GET',
+			});
+
+			const res = mocks.createResponse();
+
+			await bookController.findBooks(req, res, (err) => {
+				expect(err).equal(false);
+				console.log(res);
+			});
+
+			const { message } = res._getJSONData();
+
+			expect(res.statusCode).equal(httpResponse.OK);
+			expect(message).equal(constants.RESPONSE_NEARBY_BOOKS_EMPTY);
 		});
 	});
 });

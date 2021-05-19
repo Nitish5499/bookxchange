@@ -421,7 +421,7 @@ exports.findBooks = async (req, res, next) => {
 			},
 		]);
 
-		if (!books) {
+		if (!books[0]) {
 			res.status(httpResponse.OK).json({
 				status: constants.STATUS_SUCCESS,
 				message: constants.RESPONSE_NEARBY_BOOKS_EMPTY,
