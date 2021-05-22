@@ -11,8 +11,6 @@ const Book = require('$/models/bookModel');
 const User = require('$/models/userModel');
 const Session = require('$/models/sessionModel');
 
-const constants = require('$/config/constants');
-
 chai.use(deepEqualInAnyOrder);
 const { expect } = chai;
 
@@ -115,10 +113,11 @@ describe('Unit - Test Book Controller', () => {
 				console.log(res);
 			});
 
-			const { message } = res._getJSONData();
+			const { data } = res._getJSONData();
 
 			expect(res.statusCode).equal(httpResponse.OK);
-			expect(message).equal(constants.RESPONSE_NEARBY_BOOKS_EMPTY);
+			// eslint-disable-next-line no-unused-expressions
+			expect(data.nearbyBooks).to.be.empty;
 		});
 	});
 });
