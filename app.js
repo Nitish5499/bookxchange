@@ -1,5 +1,4 @@
 const express = require('express');
-const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
@@ -13,7 +12,6 @@ const routes = require('$/routes/index');
 
 const { ErrorHandler, handleError } = require('$/utils/errorHandler');
 const logger = require('$/config/logger');
-const constants = require('$/config/constants');
 
 const app = express();
 
@@ -22,18 +20,6 @@ app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
 
 // Set security HTTP headers
 app.use(helmet());
-
-// Limit request from the same API
-const limiter = rateLimit({
-	max: 150,
-	windowMs: 60 * 60 * 1000,
-	message: {
-		code: httpResponse.TOO_MANY_REQUESTS,
-		message: httpResponse[httpResponse.TOO_MANY_REQUESTS],
-		status: constants.STATUS_ERROR,
-	},
-});
-app.use('/api', limiter);
 
 // Body parser, reading data from body into req.body
 app.use(
