@@ -21,7 +21,7 @@ exports.signup = async (req, res, next) => {
 		if (reply !== '1') {
 			logger.info(`User with non-operating location: "name":${name}, "email":${email}, "location":${location}`);
 			res.status(httpResponse.OK).json({
-				status: constants.STATUS_SUCCESS,
+				status: constants.STATUS_ERROR,
 				data: constants.RESPONSE_USER_SIGNUP_INVALID_LOCATION,
 			});
 			return;
@@ -323,7 +323,7 @@ exports.updateUser = async (req, res, next) => {
 		if (isServiceable !== '1') {
 			logger.info(`User with non-operating location update: "name":${name}, "location":${location}`);
 			res.status(httpResponse.OK).json({
-				status: constants.STATUS_SUCCESS,
+				status: constants.STATUS_ERROR,
 				data: constants.RESPONSE_USER_SIGNUP_INVALID_LOCATION,
 			});
 			return;
