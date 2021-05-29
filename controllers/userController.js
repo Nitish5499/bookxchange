@@ -318,6 +318,17 @@ exports.updateUser = async (req, res, next) => {
 
 		logger.info(`request user: ${user}`);
 
+		const isServiceable = await redisUtil.get(location);
+
+		if (isServiceable !== '1') {
+			logger.info(`User with non-operating location update: "name":${name}, "location":${location}`);
+			res.status(httpResponse.OK).json({
+				status: constants.STATUS_SUCCESS,
+				data: constants.RESPONSE_USER_SIGNUP_INVALID_LOCATION,
+			});
+			return;
+		}
+
 		user = await User.findByIdAndUpdate(user, {
 			name,
 			location,
