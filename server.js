@@ -43,6 +43,7 @@ mongoose
 const port = process.env.PORT;
 const server = app.listen(port, () => {
 	logger.info(`Application is running on port ${port}`);
+	logger.info(`Application CORS Origin set to: ${process.env.CORS_ORIGIN}`);
 	logger.info(`Environment - ${process.env.NODE_ENV}`);
 });
 
