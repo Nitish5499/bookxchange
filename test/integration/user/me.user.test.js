@@ -179,7 +179,7 @@ describe('Integration - Test users me endpoints', () => {
 		const name = 'foo6';
 		const location = 'foo_location';
 		const updateName = 'test_name';
-		const updateLocation = 'test_location';
+		const updateLocation = '600083';
 
 		let user;
 		let jwt;

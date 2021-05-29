@@ -188,7 +188,7 @@ describe('Unit - Test User Controller', () => {
 				method: 'PATCH',
 				body: {
 					name: 'test_update',
-					location: 'test_location',
+					location: '600083',
 				},
 			});
 
@@ -202,6 +202,26 @@ describe('Unit - Test User Controller', () => {
 
 			const { data } = res._getJSONData();
 			expect(data).deep.equals(message);
+		});
+
+		it('failure updating unserviceable location - return 200', async () => {
+			const req = mocks.createRequest({
+				user: dbUser,
+				method: 'PATCH',
+				body: {
+					name: 'test_update',
+					location: 'some_pin',
+				},
+			});
+
+			const res = mocks.createResponse();
+
+			await userController.updateUser(req, res, (err) => {
+				expect(err).equal(false);
+			});
+
+			const { data } = res._getJSONData();
+			expect(data).deep.equals(constants.RESPONSE_USER_SIGNUP_INVALID_LOCATION);
 		});
 	});
 });
