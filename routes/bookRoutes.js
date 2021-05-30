@@ -22,7 +22,7 @@ router
 // GET - Fetch all the books nearby
 router
 	.route('/find')
-	.get(bookController.findBooks)
+	.get(validateMiddleware(bookValidation.findBooks), bookController.findBooks)
 	.all(errorController.methods(['GET']));
 
 // GET  - Fetch all liked books of a user

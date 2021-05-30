@@ -67,7 +67,7 @@ describe('Unit - Test Book Controller', () => {
 			console.log('\n---------------------------------------\n');
 		});
 
-		it("successful user's books retrieval - return 200", async () => {
+		it("successful user's books retrieval, with default distance - return 200", async () => {
 			const testResponse = [
 				{
 					id: 'aaaaaaaaaaaaaaaaaaaab101',
@@ -88,6 +88,35 @@ describe('Unit - Test Book Controller', () => {
 			const req = mocks.createRequest({
 				user: dbUserIdOne,
 				method: 'GET',
+			});
+
+			const res = mocks.createResponse();
+
+			await bookController.findBooks(req, res, (err) => {
+				expect(err).equal(false);
+			});
+			const { data } = res._getJSONData();
+
+			expect(data.nearbyBooks).deep.equalInAnyOrder(JSON.parse(JSON.stringify(testResponse)));
+		});
+
+		it("successful user's books retrieval, with input distance - return 200", async () => {
+			const testResponse = [
+				{
+					id: 'aaaaaaaaaaaaaaaaaaaab101',
+					name: 'The Guest List',
+					author: 'Lucy Foley',
+					link: 'https://www.goodreads.com/book/show/54911607-the-guest-list',
+					userName: 'Smith',
+				},
+			];
+
+			const req = mocks.createRequest({
+				user: dbUserIdOne,
+				method: 'GET',
+				query: {
+					distance: 1,
+				},
 			});
 
 			const res = mocks.createResponse();

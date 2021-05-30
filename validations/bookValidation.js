@@ -33,9 +33,16 @@ const deleteBook = {
 	}),
 };
 
+const findBooks = {
+	query: Joi.object().keys({
+		distance: Joi.number().integer().min(1).max(10),
+	}),
+};
+
 module.exports = {
 	addBook,
 	getBook,
 	updateBook,
 	deleteBook,
+	findBooks,
 };
