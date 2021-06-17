@@ -1,13 +1,22 @@
 name: Deploy
 
+###############################
+# Disabled deployment workflow
+###############################
+
+# on:
+#   workflow_run:
+#     workflows:
+#       - "Lint and Test"
+#     branches:
+#       - main
+#     types:
+#       - completed
+
 on:
-  workflow_run:
-    workflows:
-      - "Lint and Test"
-    branches:
-      - main
-    types:
-      - completed
+  push:
+    branches-ignore:
+      - "**"
 
 jobs:
   deploy:
